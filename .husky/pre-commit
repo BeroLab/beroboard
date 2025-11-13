@@ -1,1 +1,5 @@
-lint-staged
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Run Biome across the entire repo and auto-fix what it can
+bunx biome check --write .
