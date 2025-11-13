@@ -1,5 +1,34 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-# Run Biome across the entire repo and auto-fix what it can
+set -e
+
 bunx biome check --write .
+
+TEST_ROOT="apps/server"
+TEST_MATCH=$(find "$TEST_ROOT" -type f \( \
+	-name "*.test.js" -o \
+	-name "*.test.jsx" -o \
+	-name "*.test.ts" -o \
+	-name "*.test.tsx" -o \
+	-name "*_test.js" -o \
+	-name "*_test.jsx" -o \
+	-name "*_test.ts" -o \
+	-name "*_test.tsx" -o \
+	-name "*.spec.js" -o \
+	-name "*.spec.jsx" -o \
+	-name "*.spec.ts" -o \
+	-name "*.spec.tsx" -o \
+	-name "*_spec.js" -o \
+	-name "*_spec.jsx" -o \
+	-name "*_spec.ts" -o \
+	-name "*_spec.tsx" \
+	\) -print -quit)
+
+if [ -n "$TEST_MATCH" ]; then
+	echo "Running backend unit tests..."
+	bun test "./$TEST_ROOT"
+	echo "Tests completed."
+else
+	echo "No backend tests found under $TEST_ROOT, skipping bun test."
+fi
