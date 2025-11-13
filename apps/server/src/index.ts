@@ -1,7 +1,7 @@
 import "dotenv/config";
-import { Elysia } from "elysia";
-import { cors } from "@elysiajs/cors";
 import { auth } from "@beroboard/auth";
+import { cors } from "@elysiajs/cors";
+import { Elysia } from "elysia";
 
 const app = new Elysia()
 	.use(
@@ -23,3 +23,7 @@ const app = new Elysia()
 	.listen(3000, () => {
 		console.log("Server is running on http://localhost:3000");
 	});
+
+console.log(
+	`Elysia APP is running in the url ${app.server?.hostname} and the port ${app.server?.port}`,
+);

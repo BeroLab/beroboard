@@ -4,5 +4,9 @@
       "command": "./node_modules/.bin/biome",
       "arguments": ["format", "--write", "--stdin-file-path={buffer_path}"]
     }
+  },
+  "code_actions_on_format": {
+    "source.organizeImports.biome": true,
+    "source.fixAll.biome": true
   }
 }
