@@ -1,6 +1,6 @@
-import { betterAuth, type BetterAuthOptions } from "better-auth";
-import { prismaAdapter } from "better-auth/adapters/prisma";
 import prisma from "@beroboard/db";
+import { type BetterAuthOptions, betterAuth } from "better-auth";
+import { prismaAdapter } from "better-auth/adapters/prisma";
 
 export const auth = betterAuth<BetterAuthOptions>({
 	database: prismaAdapter(prisma, {

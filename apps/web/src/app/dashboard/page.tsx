@@ -1,7 +1,7 @@
-import { redirect } from "next/navigation";
-import Dashboard from "./dashboard";
 import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
+import Dashboard from "./dashboard";
 
 export default async function DashboardPage() {
 	const session = await authClient.getSession({
