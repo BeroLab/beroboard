@@ -1,9 +1,10 @@
-FROM oven/bun:1.1 AS deps
+FROM oven/bun:1.3 AS deps
 WORKDIR /app
 
 COPY bun.lock bunfig.toml package.json ./
 COPY packages ./packages
 COPY apps/server/package.json ./apps/server/package.json
+COPY apps/web/package.json ./apps/web/package.json
 
 RUN bun install --frozen-lockfile --production
 
@@ -20,7 +21,7 @@ COPY apps/server/src ./src
 
 RUN bun run build
 
-FROM oven/bun:1.1-slim AS runner
+FROM oven/bun:1.3-slim AS runner
 WORKDIR /app/apps/server
 
 ENV NODE_ENV=production
