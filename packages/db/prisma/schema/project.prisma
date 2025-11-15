@@ -1,0 +1,15 @@
+model Projects {
+  id String @id @map("id") @default(cuid())
+  name String @map("name")
+  description String @map("description")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+  // Relations
+  usersSubscribed User[] @relation("UsersSubscribed")
+  createdByUserId String @map("created_by_user_id")
+  createdByUser User @relation(fields: [createdByUserId], references: [id], onDelete: Cascade, name: "CreatedProjects")
+  boards Boards[]
+
+  @@map("projects")
+}

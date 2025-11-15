@@ -32,6 +32,10 @@
 		"db:generate": {
 			"cache": false,
 			"persistent": true
+		},
+		"db:migrate:create": {
+			"cache": false,
+			"persistent": true
 		}
 	}
 }

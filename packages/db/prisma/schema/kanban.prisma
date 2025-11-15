@@ -1,0 +1,39 @@
+model Boards {
+  id String @id @map("id") @default(cuid())
+  name String @map("name")
+  description String @map("description")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+  
+  // Relations  
+  projectId String @map("project_id")
+  project Projects @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  tasks Tasks[]
+  @@map("boards")
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  DONE
+}
+
+model Tasks {
+  id String @id @map("id") @default(cuid())
+  title String @map("title")
+  description String @map("description")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  // Relations
+  createdByUserId String @map("created_by_user_id")
+  createdByUser User @relation(fields: [createdByUserId], references: [id], onDelete: Cascade, name: "CreatedTasks")
+  assignedToUserId String @map("assigned_to_user_id")
+  assignedToUser User @relation(fields: [assignedToUserId], references: [id], onDelete: Cascade, name: "AssignedTasks")
+  boardId String @map("board_id")
+  board Boards @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  status TaskStatus @map("status")
+  @@map("tasks")
+}

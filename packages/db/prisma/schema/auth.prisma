@@ -1,14 +1,23 @@
+enum UserRole {
+  USER
+  ADMIN
+}
 model User {
   id            String    @id @map("_id")
   name          String
   email         String
   emailVerified Boolean
   image         String?
+  role          UserRole @default(USER)
   createdAt     DateTime
   updatedAt     DateTime
   sessions      Session[]
   accounts      Account[]
-
+  accessProjects Projects[] @relation("UsersSubscribed")
+  createdProjects Projects[] @relation("CreatedProjects")
+  assignedTasks Tasks[] @relation("AssignedTasks")
+  createdTasks  Tasks[] @relation("CreatedTasks")
+  
   @@unique([email])
   @@map("user")
 }

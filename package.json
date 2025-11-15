@@ -22,6 +22,8 @@
 		"dev": "turbo dev",
 		"build": "turbo build",
 		"check-types": "turbo check-types",
+		"install_web": "turbo -F web apps/web",
+		"install_server": "turbo -F server apps/server",
 		"dev:native": "turbo -F native dev",
 		"dev:web": "turbo -F web dev",
 		"dev:server": "turbo -F server dev",
@@ -29,7 +31,9 @@
 		"db:studio": "turbo -F @beroboard/db db:studio",
 		"db:generate": "turbo -F @beroboard/db db:generate",
 		"db:migrate": "turbo -F @beroboard/db db:migrate",
-		"docker:up": "docker-compose -f docker-compose.development.yaml up -d"
+		"db:migrate:create": "turbo -F @beroboard/db db:migrate:create --",
+		"docker:up": "docker-compose -f docker-compose.development.yaml up -d",
+		"test:integration": "docker-compose -f docker-compose.development.yaml up -d  && docker exec beroboard-db-1 bash -c 'until pg_isready -U postgres -d beroboard; do echo \"⏳ Aguardando DB...\"; sleep 1; done' && turbo -F @beroboard/db db:migrate && bun test; docker-compose -f docker-compose.development.yaml down"
 	},
 	"dependencies": {
 		"dotenv": "^17.2.2",
