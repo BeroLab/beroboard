@@ -6,7 +6,7 @@
 		"useIgnoreFile": false
 	},
 	"files": {
-		"ignoreUnknown": false,
+		"ignoreUnknown": true,
 		"includes": [
 			"**",
 			"!**/.next",
@@ -64,7 +64,11 @@
 	},
 	"javascript": {
 		"formatter": {
-			"quoteStyle": "double"
+			"quoteStyle": "double",
+			"trailingCommas": "all",
+			"lineWidth": 160,
+			"indentStyle": "space",
+			"indentWidth": 3
 		}
 	},
 	"css": {
