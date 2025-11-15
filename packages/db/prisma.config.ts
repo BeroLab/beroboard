@@ -3,12 +3,12 @@ import dotenv from "dotenv";
 import type { PrismaConfig } from "prisma";
 
 dotenv.config({
-	path: "../../apps/server/.env",
+   path: "../../.env",
 });
 
 export default {
-	schema: path.join("prisma", "schema"),
-	migrations: {
-		path: path.join("prisma", "migrations"),
-	},
+   schema: path.join("prisma", "schema"),
+   migrations: {
+      path: path.join("prisma", "migrations"),
+   },
 } satisfies PrismaConfig;
