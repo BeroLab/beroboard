@@ -10,13 +10,15 @@
 		"start": "bun run dist/index.js"
 	},
 	"dependencies": {
-		"elysia": "^1.3.21",
-		"@elysiajs/cors": "^1.3.3",
-		"better-auth": "catalog:",
-		"dotenv": "catalog:",
-		"zod": "catalog:",
 		"@beroboard/auth": "workspace:*",
-		"@beroboard/db": "workspace:*"
+		"@beroboard/db": "workspace:*",
+		"@elysiajs/cors": "^1.3.3",
+		"@elysiajs/openapi": "^1.4.11",
+		"better-auth": "catalog:",
+		"date-fns": "^4.1.0",
+		"dotenv": "catalog:",
+		"elysia": "^1.3.21",
+		"zod": "catalog:"
 	},
 	"devDependencies": {
 		"typescript": "catalog:",
