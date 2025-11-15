@@ -9,7 +9,8 @@ export const errorsRegister = new Elysia()
       if (code !== "UNKNOWN") return;
       if ("status" in error && typeof error.status === "number") return status(error.status, error.message);
 
-      if (typeof (error as any).toResponse === "function") return (error as any).toResponse();
+      if (typeof (error as unknown as { toResponse?: () => unknown }).toResponse === "function")
+         return (error as unknown as { toResponse: () => unknown }).toResponse();
 
       return status(500, "Internal server error");
    });

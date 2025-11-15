@@ -9,6 +9,7 @@
 		"ignoreUnknown": true,
 		"includes": [
 			"**",
+			"**/*.ts",
 			"!**/.next",
 			"!**/dist",
 			"!**/.turbo",
@@ -24,7 +25,8 @@
 			"!**/.alchemy",
 			"!**/.svelte-kit",
 			"!**/wrangler.jsonc",
-			"!**/.source"
+			"!**/.source",
+			"!**/prisma/generated"
 		]
 	},
 	"formatter": {
