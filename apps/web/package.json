@@ -9,6 +9,7 @@
 	},
 	"dependencies": {
 		"@beroboard/auth": "workspace:*",
+		"@beroboard/db": "workspace:*",
 		"@elysiajs/eden": "^1.4.5",
 		"@prisma/client": "catalog:",
 		"@radix-ui/react-collapsible": "^1.1.12",
