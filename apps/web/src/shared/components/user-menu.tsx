@@ -7,7 +7,7 @@ import {
    DropdownMenuLabel,
    DropdownMenuSeparator,
    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@/shared/components/ui/dropdown-menu";
 import { authClient } from "@/lib/auth-client";
 import { Button } from "./ui/button";
 import { Skeleton } from "./ui/skeleton";
