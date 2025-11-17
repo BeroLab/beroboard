@@ -5,9 +5,8 @@ import { getProjectUseCase } from "./get-project.use-case";
 
 export const getProjectRouter = new Elysia().use(authMiddleware).get("/:id", ({ params, user }) => getProjectUseCase({ ...params, userId: user.id }), {
    params: getProjectModel,
-   response: {
-      "200": getProjectResponseModel,
-   },
+   response: getProjectResponseModel,
+
    auth: true,
    detail: {
       summary: "Get a project",
