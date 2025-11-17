@@ -4,7 +4,7 @@ import { userBelongsToProjectUseCase } from "../user-belongs-to-project";
 import type { GetProjectModel, GetProjectResponseModel } from "./get-project.model";
 import { getProjectRepository } from "./get-project.repository";
 
-export async function getProjectUseCase(params: GetProjectModel): Promise<GetProjectResponseModel> {
+export async function getProjectUseCase(params: GetProjectModel) {
    const project = await getProjectRepository(params);
    if (!project) {
       throw new NotFoundError("Project");

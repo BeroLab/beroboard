@@ -1,3 +1,1 @@
-export interface GetProjects {
-
-}
+export type GetProjects = {};

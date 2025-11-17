@@ -17,6 +17,8 @@ export const getProjectsResponseModel = z.array(
       description: z.string(),
       createdAt: z.date(),
       updatedAt: z.date(),
+      deletedAt:z.date().nullable(),
+      createdByUserId:z.string()
    }),
 );
 export type GetProjectsModel = z.infer<typeof getProjectsModel> & { userId: string } & { usersSubscribed?: { id: string }[] };
