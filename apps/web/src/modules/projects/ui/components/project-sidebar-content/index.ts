@@ -1,1 +1,1 @@
-export * from './project-sidebar-content'
+export * from "./project-sidebar-content";

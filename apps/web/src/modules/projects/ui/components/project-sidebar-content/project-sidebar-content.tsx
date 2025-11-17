@@ -1,6 +1,6 @@
+import { ChevronDown, Hash, Plus } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/shared/components/ui/collapsible";
 import { SidebarGroup, SidebarGroupAction, SidebarGroupContent, SidebarGroupLabel, SidebarMenuButton, SidebarMenuItem } from "@/shared/components/ui/sidebar";
-import { ChevronDown, Hash, Plus } from "lucide-react";
 
 const projects = ["Project1", "Project2", "Project3"];
 export function ProjectSidebarContent() {

@@ -1,6 +1,3 @@
+import { apiClient } from "@/lib/client";
 
-import {apiClient} from "@/lib/client"
-
-export function useGetProjects(){
-
-}
+export function useGetProjects() {}

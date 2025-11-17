@@ -1,1 +1,1 @@
-export * from './dashboard-screen'
+export * from "./dashboard-screen";
