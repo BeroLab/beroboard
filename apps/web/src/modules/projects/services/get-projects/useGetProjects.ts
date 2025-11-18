@@ -1,9 +1,9 @@
-import { apiClient } from "@/lib/client";
 import { useQuery } from "@tanstack/react-query";
+import { apiClient } from "@/lib/client";
+import type { ProjectApi } from "../../domain/project.model";
 import { ProjectsQueryKeys } from "../../types";
-import type { UserModel, ProjectsModel } from "@beroboard/db/types";
 
-async function getProjectsService(): Promise<ProjectsModel[] | null> {
+async function getProjectsService(): Promise<ProjectApi[] | null> {
    const { data } = await apiClient.projects.get({
       query: {
          limit: 10,
@@ -13,7 +13,7 @@ async function getProjectsService(): Promise<ProjectsModel[] | null> {
    return data;
 }
 
-export async function useGetProjects() {
+export function useGetProjects() {
    const { data, isPending } = useQuery({
       queryKey: [ProjectsQueryKeys.GET_PROJECTS],
       queryFn: getProjectsService,
