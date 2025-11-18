@@ -12,8 +12,8 @@ export const updateBoardParamsModel = z.object({
 export const updateBoardResponseModel = z.object({
    name: z.string(),
    description: z.string(),
-   createdAt: z.date(),
-   updatedAt: z.date(),
+   createdAt: z.coerce.date(),
+   updatedAt: z.coerce.date(),
 });
 export type UpdateBoardModel = z.infer<typeof updateBoardModel> & z.infer<typeof updateBoardParamsModel> & { userId: string };
 export type UpdateBoardResponseModel = z.infer<typeof updateBoardResponseModel>;

@@ -12,8 +12,8 @@ export const createBoardResponseModel = z.object({
    id: z.string(),
    name: z.string(),
    description: z.string(),
-   createdAt: z.date(),
-   updatedAt: z.date(),
+   createdAt: z.coerce.date(),
+   updatedAt: z.coerce.date(),
 });
 export type CreateBoardModel = z.infer<typeof createBoardModel> & z.infer<typeof createBoardQueryParamsModel> & { userId: string };
 export type CreateBoardResponseModel = z.infer<typeof createBoardResponseModel>;

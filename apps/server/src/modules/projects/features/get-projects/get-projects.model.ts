@@ -3,11 +3,11 @@ import z from "zod";
 // ** Get Projects Model **
 export const getProjectsModel = z.object({
    cursor: z.string().optional(),
-   limit: z.number().min(1, "Limit is required").optional().default(10),
+   limit: z.coerce.number().min(1, "Limit is required").optional().default(10),
    title: z.string().optional(),
    description: z.string().optional(),
-   createdAt: z.date().optional(),
-   updatedAt: z.date().optional(),
+   createdAt: z.coerce.date().optional(),
+   updatedAt: z.coerce.date().optional(),
 });
 
 export const getProjectsResponseModel = z.array(
@@ -15,9 +15,9 @@ export const getProjectsResponseModel = z.array(
       id: z.string(),
       name: z.string(),
       description: z.string(),
-      createdAt: z.date(),
-      updatedAt: z.date(),
-      deletedAt: z.date().nullable(),
+      createdAt: z.coerce.date(),
+      updatedAt: z.coerce.date(),
+      deletedAt: z.coerce.date().nullable(),
       createdByUserId: z.string(),
    }),
 );
