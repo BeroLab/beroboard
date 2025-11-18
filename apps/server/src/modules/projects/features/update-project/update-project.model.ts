@@ -10,8 +10,8 @@ export const updateProjectResponseModel = z.object({
    id: z.string(),
    name: z.string(),
    description: z.string(),
-   createdAt: z.date(),
-   updatedAt: z.date(),
+   createdAt: z.coerce.date(),
+   updatedAt: z.coerce.date(),
 });
 export type UpdateProjectModel = z.infer<typeof updateProjectModel> & { userId: string };
 export type UpdateProjectResponseModel = z.infer<typeof updateProjectResponseModel>;

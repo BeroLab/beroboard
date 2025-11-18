@@ -8,8 +8,8 @@ export const getBoardResponseModel = z.object({
    id: z.string(),
    name: z.string(),
    description: z.string(),
-   createdAt: z.date(),
-   updatedAt: z.date(),
+   createdAt: z.coerce.date(),
+   updatedAt: z.coerce.date(),
 });
 export type GetBoardModel = z.infer<typeof getBoardModel> & { userId: string };
 export type GetBoardResponseModel = z.infer<typeof getBoardResponseModel>;
