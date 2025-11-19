@@ -15,7 +15,7 @@ import {
 
 export function AppSidebar() {
    return (
-      <Sidebar >
+      <Sidebar className="border-r-2 border-dracula-surface/50">
          <SidebarHeader>
             <h1>BeroBoard</h1>
          </SidebarHeader>

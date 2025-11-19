@@ -1,1 +1,1 @@
-export * from './find-project-by.service'
+export * from './useFindProjectById'

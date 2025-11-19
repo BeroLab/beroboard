@@ -1,10 +1,10 @@
 import { apiClient } from "@/lib/client";
 
-type FindProjectQuery = {
+export type FindProjectQuery = {
    id: string;
 };
 
-export async function findProjectByService(query: FindProjectQuery) {
+export async function findProjectByIdService(query: FindProjectQuery) {
    const {data} = await apiClient
       .projects({
          id: query.id,

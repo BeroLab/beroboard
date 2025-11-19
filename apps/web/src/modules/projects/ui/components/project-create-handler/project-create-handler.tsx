@@ -9,7 +9,9 @@ import { FormInput } from "@/shared/components/form-input";
 
 export function ProjectCreateHandler({ open, onOpenChange }: ProjectCreateHandlerProps) {
    const { createProject, isPending } = useCreateProject({
-      onSuccess: () => {},
+      onSuccess: () => {
+        onOpenChange(false);
+      },
    });
 
    const { control, onSubmit } = useCreateProjectForm({
