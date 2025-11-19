@@ -18,6 +18,7 @@ describe("POST /boards", () => {
       otherUser = await createAdditionalTestUser(otherUserEmail, "password123", "Other User");
 
       // Create test project owned by testUser via API
+      const projectName = `Test Project ${Date.now()}`;
       const createProjectResponse = await app.handle(
          new Request("http://localhost/projects", {
             method: "POST",
@@ -26,7 +27,7 @@ describe("POST /boards", () => {
                "Content-Type": "application/json",
             },
             body: JSON.stringify({
-               name: "Test Project",
+               name: projectName,
                description: "Test Description",
             }),
          }),
@@ -45,32 +46,31 @@ describe("POST /boards", () => {
          updatedAt: string;
       };
 
-      // Add otherUser to the project via API
-      // Note: Since project creation now automatically adds the creator to usersSubscribed,
-      // the creator should be able to add other users
-      const addUserResponse = await app.handle(
-         new Request(`http://localhost/projects/${testProject.id}/users`, {
-            method: "POST",
-            headers: {
-               cookie: auth.sessionCookie,
-               "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-               userId: otherUser.userId,
-            }),
-         }),
-      );
+      // Get the project's organization and add otherUser as member
+      const project = await prisma.projects.findUnique({
+         where: { id: testProject.id },
+         select: { organizationId: true },
+      });
 
-      if (addUserResponse.status !== 200 && addUserResponse.status !== 201) {
-         const errorText = await addUserResponse.text();
-         throw new Error(`Failed to add user to project (status ${addUserResponse.status}): ${errorText}`);
+      if (project) {
+         await prisma.member.create({
+            data: {
+               userId: otherUser.userId,
+               organizationId: project.organizationId,
+               role: "user",
+            },
+         });
       }
    });
 
    afterEach(async () => {
       // Cleanup: Remove test data (but not users/sessions as they're managed globally)
+      // Delete in order to respect foreign key constraints
       await prisma.boards.deleteMany({});
       await prisma.projects.deleteMany({});
+      await prisma.member.deleteMany({});
+      await prisma.organization.deleteMany({});
+      await prisma.invitation.deleteMany({});
    });
 
    it("should return 201 with board data when board is created successfully", async () => {
@@ -283,6 +283,7 @@ describe("POST /boards", () => {
 
    it("should return 403 when user does not belong to the project", async () => {
       // Create a project that otherUser doesn't belong to via API
+      const isolatedProjectName = `Isolated Project ${Date.now()}`;
       const createIsolatedProjectResponse = await app.handle(
          new Request("http://localhost/projects", {
             method: "POST",
@@ -291,7 +292,7 @@ describe("POST /boards", () => {
                "Content-Type": "application/json",
             },
             body: JSON.stringify({
-               name: "Isolated Project",
+               name: isolatedProjectName,
                description: "Isolated Description",
             }),
          }),

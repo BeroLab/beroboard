@@ -1,3 +1,5 @@
+import { container } from "@/lib/dependency-injection/container";
+import { PermissionService } from "@/modules/permissions/interface";
 import { ForbiddenError } from "@/shared/errors/forbidden-error";
 import { NotFoundError } from "@/shared/errors/not-found.error";
 import { getProjectRepository } from "../get-project/get-project.repository";
@@ -9,6 +11,15 @@ export async function deleteProjectUseCase(params: DeleteProjectModel): Promise<
    if (!project) {
       throw new NotFoundError("Project");
    }
-   if (project.createdByUserId !== params.userId) throw new ForbiddenError("You are not allowed to delete this project");
+   const permissionService = container.resolve(PermissionService);
+   const userCanAccessResource = await permissionService.userCanAccessResource({
+      resourceType: "project",
+      resourceId: project.id,
+      userId: params.userId,
+      operation: "delete",
+   });
+   if (!userCanAccessResource) {
+      throw new ForbiddenError("You are not allowed to delete this project");
+   }
    await deleteProjectRepository(params);
 }

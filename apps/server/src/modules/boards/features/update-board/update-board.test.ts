@@ -3,10 +3,9 @@ import prisma from "@beroboard/db";
 import { app } from "@/index";
 import { createAdditionalTestUser, testAuth } from "@/modules/auth/auth.test";
 
-describe("GET /boards/:id", () => {
+describe("PATCH /boards/:id", () => {
    let auth: Awaited<typeof testAuth>;
    let otherUser: { sessionCookie: string; userId: string };
-   let otherUserEmail: string;
    let testProject: Awaited<ReturnType<typeof prisma.projects.create>>;
    let testBoard: Awaited<ReturnType<typeof prisma.boards.create>>;
 
@@ -15,7 +14,7 @@ describe("GET /boards/:id", () => {
       auth = await testAuth;
 
       // Create an additional user for testing authorization
-      otherUserEmail = `other-${Date.now()}@example.com`;
+      const otherUserEmail = `other-${Date.now()}@example.com`;
       otherUser = await createAdditionalTestUser(otherUserEmail, "password123", "Other User");
 
       // Get the test user ID from auth
@@ -50,8 +49,8 @@ describe("GET /boards/:id", () => {
       }
 
       const orgData = (await orgResponse.json()) as { data?: { id: string }; id?: string };
-      let organizationId = orgData?.data?.id || orgData?.id;
-      if (!organizationId) {
+      let orgId = orgData?.data?.id || orgData?.id;
+      if (!orgId) {
          const org = await prisma.organization.findUnique({
             where: { slug: orgSlug },
             select: { id: true },
@@ -59,17 +58,8 @@ describe("GET /boards/:id", () => {
          if (!org) {
             throw new Error("Failed to create organization: no ID returned");
          }
-         organizationId = org.id;
+         orgId = org.id;
       }
-
-      // Add otherUser to organization as member
-      await prisma.member.create({
-         data: {
-            userId: otherUser.userId,
-            organizationId: organizationId,
-            role: "user",
-         },
-      });
 
       // Create test project linked to organization
       testProject = await prisma.projects.create({
@@ -81,7 +71,7 @@ describe("GET /boards/:id", () => {
                connect: { id: testUser.id },
             },
             organization: {
-               connect: { id: organizationId },
+               connect: { id: orgId },
             },
             createdAt: new Date(),
             updatedAt: new Date(),
@@ -103,68 +93,151 @@ describe("GET /boards/:id", () => {
 
    afterEach(async () => {
       // Cleanup: Remove test data (but not users/sessions as they're managed globally)
+      // Delete in order to respect foreign key constraints
       await prisma.boards.deleteMany({});
       await prisma.projects.deleteMany({});
       await prisma.member.deleteMany({});
       await prisma.organization.deleteMany({});
+      await prisma.invitation.deleteMany({});
    });
 
-   it("should return 200 with board data when board exists and user belongs to project", async () => {
+   it("should return 200 with updated board data when updating both name and description", async () => {
       const response = await app.handle(
          new Request(`http://localhost/boards/${testBoard.id}`, {
-            method: "GET",
+            method: "PATCH",
             headers: {
                cookie: auth.sessionCookie,
+               "Content-Type": "application/json",
             },
+            body: JSON.stringify({
+               name: "Updated Board Name",
+               description: "Updated Description",
+            }),
          }),
       );
 
       expect(response.status).toBe(200);
       const data = (await response.json()) as {
-         id: string;
          name: string;
          description: string;
          createdAt: string;
          updatedAt: string;
       };
-      expect(data).toHaveProperty("id", testBoard.id);
-      expect(data).toHaveProperty("name", "Test Board");
-      expect(data).toHaveProperty("description", "Test Board Description");
+      expect(data).toHaveProperty("name", "Updated Board Name");
+      expect(data).toHaveProperty("description", "Updated Description");
       expect(data).toHaveProperty("createdAt");
       expect(data).toHaveProperty("updatedAt");
+
+      // Verify board was actually updated in database
+      const updatedBoard = await prisma.boards.findUnique({
+         where: { id: testBoard.id },
+      });
+      expect(updatedBoard).not.toBeNull();
+      expect(updatedBoard?.name).toBe("Updated Board Name");
+      expect(updatedBoard?.description).toBe("Updated Description");
+   });
+
+   it("should return 200 with updated board data when updating only name", async () => {
+      const response = await app.handle(
+         new Request(`http://localhost/boards/${testBoard.id}`, {
+            method: "PATCH",
+            headers: {
+               cookie: auth.sessionCookie,
+               "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+               name: "Updated Name Only",
+            }),
+         }),
+      );
+
+      expect(response.status).toBe(200);
+      const data = (await response.json()) as {
+         name: string;
+         description: string;
+      };
+      expect(data).toHaveProperty("name", "Updated Name Only");
+      expect(data).toHaveProperty("description", "Test Board Description"); // Original description should remain
+
+      // Verify board was actually updated in database
+      const updatedBoard = await prisma.boards.findUnique({
+         where: { id: testBoard.id },
+      });
+      expect(updatedBoard).not.toBeNull();
+      expect(updatedBoard?.name).toBe("Updated Name Only");
+      expect(updatedBoard?.description).toBe("Test Board Description");
+   });
+
+   it("should return 200 with updated board data when updating only description", async () => {
+      const response = await app.handle(
+         new Request(`http://localhost/boards/${testBoard.id}`, {
+            method: "PATCH",
+            headers: {
+               cookie: auth.sessionCookie,
+               "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+               description: "Updated Description Only",
+            }),
+         }),
+      );
+
+      expect(response.status).toBe(200);
+      const data = (await response.json()) as {
+         name: string;
+         description: string;
+      };
+      expect(data).toHaveProperty("name", "Test Board"); // Original name should remain
+      expect(data).toHaveProperty("description", "Updated Description Only");
+
+      // Verify board was actually updated in database
+      const updatedBoard = await prisma.boards.findUnique({
+         where: { id: testBoard.id },
+      });
+      expect(updatedBoard).not.toBeNull();
+      expect(updatedBoard?.name).toBe("Test Board");
+      expect(updatedBoard?.description).toBe("Updated Description Only");
+   });
+
+   it("should return 200 with unchanged board data when no fields are provided", async () => {
+      const response = await app.handle(
+         new Request(`http://localhost/boards/${testBoard.id}`, {
+            method: "PATCH",
+            headers: {
+               cookie: auth.sessionCookie,
+               "Content-Type": "application/json",
+            },
+            body: JSON.stringify({}),
+         }),
+      );
+
+      expect(response.status).toBe(200);
+      const data = (await response.json()) as {
+         name: string;
+         description: string;
+      };
+      expect(data).toHaveProperty("name", "Test Board");
+      expect(data).toHaveProperty("description", "Test Board Description");
    });
 
    it("should return 401 when user is not authenticated", async () => {
       const response = await app.handle(
          new Request(`http://localhost/boards/${testBoard.id}`, {
-            method: "GET",
+            method: "PATCH",
+            headers: {
+               "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+               name: "Updated Name",
+            }),
          }),
       );
 
       expect(response.status).toBe(401);
-      const text = await response.text();
-      expect(text).toBe("User not authorized");
    });
 
-   it("should return 404 when board does not exist", async () => {
-      const response = await app.handle(
-         new Request("http://localhost/boards/non-existent-board-id", {
-            method: "GET",
-            headers: {
-               cookie: auth.sessionCookie,
-            },
-         }),
-      );
-
-      expect(response.status).toBe(404);
-      const data = (await response.json()) as { message: string };
-      expect(data).toHaveProperty("message");
-      expect(data.message).toBe("Board not found");
-   });
-
-   it("should return 404 when user does not belong to the project", async () => {
-      // Create a project that otherUser doesn't belong to
-      // The repository filters by user membership, so it returns null → 404
+   it("should return 403 when user does not have permission to update the board", async () => {
+      // Create an isolated project that otherUser doesn't have access to
       const testUser = await prisma.user.findUnique({
          where: { email: auth.email },
       });
@@ -232,13 +305,17 @@ describe("GET /boards/:id", () => {
          },
       });
 
-      // Try to access with otherUser (who doesn't belong to isolatedProject)
+      // Try to update with otherUser (who doesn't have access to isolatedBoard)
       const response = await app.handle(
          new Request(`http://localhost/boards/${isolatedBoard.id}`, {
-            method: "GET",
+            method: "PATCH",
             headers: {
                cookie: otherUser.sessionCookie,
+               "Content-Type": "application/json",
             },
+            body: JSON.stringify({
+               name: "Unauthorized Update",
+            }),
          }),
       );
 
@@ -253,18 +330,43 @@ describe("GET /boards/:id", () => {
       await prisma.organization.delete({ where: { id: isolatedOrgId } });
    });
 
-   it("should return 422 when id is empty", async () => {
-      // The route /:id matches /boards/ but id is empty, so validation fails
+   it("should return 404 when board does not exist", async () => {
       const response = await app.handle(
-         new Request("http://localhost/boards/", {
-            method: "GET",
+         new Request("http://localhost/boards/non-existent-board-id", {
+            method: "PATCH",
             headers: {
                cookie: auth.sessionCookie,
+               "Content-Type": "application/json",
             },
+            body: JSON.stringify({
+               name: "Updated Name",
+            }),
          }),
       );
 
-      // Elysia returns 422 for validation errors
-      expect(response.status).toBe(422);
+      expect(response.status).toBe(404);
+      const data = (await response.json()) as { message: string };
+      expect(data).toHaveProperty("message");
+   });
+
+   it("should return 404 or 422 when id is missing or empty", async () => {
+      // The route pattern /:id doesn't match /boards/, so it returns 404
+      // But validation might return 422 for empty id
+      const response = await app.handle(
+         new Request("http://localhost/boards/", {
+            method: "PATCH",
+            headers: {
+               cookie: auth.sessionCookie,
+               "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+               name: "Updated Name",
+            }),
+         }),
+      );
+
+      // Elysia returns 404 when route doesn't match or 422 for validation
+      expect([404, 422]).toContain(response.status);
    });
 });
+

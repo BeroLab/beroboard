@@ -1,12 +1,21 @@
 import prisma from "@beroboard/db";
 
 export async function userBelongsToProjectRepository(projectId: string, userId: string): Promise<boolean> {
-   return !!(await prisma.projects.findFirst({
+   const project = await prisma.projects.findUnique({
+      where: { id: projectId },
+      select: { organizationId: true },
+   });
+
+   if (!project) return false;
+
+   const member = await prisma.member.findUnique({
       where: {
-         id: projectId,
-         usersSubscribed: {
-            some: { id: userId },
+         userId_organizationId: {
+            userId,
+            organizationId: project.organizationId,
          },
       },
-   }));
+   });
+
+   return !!member;
 }

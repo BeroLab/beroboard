@@ -6,12 +6,5 @@ export async function getProjectRepository(params: GetProjectModel) {
       where: {
          id: params.id,
       },
-      include: {
-         usersSubscribed: {
-            select: {
-               id: true,
-            },
-         },
-      },
    });
 }
