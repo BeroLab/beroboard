@@ -21,5 +21,5 @@ export const getProjectsResponseModel = z.array(
       createdByUserId: z.string(),
    }),
 );
-export type GetProjectsModel = z.infer<typeof getProjectsModel> & { userId: string } & { usersSubscribed?: { id: string }[] };
+export type GetProjectsModel = z.infer<typeof getProjectsModel> & { userId: string };
 export type GetProjectsResponseModel = z.infer<typeof getProjectsResponseModel>;

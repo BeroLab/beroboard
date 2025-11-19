@@ -24,11 +24,7 @@ export async function getBoardsRepository(params: GetBoardsModel) {
                gte: params.updatedAt,
             },
          }),
-         project: {
-            usersSubscribed: {
-               some: { id: params.userId },
-            },
-         },
+         projectId: params.projectId,
       },
       orderBy: {
          createdAt: "desc",

@@ -12,4 +12,4 @@ export const getProjectResponseModel = z.object({
    updatedAt: z.coerce.date(),
 });
 export type GetProjectModel = z.infer<typeof getProjectModel> & { userId: string };
-export type GetProjectResponseModel = z.infer<typeof getProjectResponseModel> & { createdByUserId: string; usersSubscribed: { id: string }[] };
+export type GetProjectResponseModel = z.infer<typeof getProjectResponseModel> & { createdByUserId: string };

@@ -10,6 +10,8 @@ export const getBoardResponseModel = z.object({
    description: z.string(),
    createdAt: z.coerce.date(),
    updatedAt: z.coerce.date(),
+   deletedAt: z.coerce.date().nullable(),
+   projectId: z.string(),
 });
 export type GetBoardModel = z.infer<typeof getBoardModel> & { userId: string };
 export type GetBoardResponseModel = z.infer<typeof getBoardResponseModel>;

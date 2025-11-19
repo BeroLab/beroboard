@@ -5,11 +5,6 @@ export async function getBoardRepository(params: GetBoardModel) {
    return prisma.boards.findFirst({
       where: {
          id: params.id,
-         project: {
-            usersSubscribed: {
-               some: { id: params.userId },
-            },
-         },
       },
    });
 }

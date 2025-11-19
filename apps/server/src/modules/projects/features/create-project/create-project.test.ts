@@ -15,7 +15,12 @@ describe("POST /projects", () => {
 
    afterEach(async () => {
       // Cleanup: Remove test data (but not users/sessions as they're managed globally)
+      // Delete in order to respect foreign key constraints
+      await prisma.boards.deleteMany({});
       await prisma.projects.deleteMany({});
+      await prisma.member.deleteMany({});
+      await prisma.organization.deleteMany({});
+      await prisma.invitation.deleteMany({});
    });
 
    it("should return 201 with project data when project is created successfully", async () => {

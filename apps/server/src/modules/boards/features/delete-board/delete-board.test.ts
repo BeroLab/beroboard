@@ -27,15 +27,52 @@ describe("DELETE /boards/:id", () => {
          throw new Error("Failed to find test user");
       }
 
-      // Create test project owned by testUser
+      // Create organization via API
+      const orgName = `Test Org ${Date.now()}`;
+      const orgSlug = `test-org-${Date.now()}`;
+      const orgResponse = await app.handle(
+         new Request("http://localhost/api/auth/organization/create", {
+            method: "POST",
+            headers: {
+               "Content-Type": "application/json",
+               cookie: auth.sessionCookie,
+            },
+            body: JSON.stringify({
+               name: orgName,
+               slug: orgSlug,
+            }),
+         }),
+      );
+
+      if (orgResponse.status !== 200 && orgResponse.status !== 201) {
+         const errorText = await orgResponse.text();
+         throw new Error(`Failed to create organization (status ${orgResponse.status}): ${errorText}`);
+      }
+
+      const orgData = (await orgResponse.json()) as { data?: { id: string }; id?: string };
+      let orgId = orgData?.data?.id || orgData?.id;
+      if (!orgId) {
+         const org = await prisma.organization.findUnique({
+            where: { slug: orgSlug },
+            select: { id: true },
+         });
+         if (!org) {
+            throw new Error("Failed to create organization: no ID returned");
+         }
+         orgId = org.id;
+      }
+
+      // Create test project linked to organization
       testProject = await prisma.projects.create({
          data: {
             id: `test-project-${Date.now()}`,
             name: "Test Project",
             description: "Test Description",
-            createdByUserId: testUser.id,
-            usersSubscribed: {
-               connect: [{ id: testUser.id }],
+            createdByUser: {
+               connect: { id: testUser.id },
+            },
+            organization: {
+               connect: { id: orgId },
             },
             createdAt: new Date(),
             updatedAt: new Date(),
@@ -57,8 +94,12 @@ describe("DELETE /boards/:id", () => {
 
    afterEach(async () => {
       // Cleanup: Remove test data (but not users/sessions as they're managed globally)
+      // Delete in order to respect foreign key constraints
       await prisma.boards.deleteMany({});
       await prisma.projects.deleteMany({});
+      await prisma.member.deleteMany({});
+      await prisma.organization.deleteMany({});
+      await prisma.invitation.deleteMany({});
    });
 
    it("should return 200 when board is successfully deleted", async () => {
@@ -92,7 +133,7 @@ describe("DELETE /boards/:id", () => {
       expect(text).toBe("User not authorized");
    });
 
-   it("should return 404 when user does not belong to the project", async () => {
+   it("should return 403 when user does not belong to the project", async () => {
       // Create a project that otherUser doesn't belong to
       const testUser = await prisma.user.findUnique({
          where: { email: auth.email },
@@ -101,14 +142,49 @@ describe("DELETE /boards/:id", () => {
          throw new Error("Failed to find test user");
       }
 
+      // Create isolated organization
+      const isolatedOrgSlug = `isolated-org-${Date.now()}`;
+      const isolatedOrgResponse = await app.handle(
+         new Request("http://localhost/api/auth/organization/create", {
+            method: "POST",
+            headers: {
+               "Content-Type": "application/json",
+               cookie: auth.sessionCookie,
+            },
+            body: JSON.stringify({
+               name: "Isolated Org",
+               slug: isolatedOrgSlug,
+            }),
+         }),
+      );
+
+      if (isolatedOrgResponse.status !== 200 && isolatedOrgResponse.status !== 201) {
+         throw new Error("Failed to create isolated organization");
+      }
+
+      const isolatedOrgData = (await isolatedOrgResponse.json()) as { data?: { id: string }; id?: string };
+      let isolatedOrgId = isolatedOrgData?.data?.id || isolatedOrgData?.id;
+      if (!isolatedOrgId) {
+         const org = await prisma.organization.findUnique({
+            where: { slug: isolatedOrgSlug },
+            select: { id: true },
+         });
+         if (!org) {
+            throw new Error("Failed to create isolated organization");
+         }
+         isolatedOrgId = org.id;
+      }
+
       const isolatedProject = await prisma.projects.create({
          data: {
             id: `isolated-project-${Date.now()}`,
             name: "Isolated Project",
             description: "Isolated Description",
-            createdByUserId: testUser.id,
-            usersSubscribed: {
-               connect: [{ id: testUser.id }],
+            createdByUser: {
+               connect: { id: testUser.id },
+            },
+            organization: {
+               connect: { id: isolatedOrgId },
             },
             createdAt: new Date(),
             updatedAt: new Date(),
@@ -137,14 +213,15 @@ describe("DELETE /boards/:id", () => {
          }),
       );
 
-      expect(response.status).toBe(404);
+      expect(response.status).toBe(403);
       const data = (await response.json()) as { message: string };
       expect(data).toHaveProperty("message");
-      expect(data.message).toBe("Board not found");
+      expect(data.message).toContain("not allowed");
 
       // Cleanup isolated test data
       await prisma.boards.delete({ where: { id: isolatedBoard.id } });
       await prisma.projects.delete({ where: { id: isolatedProject.id } });
+      await prisma.organization.delete({ where: { id: isolatedOrgId } });
    });
 
    it("should return 404 when board does not exist", async () => {
