@@ -5,6 +5,7 @@ import type { GetProjectModel, GetProjectResponseModel } from "./get-project.mod
 import { getProjectRepository } from "./get-project.repository";
 
 export async function getProjectUseCase(params: GetProjectModel) {
+   console.log("PROJECT-",)
    const project = await getProjectRepository(params);
    if (!project) {
       throw new NotFoundError("Project");
