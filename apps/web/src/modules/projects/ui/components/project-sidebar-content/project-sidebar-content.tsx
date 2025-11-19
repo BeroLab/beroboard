@@ -6,6 +6,7 @@ import { useGetProjects } from "@/modules/projects/services/get-projects/useGetP
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/shared/components/ui/collapsible";
 import { SidebarGroup, SidebarGroupAction, SidebarGroupContent, SidebarGroupLabel, SidebarMenuButton, SidebarMenuItem } from "@/shared/components/ui/sidebar";
 import { ProjectCreateHandler } from "../project-create-handler";
+import Link from "next/link";
 
 export function ProjectSidebarContent() {
    const { projects } = useGetProjects();
@@ -45,9 +46,11 @@ export function ProjectSidebarContent() {
 
 export function ProjectSideBarContentItem({ project }: { project: ProjectApi }) {
    return (
-      <div>
-         <Hash className="mr-2" />
-         {project.name}
-      </div>
+      <Link href={`/projects/${project.id}`}>
+         <div className="flex gap-1 px-2 py-1 flex-row items-center rounded-lg cursor-pointer hover:bg-dracula-surface/25">
+            <Hash className="text-dracula-pink  " />
+            <span className="text-lg font-semibold">{project.name}</span>
+         </div>
+      </Link>
    );
 }

@@ -32,8 +32,8 @@ export default function RootLayout({
             <Providers>
                <SidebarProvider>
                   <AppSidebar />
-                  <main>
-                     {/*<Header />*/}
+                  <main className="bg-dracula-background flex flex-1 flex-col p-5">
+
                      <SidebarTrigger />
                      {children}
                   </main>

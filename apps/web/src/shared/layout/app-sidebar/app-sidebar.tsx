@@ -15,7 +15,7 @@ import {
 
 export function AppSidebar() {
    return (
-      <Sidebar>
+      <Sidebar >
          <SidebarHeader>
             <h1>BeroBoard</h1>
          </SidebarHeader>
