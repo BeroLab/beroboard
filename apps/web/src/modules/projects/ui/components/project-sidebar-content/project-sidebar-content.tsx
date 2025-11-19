@@ -48,8 +48,8 @@ export function ProjectSideBarContentItem({ project }: { project: ProjectApi }) 
    return (
       <Link href={`/projects/${project.id}`}>
          <div className="flex gap-1 px-2 py-1 flex-row items-center rounded-lg cursor-pointer hover:bg-dracula-surface/25">
-            <Hash className="text-dracula-pink  " />
-            <span className="text-lg font-semibold">{project.name}</span>
+            <Hash className="text-dracula-pink" size={20} />
+            <span className="text-md font-semibold">{project.name}</span>
          </div>
       </Link>
    );
