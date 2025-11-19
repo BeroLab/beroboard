@@ -5,10 +5,11 @@ model Projects {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
   deletedAt DateTime? @map("deleted_at")
+  organizationId String @unique @map("organization_id")
   // Relations
-  usersSubscribed User[] @relation("UsersSubscribed")
   createdByUserId String @map("created_by_user_id")
   createdByUser User @relation(fields: [createdByUserId], references: [id], onDelete: Cascade, name: "CreatedProjects")
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   boards Boards[]
 
   @@map("projects")
