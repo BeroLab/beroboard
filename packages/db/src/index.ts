@@ -9,6 +9,7 @@ dotenv.config({
    path: path.join(__dirname, "../../../apps/server/.env"),
 });
 
-const prisma = new PrismaClient();
+const prisma: PrismaClient = new PrismaClient();
 
 export default prisma;
+export type { PrismaClient };

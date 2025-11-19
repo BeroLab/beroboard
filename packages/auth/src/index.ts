@@ -1,6 +1,7 @@
 import prisma from "@beroboard/db";
 import { type BetterAuthOptions, betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
+import { organization } from "better-auth/plugins";
 import type { UserRole } from "../../db/prisma/generated/enums";
 
 export const auth = betterAuth<BetterAuthOptions>({
@@ -29,6 +30,12 @@ export const auth = betterAuth<BetterAuthOptions>({
          },
       },
    },
+   plugins: [
+      organization({
+         allowUserToCreateOrganization: true,
+         creatorRole: "owner",
+      }),
+   ],
 });
 
 // Export session type with role field included
