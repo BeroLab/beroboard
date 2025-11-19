@@ -5,6 +5,7 @@ import openapi from "@elysiajs/openapi";
 import { Elysia } from "elysia";
 import { boardsController } from "./modules/boards";
 import { projectsController } from "./modules/projects";
+import { stagesController } from "./modules/stages";
 import { errorsRegister } from "./shared/errors/errors-register";
 
 export const app = new Elysia()
@@ -27,6 +28,7 @@ export const app = new Elysia()
    })
    .use(boardsController)
    .use(projectsController)
+   .use(stagesController)
    .get("/", () => "OK");
 
 app.listen(3000, () => {
