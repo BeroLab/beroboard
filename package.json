@@ -36,6 +36,7 @@
 		"test:integration": "docker-compose -f docker-compose.development.yaml up -d  && docker exec beroboard-db-1 bash -c 'until pg_isready -U admin -d beroboard; do echo \"⏳ Aguardando DB...\"; sleep 1; done' && turbo -F @beroboard/db db:migrate && bun test; docker-compose -f docker-compose.development.yaml down"
 	},
 	"dependencies": {
+		"@hookform/resolvers": "^5.2.2",
 		"dotenv": "^17.2.2",
 		"zod": "^4.1.11"
 	},

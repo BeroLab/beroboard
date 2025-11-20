@@ -16,6 +16,7 @@ export async function createBoardService(dto: CreateBoardDTO) {
 
    if (data && dto.stages && dto.stages.length > 0) {
       for (const stage of dto.stages) {
+         console.log("Creating stage:", stage);
          await apiClient.stages.post({
             boardId: data.id,
             name: stage,
