@@ -7,14 +7,12 @@ export const createBoardRouter = new Elysia().use(authMiddleware).post(
    "/",
    async ({ body, query, user }) => {
       const board = await createBoardUseCase({ ...body, projectId: query.projectId, userId: user.id });
-      return status(201, board);
+      return board;
    },
    {
       body: createBoardModel,
       query: createBoardQueryParamsModel,
-      response: {
-         "201": createBoardResponseModel,
-      },
+      response: createBoardResponseModel,
       auth: true,
       detail: {
          summary: "Create a new board",

@@ -7,9 +7,7 @@ export const getBoardsRouter = new Elysia()
    .use(authMiddleware)
    .get("/", ({ query, params, user }) => getBoardsUseCase({ ...query, ...params, userId: user.id }), {
       query: getBoardsModel,
-      response: {
-         "200": getBoardsResponseModel,
-      },
+      response: getBoardsResponseModel,
       auth: true,
       detail: {
          summary: "Get all boards",
