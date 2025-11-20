@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "../index.css";
-import Header from "@/shared/components/header";
-import { Sidebar, SidebarProvider, SidebarTrigger } from "@/shared/components/ui/sidebar";
-import { AppSidebar } from "@/shared/layout/app-sidebar/app-sidebar";
+
 import Providers from "@/shared/providers/providers";
 import { ModalManager } from "@/shared/services/modal-manager/components";
 
@@ -31,14 +29,10 @@ export default function RootLayout({
       <html lang="en" suppressHydrationWarning>
          <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
             <Providers>
-               <SidebarProvider>
-                  <AppSidebar />
-                  <main className="bg-dracula-background flex flex-1 flex-col">
-                     <SidebarTrigger />
-                     {children}
-                     <ModalManager />
-                  </main>
-               </SidebarProvider>
+               <main className="bg-dracula-background flex flex-1 flex-col h-dvh">
+                  {children}
+                  <ModalManager />
+               </main>
             </Providers>
          </body>
       </html>

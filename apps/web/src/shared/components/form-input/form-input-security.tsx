@@ -1,17 +1,15 @@
 "use client"
-import React from "react";
-
 import { Controller } from "react-hook-form";
 import type { FieldValues, UseControllerProps } from "react-hook-form";
 
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 
-export type FormInputProps<TFieldValue extends FieldValues> = {
+export type FormInputSecurityProps<TFieldValue extends FieldValues> = {
    label: string;
 } & UseControllerProps<TFieldValue>;
 
-export function FormInput<TFieldValue extends FieldValues>({ control, name, rules, label }: FormInputProps<TFieldValue>) {
+export function FormInputSecurity<TFieldValue extends FieldValues>({ control, name, rules, label }: FormInputSecurityProps<TFieldValue>) {
    return (
       <Controller
          control={control}
@@ -21,7 +19,7 @@ export function FormInput<TFieldValue extends FieldValues>({ control, name, rule
             return (
                <div className="grid gap-2">
                   <Label htmlFor={field.name}>{label}</Label>
-                  <Input id={field.name} name={field.name} onChange={(e) => field.onChange(e.target.value)} />
+                  <Input id={field.name} name={field.name} type="password" onChange={(e) => field.onChange(e.target.value)} />
                   {fieldState.error && <p className="text-red-500">{fieldState.error.message}</p>}
                </div>
             );

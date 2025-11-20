@@ -9,5 +9,5 @@ export async function getStagesService(boardID: string): Promise<StagesApi[] | n
       },
    });
 
-   return data;
+   return data?.reverse() || null;
 }
