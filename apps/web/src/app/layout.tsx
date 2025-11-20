@@ -5,6 +5,7 @@ import Header from "@/shared/components/header";
 import { Sidebar, SidebarProvider, SidebarTrigger } from "@/shared/components/ui/sidebar";
 import { AppSidebar } from "@/shared/layout/app-sidebar/app-sidebar";
 import Providers from "@/shared/providers/providers";
+import { ModalManager } from "@/shared/services/modal-manager/components";
 
 const geistSans = Geist({
    variable: "--font-geist-sans",
@@ -33,9 +34,9 @@ export default function RootLayout({
                <SidebarProvider>
                   <AppSidebar />
                   <main className="bg-dracula-background flex flex-1 flex-col">
-
                      <SidebarTrigger />
                      {children}
+                     <ModalManager />
                   </main>
                </SidebarProvider>
             </Providers>

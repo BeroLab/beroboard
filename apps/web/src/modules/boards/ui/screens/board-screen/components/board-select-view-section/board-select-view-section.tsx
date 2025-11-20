@@ -1,4 +1,4 @@
-export function ProjectSelectViewSection() {
+export function BoardSelectViewSection() {
    return (
       <div className="w-full mt-3 border-b border-dracula-surface/30 flex flex-row gap-5">
          <div className="py-5 px-8 border-b border-b-dracula-pink">

@@ -5,9 +5,7 @@ import { getBoardUseCase } from "./get-board.use-case";
 
 export const getBoardRouter = new Elysia().use(authMiddleware).get("/:id", ({ params, user }) => getBoardUseCase({ ...params, userId: user.id }), {
    params: getBoardModel,
-   response: {
-      "200": getBoardResponseModel,
-   },
+   response: getBoardResponseModel,
    auth: true,
    detail: {
       summary: "Get a board",

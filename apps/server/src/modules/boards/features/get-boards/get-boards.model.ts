@@ -21,7 +21,7 @@ export const getBoardsResponseModel = z.array(
          updatedAt: z.coerce.date(),
          deletedAt: z.coerce.date().nullable(),
       })
-      .optional(),
+      
 );
 export type GetBoardsModel = z.infer<typeof getBoardsModel> & { userId: string };
 export type GetBoardsResponseModel = z.infer<typeof getBoardsResponseModel>;

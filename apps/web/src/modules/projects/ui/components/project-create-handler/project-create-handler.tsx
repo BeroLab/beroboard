@@ -1,16 +1,14 @@
-import { useForm } from "react-hook-form";
 import { useCreateProject } from "@/modules/projects/services/create-project";
 import { Button } from "@/shared/components/ui/button";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/shared/components/ui/dialog";
 
-import type { ProjectCreateHandlerProps } from "./types";
 import { useCreateProjectForm } from "./hooks/useCreateProjectForm";
 import { FormInput } from "@/shared/components/form-input";
+import { modalManager } from "@/shared/services/modal-manager";
 
-export function ProjectCreateHandler({ open, onOpenChange }: ProjectCreateHandlerProps) {
+export function ProjectCreateHandler() {
    const { createProject, isPending } = useCreateProject({
       onSuccess: () => {
-        onOpenChange(false);
+         modalManager.hide();
       },
    });
 
@@ -19,32 +17,22 @@ export function ProjectCreateHandler({ open, onOpenChange }: ProjectCreateHandle
    });
 
    return (
-      <Dialog open={open} onOpenChange={onOpenChange}>
-         <form
-            onSubmit={(e) => {
-               console.log("SUBMIT");
-               e.preventDefault();
-               e.stopPropagation();
-               onSubmit();
-            }}
-         >
-            <DialogContent className="sm:max-w-[425px]">
-               <DialogHeader>
-                  <DialogTitle>Criar projeto</DialogTitle>
-               </DialogHeader>
-               <div className="grid gap-4">
-                  <FormInput control={control} name="name" label="Nome:" />
-                  <FormInput control={control} name="description" label="Descrição:" />
-               </div>
-               <DialogFooter>
-                  <DialogClose asChild>
-                     <Button variant="outline">Cancel</Button>
-                  </DialogClose>
+      <form
+         onSubmit={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onSubmit();
+         }}
+      >
+         <div className="grid gap-4">
+            <FormInput control={control} name="name" label="Nome:" />
+            <FormInput control={control} name="description" label="Descrição:" />
+         </div>
 
-                  <Button  onClick={onSubmit}>Criar</Button>
-               </DialogFooter>
-            </DialogContent>
-         </form>
-      </Dialog>
+         <div className="mt-4 flex w-full flex-row justify-end gap-3">
+            <Button variant={"outline"}>Cancelar</Button>
+            <Button type="submit">Criar</Button>
+         </div>
+      </form>
    );
 }

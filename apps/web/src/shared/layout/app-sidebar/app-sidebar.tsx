@@ -1,17 +1,6 @@
-import { Calendar, Home, Inbox, Plus, Search, Settings, Settings2 } from "lucide-react";
+import { Settings2 } from "lucide-react";
 import { ProjectSidebarContent } from "@/modules/projects/ui/components/project-sidebar-content";
-import {
-   Sidebar,
-   SidebarContent,
-   SidebarFooter,
-   SidebarGroup,
-   SidebarGroupAction,
-   SidebarGroupContent,
-   SidebarGroupLabel,
-   SidebarHeader,
-   SidebarMenuButton,
-   SidebarMenuItem,
-} from "@/shared/components/ui/sidebar";
+import { Sidebar, SidebarContent, SidebarFooter, SidebarGroupContent, SidebarHeader, SidebarMenuButton, SidebarMenuItem } from "@/shared/components/ui/sidebar";
 
 export function AppSidebar() {
    return (
