@@ -103,12 +103,12 @@ describe("GET /projects", () => {
       }>;
       expect(Array.isArray(data)).toBe(true);
       expect(data.length).toBeGreaterThanOrEqual(2);
-      
+
       // Verify projects are in the response
       const projectIds = data.map((p) => p.id);
       expect(projectIds).toContain(testProject1.id);
       expect(projectIds).toContain(testProject2.id);
-      
+
       // Verify project structure
       const project1 = data.find((p) => p.id === testProject1.id);
       expect(project1).toBeDefined();
@@ -122,11 +122,7 @@ describe("GET /projects", () => {
    it("should return 200 with empty array when user has no projects", async () => {
       // Create a new user with no projects
       const { createAdditionalTestUser } = await import("@/modules/auth/auth.test");
-      const newUser = await createAdditionalTestUser(
-         `newuser-${Date.now()}@example.com`,
-         "password123",
-         "New User",
-      );
+      const newUser = await createAdditionalTestUser(`newuser-${Date.now()}@example.com`, "password123", "New User");
 
       const response = await app.handle(
          new Request("http://localhost/projects", {
@@ -171,7 +167,7 @@ describe("GET /projects", () => {
          description: string;
       }>;
       expect(Array.isArray(data)).toBe(true);
-      
+
       // All returned projects should have "Project 1" in the name
       data.forEach((project) => {
          expect(project.name).toContain("Project 1");
@@ -195,7 +191,7 @@ describe("GET /projects", () => {
          description: string;
       }>;
       expect(Array.isArray(data)).toBe(true);
-      
+
       // All returned projects should have "Description 1" in the description
       data.forEach((project) => {
          expect(project.description).toContain("Description 1");
@@ -248,4 +244,3 @@ describe("GET /projects", () => {
       expect(data.length).toBeLessThanOrEqual(10);
    });
 });
-

@@ -1,7 +1,7 @@
 import { useGetStages } from "@/modules/stages/services/get-stages";
-import type { BoardKanbanViewProps } from "./types";
 import { StageColumnView } from "@/modules/stages/ui/components/stages-column-view";
 import { TaskCard } from "@/modules/task/ui/components/task-card";
+import type { BoardKanbanViewProps } from "./types";
 
 export function BoardKanbanView({ boardId }: BoardKanbanViewProps) {
    const { stages, isLoading } = useGetStages(boardId);

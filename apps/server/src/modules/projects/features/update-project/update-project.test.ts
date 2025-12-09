@@ -299,4 +299,3 @@ describe("PATCH /projects/:id", () => {
       expect([404, 422]).toContain(response.status);
    });
 });
-

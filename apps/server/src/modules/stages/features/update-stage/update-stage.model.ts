@@ -15,4 +15,3 @@ export const updateStageResponseModel = z.object({
 });
 export type UpdateStageModel = z.infer<typeof updateStageModel> & { userId: string };
 export type UpdateStageResponseModel = z.infer<typeof updateStageResponseModel>;
-

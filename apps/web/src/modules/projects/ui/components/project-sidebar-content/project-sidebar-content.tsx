@@ -1,14 +1,12 @@
 "use client";
 import { ChevronDown, Plus } from "lucide-react";
-
+import { BoardCreateHandler } from "@/modules/boards/ui/components/board-create-handler";
+import { BoardSidebarContent } from "@/modules/boards/ui/components/board-sidebar-content";
 import { useGetProjects } from "@/modules/projects/services/get-projects/useGetProjects";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/shared/components/ui/collapsible";
 import { SidebarGroup, SidebarGroupAction, SidebarGroupContent, SidebarGroupLabel, SidebarMenuButton, SidebarMenuItem } from "@/shared/components/ui/sidebar";
-import { ProjectCreateHandler } from "../project-create-handler";
-
-import { BoardCreateHandler } from "@/modules/boards/ui/components/board-create-handler";
-import { BoardSidebarContent } from "@/modules/boards/ui/components/board-sidebar-content";
 import { modalManager } from "@/shared/services/modal-manager";
+import { ProjectCreateHandler } from "../project-create-handler";
 
 export function ProjectSidebarContent() {
    const { projects } = useGetProjects();

@@ -18,4 +18,3 @@ export const updateStageRouter = new Elysia().use(authMiddleware).patch(
       },
    },
 );
-

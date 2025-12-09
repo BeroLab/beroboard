@@ -1,1 +1,1 @@
-export * from './ModalManager'
+export * from "./ModalManager";

@@ -369,4 +369,3 @@ describe("PATCH /boards/:id", () => {
       expect([404, 422]).toContain(response.status);
    });
 });
-

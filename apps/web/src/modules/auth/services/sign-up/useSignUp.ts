@@ -1,7 +1,6 @@
-import { authClient } from "@/lib/auth-client";
-
-import type { MutationProps } from "@/shared/config/types";
 import { useState } from "react";
+import { authClient } from "@/lib/auth-client";
+import type { MutationProps } from "@/shared/config/types";
 import type { SignUpDTO } from "./types";
 
 export function useSignUp(config: MutationProps<void>) {

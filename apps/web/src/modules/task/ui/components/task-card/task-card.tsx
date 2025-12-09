@@ -14,32 +14,32 @@ interface TaskCardProps {
 
 export function TaskCard({ title, category, logTime, commentsCount = 0, assignee }: TaskCardProps) {
    return (
-      <div className="bg-dracula-surface/40 rounded-lg border border-dracula-surface/30 p-4 hover:shadow-md transition-shadow cursor-pointer">
+      <div className="cursor-pointer rounded-lg border border-dracula-surface/30 bg-dracula-surface/40 p-4 transition-shadow hover:shadow-md">
          <div className="flex gap-3">
             {/* Checkbox */}
             <div className="pt-0.5">
                <button
                   type="button"
-                  className="w-5 h-5 rounded-full border-2 border-dracula-surface hover:border-dracula-purple transition-colors"
+                  className="h-5 w-5 rounded-full border-2 border-dracula-surface transition-colors hover:border-dracula-purple"
                   aria-label="Mark task as complete"
                />
             </div>
 
             {/* Content */}
-            <div className="flex-1 min-w-0">
+            <div className="min-w-0 flex-1">
                {/* Title */}
-               <h4 className="text-sm font-medium text-dracula-foreground mb-2">{title}</h4>
+               <h4 className="mb-2 font-medium text-dracula-foreground text-sm">{title}</h4>
 
                {/* Category Tag */}
-               <span className="inline-block text-xs text-dracula-foreground/60 bg-dracula-surface px-2 py-1 rounded mb-3">{category}</span>
+               <span className="mb-3 inline-block rounded bg-dracula-surface px-2 py-1 text-dracula-foreground/60 text-xs">{category}</span>
 
                {/* Footer */}
                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3 text-xs text-dracula-foreground/50">
+                  <div className="flex items-center gap-3 text-dracula-foreground/50 text-xs">
                      {/* Log Time */}
                      {logTime && (
                         <div className="flex items-center gap-1">
-                           <Clock className="w-3.5 h-3.5" />
+                           <Clock className="h-3.5 w-3.5" />
                            <span>Log: {logTime}</span>
                         </div>
                      )}
@@ -47,7 +47,7 @@ export function TaskCard({ title, category, logTime, commentsCount = 0, assignee
                      {/* Comments */}
                      {commentsCount > 0 && (
                         <div className="flex items-center gap-1">
-                           <MessageSquare className="w-3.5 h-3.5" />
+                           <MessageSquare className="h-3.5 w-3.5" />
                            <span>{commentsCount}</span>
                         </div>
                      )}
@@ -55,9 +55,9 @@ export function TaskCard({ title, category, logTime, commentsCount = 0, assignee
 
                   {/* Assignee Avatar */}
                   {assignee && (
-                     <div className="flex items-center justify-center w-7 h-7 rounded-full bg-dracula-surface text-xs font-medium text-dracula-foreground/70">
+                     <div className="flex h-7 w-7 items-center justify-center rounded-full bg-dracula-surface font-medium text-dracula-foreground/70 text-xs">
                         {assignee.avatar ? (
-                           <img src={assignee.avatar} alt={assignee.name} className="w-full h-full rounded-full object-cover" />
+                           <img src={assignee.avatar} alt={assignee.name} className="h-full w-full rounded-full object-cover" />
                         ) : (
                            <span>{assignee.initials || assignee.name.substring(0, 2).toUpperCase()}</span>
                         )}

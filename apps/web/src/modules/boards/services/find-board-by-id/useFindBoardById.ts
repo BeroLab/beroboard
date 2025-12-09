@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { findBoardByIdService } from "./find-board-by-id.service";
 import { BoardQueryKeys } from "../../types";
+import { findBoardByIdService } from "./find-board-by-id.service";
 
 export function useFindBoardById({ id }: { id: string }) {
    const { data, error, isLoading } = useQuery({

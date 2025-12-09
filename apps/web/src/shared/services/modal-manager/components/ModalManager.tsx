@@ -1,8 +1,8 @@
-"use client"
+"use client";
 import { createRef, useImperativeHandle, useState } from "react";
-import type { ModalConfig, ModalManagerProps } from "../types";
-import { Dialog, DialogContent, DialogFooter, DialogTitle } from "@/shared/components/ui/dialog";
 import { Button } from "@/shared/components/ui/button";
+import { Dialog, DialogContent, DialogFooter, DialogTitle } from "@/shared/components/ui/dialog";
+import type { ModalConfig, ModalManagerProps } from "../types";
 
 export const ModalManagerRef = createRef<ModalManagerProps>();
 export function ModalManager() {

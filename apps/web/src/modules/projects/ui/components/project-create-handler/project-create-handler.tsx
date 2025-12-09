@@ -1,9 +1,8 @@
 import { useCreateProject } from "@/modules/projects/services/create-project";
-import { Button } from "@/shared/components/ui/button";
-
-import { useCreateProjectForm } from "./hooks/useCreateProjectForm";
 import { FormInput } from "@/shared/components/form-input";
+import { Button } from "@/shared/components/ui/button";
 import { modalManager } from "@/shared/services/modal-manager";
+import { useCreateProjectForm } from "./hooks/useCreateProjectForm";
 
 export function ProjectCreateHandler() {
    const { createProject, isPending } = useCreateProject({

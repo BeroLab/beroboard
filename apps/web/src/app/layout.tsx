@@ -29,7 +29,7 @@ export default function RootLayout({
       <html lang="en" suppressHydrationWarning>
          <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
             <Providers>
-               <main className="bg-dracula-background flex flex-1 flex-col h-dvh">
+               <main className="flex h-dvh flex-1 flex-col bg-dracula-background">
                   {children}
                   <ModalManager />
                </main>

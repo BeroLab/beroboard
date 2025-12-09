@@ -1,13 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { AuthForm } from "../../components/auth-form";
-import { useMemo } from "react";
-import { buildSignInFormFields } from "./library/buildSignInFormFields";
-import { useSignInForm } from "./hooks/useSignInForm";
-import { useSignIn } from "@/modules/auth/services/sign-in";
 import { useRouter } from "next/navigation";
+import { useMemo } from "react";
 import { toast } from "sonner";
+import { useSignIn } from "@/modules/auth/services/sign-in";
+import { AuthForm } from "../../components/auth-form";
+import { useSignInForm } from "./hooks/useSignInForm";
+import { buildSignInFormFields } from "./library/buildSignInFormFields";
 
 export function SignInScreen() {
    const router = useRouter();

@@ -1,3 +1,3 @@
 export enum StageQueryKeys {
-    GET_STAGES = "getStages",
+   GET_STAGES = "getStages",
 }

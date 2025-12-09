@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { getStagesService } from "./get-stages.service";
 import { StageQueryKeys } from "../../types";
+import { getStagesService } from "./get-stages.service";
 
 export function useGetStages(boardID: string) {
    const { data, isLoading } = useQuery({

@@ -1,6 +1,6 @@
 import { FormInput, FormInputSecurity } from "@/shared/components/form-input";
-import type { AuthFormProps, FormSchemaConstraints } from "./types";
 import { Button } from "@/shared/components/ui/button";
+import type { AuthFormProps, FormSchemaConstraints } from "./types";
 
 export function AuthForm<FormSchema extends FormSchemaConstraints>({ fields, loadingSubmit, onSubmit, control, buttonText }: AuthFormProps<FormSchema>) {
    return (
@@ -20,7 +20,9 @@ export function AuthForm<FormSchema extends FormSchemaConstraints>({ fields, loa
             ),
          )}
          <div className="w-full">
-            <Button className="w-full" type="submit">{loadingSubmit ? "Carregando..." : buttonText}</Button>
+            <Button className="w-full" type="submit">
+               {loadingSubmit ? "Carregando..." : buttonText}
+            </Button>
          </div>
       </form>
    );

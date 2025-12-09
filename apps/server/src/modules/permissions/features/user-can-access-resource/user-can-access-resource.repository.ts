@@ -9,12 +9,7 @@ import type { UserCanAccessResourceModel } from "./user-can-access-resource.mode
  * - Admin: Can create/update/delete/get Boards, Stages, Tasks
  * - User: Can only create/update/delete/get Tasks
  */
-export async function userCanAccessResourceRepository({
-   resourceType,
-   organizationId,
-   userId,
-   operation,
-}: UserCanAccessResourceModel): Promise<boolean> {
+export async function userCanAccessResourceRepository({ resourceType, organizationId, userId, operation }: UserCanAccessResourceModel): Promise<boolean> {
    // Get user's membership and role in the organization
    const member = await prisma.member.findUnique({
       where: {

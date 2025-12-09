@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { findProjectByIdService, type FindProjectQuery } from "./find-project-by-id.service";
 import { ProjectsQueryKeys } from "../../types";
+import { type FindProjectQuery, findProjectByIdService } from "./find-project-by-id.service";
 
 export function useFindProjectById({ id }: FindProjectQuery) {
    const { data, isPending } = useQuery({

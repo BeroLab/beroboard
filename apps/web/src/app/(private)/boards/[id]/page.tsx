@@ -1,7 +1,7 @@
-import { authClient } from "@/lib/auth-client";
-import { BoardScreen } from "@/modules/boards/ui/screens/board-screen";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { authClient } from "@/lib/auth-client";
+import { BoardScreen } from "@/modules/boards/ui/screens/board-screen";
 
 type Props = {
    params: {

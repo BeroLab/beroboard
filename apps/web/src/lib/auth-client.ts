@@ -1,6 +1,5 @@
 import type { auth } from "@beroboard/auth";
-import { inferAdditionalFields } from "better-auth/client/plugins";
-import { organizationClient } from "better-auth/client/plugins";
+import { inferAdditionalFields, organizationClient } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
 
 export const authClient = createAuthClient({

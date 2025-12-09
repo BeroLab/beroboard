@@ -8,7 +8,7 @@ import type { BoardScreenProps } from "./types";
 export function BoardScreen({ id }: BoardScreenProps) {
    const { board } = useFindBoardById({ id });
    return (
-      <div className="w-full mt-5 flex flex-col h-full">
+      <div className="mt-5 flex h-full w-full flex-col">
          <header className="px-8">
             <h1 className="font-bold text-3xl">{board?.name || "Loading..."}</h1>
          </header>

@@ -2,10 +2,7 @@ import prisma from "@beroboard/db";
 import { NotFoundError } from "@/shared/errors/not-found.error";
 import type { ResourceType } from "../get-resource-by-type/get-resource-by-type.model";
 
-export async function getOrganizationIdFromResourceRepository(
-   resourceType: ResourceType,
-   resourceId: string,
-): Promise<string | undefined> {
+export async function getOrganizationIdFromResourceRepository(resourceType: ResourceType, resourceId: string): Promise<string | undefined> {
    switch (resourceType) {
       case "project": {
          const project = await prisma.projects.findUnique({
@@ -55,4 +52,3 @@ export async function getOrganizationIdFromResourceRepository(
          return undefined;
    }
 }
-

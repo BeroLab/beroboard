@@ -336,4 +336,3 @@ describe("GET /boards", () => {
       expect(data.length).toBeLessThanOrEqual(10);
    });
 });
-

@@ -11,17 +11,15 @@ export const getBoardsModel = z.object({
    projectId: z.string().min(1, "Project ID is required"),
 });
 export const getBoardsResponseModel = z.array(
-   z
-      .object({
-         id: z.string(),
-         name: z.string(),
-         projectId: z.string(),
-         description: z.string(),
-         createdAt: z.coerce.date(),
-         updatedAt: z.coerce.date(),
-         deletedAt: z.coerce.date().nullable(),
-      })
-      
+   z.object({
+      id: z.string(),
+      name: z.string(),
+      projectId: z.string(),
+      description: z.string(),
+      createdAt: z.coerce.date(),
+      updatedAt: z.coerce.date(),
+      deletedAt: z.coerce.date().nullable(),
+   }),
 );
 export type GetBoardsModel = z.infer<typeof getBoardsModel> & { userId: string };
 export type GetBoardsResponseModel = z.infer<typeof getBoardsResponseModel>;

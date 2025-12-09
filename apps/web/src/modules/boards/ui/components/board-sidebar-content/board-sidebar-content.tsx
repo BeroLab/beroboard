@@ -1,7 +1,7 @@
+import { CircuitBoard } from "lucide-react";
+import Link from "next/link";
 import { useGetBoardsByProject } from "@/modules/boards/services/get-boards-by-project";
 import type { BoardSideBarContentProps } from "./types";
-import Link from "next/link";
-import { CircuitBoard } from "lucide-react";
 
 export function BoardSidebarContent({ projectId }: BoardSideBarContentProps) {
    const { boards } = useGetBoardsByProject({

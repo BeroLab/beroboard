@@ -1,5 +1,5 @@
-import type { FormInputProps, FormInputSecurityProps } from "@/shared/components/form-input";
 import type { Control } from "react-hook-form";
+import type { FormInputProps, FormInputSecurityProps } from "@/shared/components/form-input";
 
 export type FormSchemaConstraints = {
    email: string;

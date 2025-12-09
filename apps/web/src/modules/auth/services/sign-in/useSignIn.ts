@@ -1,7 +1,7 @@
-import { authClient } from "@/lib/auth-client";
-import type { SignInDTO } from "./types";
-import type { MutationProps } from "@/shared/config/types";
 import { useState } from "react";
+import { authClient } from "@/lib/auth-client";
+import type { MutationProps } from "@/shared/config/types";
+import type { SignInDTO } from "./types";
 
 export function useSignIn(config: MutationProps<void>) {
    const [isLoading, setIsLoading] = useState(false);

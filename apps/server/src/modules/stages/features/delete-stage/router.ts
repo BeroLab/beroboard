@@ -11,4 +11,3 @@ export const deleteStageRouter = new Elysia().use(authMiddleware).delete("/:id",
       description: "Delete a stage by ID",
    },
 });
-

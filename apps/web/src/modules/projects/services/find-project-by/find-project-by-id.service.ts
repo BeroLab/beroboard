@@ -5,7 +5,7 @@ export type FindProjectQuery = {
 };
 
 export async function findProjectByIdService(query: FindProjectQuery) {
-   const {data} = await apiClient
+   const { data } = await apiClient
       .projects({
          id: query.id,
       })

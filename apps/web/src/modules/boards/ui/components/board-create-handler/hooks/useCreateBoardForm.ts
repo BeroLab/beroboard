@@ -1,6 +1,5 @@
-import type { CreateBoardDTO } from "@/modules/boards/services/create-board";
-
 import { useForm } from "react-hook-form";
+import type { CreateBoardDTO } from "@/modules/boards/services/create-board";
 
 type Props = {
    onSubmit: (data: CreateBoardDTO) => void;

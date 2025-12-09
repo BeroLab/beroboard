@@ -11,4 +11,3 @@ export const getStageRouter = new Elysia().use(authMiddleware).get("/:id", ({ pa
       description: "Get a stage by ID",
    },
 });
-

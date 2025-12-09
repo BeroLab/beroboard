@@ -1,1 +1,1 @@
-export * from './board-sidebar-content'
+export * from "./board-sidebar-content";

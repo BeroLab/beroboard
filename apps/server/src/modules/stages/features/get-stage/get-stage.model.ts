@@ -24,4 +24,3 @@ export const getStageResponseModel = z.object({
 });
 export type GetStageModel = z.infer<typeof getStageModel> & { userId: string };
 export type GetStageResponseModel = z.infer<typeof getStageResponseModel>;
-

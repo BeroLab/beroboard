@@ -1,11 +1,9 @@
-"use client"
+"use client";
 import React from "react";
-
-import { Controller } from "react-hook-form";
 import type { FieldValues, UseControllerProps } from "react-hook-form";
-
-import { Label } from "../ui/label";
+import { Controller } from "react-hook-form";
 import { Input } from "../ui/input";
+import { Label } from "../ui/label";
 
 export type FormInputProps<TFieldValue extends FieldValues> = {
    label: string;

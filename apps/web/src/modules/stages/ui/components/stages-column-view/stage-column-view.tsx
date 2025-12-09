@@ -19,14 +19,14 @@ export function StageColumnView({ stage, renderTaskContent }: StageColumnViewPro
                   className="rounded p-1.5 text-gray-500 transition-colors hover:bg-dracula-surface/25"
                   aria-label={`Add item to ${stage.name}`}
                >
-                  <Plus className="w-4 h-4" />
+                  <Plus className="h-4 w-4" />
                </button>
                <button
                   type="button"
                   className="rounded p-1.5 text-gray-500 transition-colors hover:bg-dracula-surface/25"
                   aria-label={`More options for ${stage.name}`}
                >
-                  <MoreHorizontal className="w-4 h-4" />
+                  <MoreHorizontal className="h-4 w-4" />
                </button>
             </div>
          </div>

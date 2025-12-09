@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createBoardService } from "./create-board.service";
 import type { MutationProps } from "@/shared/config/types";
-import type { CreateBoardDTO } from "./types";
 import { BoardQueryKeys } from "../../types";
+import { createBoardService } from "./create-board.service";
+import type { CreateBoardDTO } from "./types";
 
 export function useCreateBoard({ onError, onSuccess }: MutationProps<void>) {
    const queryClient = useQueryClient();

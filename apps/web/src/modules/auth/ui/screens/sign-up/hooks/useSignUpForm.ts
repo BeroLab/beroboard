@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { useForm } from "react-hook-form";
-import { signUpSchema, type SignUpSchema } from "../library/sign-up.schema";
+import { type SignUpSchema, signUpSchema } from "../library/sign-up.schema";
 
 type Props = {
    onSubmit: (data: SignUpSchema) => void;

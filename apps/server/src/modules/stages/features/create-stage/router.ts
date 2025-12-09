@@ -14,4 +14,3 @@ export const createStageRouter = new Elysia().use(authMiddleware).post("/", ({ b
       description: "Create a new stage",
    },
 });
-

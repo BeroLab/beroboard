@@ -1,5 +1,6 @@
-import type { CreateProjectDTO } from "@/modules/projects/services/create-project/types";
 import { useForm } from "react-hook-form";
+import type { CreateProjectDTO } from "@/modules/projects/services/create-project/types";
+
 type Props = {
    onSubmit: (data: CreateProjectDTO) => void;
 };

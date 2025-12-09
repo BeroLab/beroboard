@@ -17,4 +17,3 @@ export const getStagesRouter = new Elysia().use(authMiddleware).get(
       },
    },
 );
-

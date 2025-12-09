@@ -11,4 +11,3 @@ export async function updateStageRepository(stage: UpdateStageModel) {
    });
    return updatedStage;
 }
-

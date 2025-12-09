@@ -287,4 +287,3 @@ describe("DELETE /stages/:id", () => {
       expect([404, 422]).toContain(response.status);
    });
 });
-

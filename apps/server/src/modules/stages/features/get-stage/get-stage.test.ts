@@ -288,4 +288,3 @@ describe("GET /stages/:id", () => {
       expect(data).toHaveProperty("message");
    });
 });
-

@@ -1,1 +1,1 @@
-export * from './board-select-view-section'
+export * from "./board-select-view-section";

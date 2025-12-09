@@ -1,1 +1,1 @@
-export interface ProjectCreateHandlerProps {}
+export type ProjectCreateHandlerProps = {};
