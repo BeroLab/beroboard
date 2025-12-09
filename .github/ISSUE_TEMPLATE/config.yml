@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: 💬 Discussões
+    url: https://github.com/BeroLab/beroboard/discussions
+    about: Para perguntas e discussões gerais sobre o projeto
+  - name: 📚 Documentação
+    url: https://github.com/BeroLab/beroboard/wiki
+    about: Confira nossa documentação antes de abrir uma issue
