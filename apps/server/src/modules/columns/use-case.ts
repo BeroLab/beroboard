@@ -5,23 +5,6 @@ import type {
 	UpdateColumnInput,
 } from "./schema";
 
-export async function getColumns(organizationId: string) {
-	return prisma.column.findMany({
-		where: { organizationId },
-		orderBy: { order: "asc" },
-		include: {
-			tasks: {
-				orderBy: { order: "asc" },
-				include: {
-					assignee: {
-						select: { id: true, name: true, image: true },
-					},
-				},
-			},
-		},
-	});
-}
-
 export async function createColumn(input: CreateColumnInput) {
 	const lastColumn = await prisma.column.findFirst({
 		where: { organizationId: input.organizationId },

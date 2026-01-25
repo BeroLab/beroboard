@@ -23,10 +23,6 @@ export const reorderColumnsSchema = z.object({
 	),
 });
 
-export const getColumnsQuerySchema = z.object({
-	organizationId: z.string().min(1),
-});
-
 export const columnIdParamSchema = z.object({
 	id: z.string().min(1),
 });
