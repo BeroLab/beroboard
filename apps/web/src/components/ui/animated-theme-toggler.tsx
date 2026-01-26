@@ -2,7 +2,7 @@ import { Moon, Sun } from "@phosphor-icons/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 
-import { cn } from "@/lib/utils";
+import { cn } from "~/lib/utils";
 
 interface AnimatedThemeTogglerProps
 	extends React.ComponentPropsWithoutRef<"button"> {

@@ -2,8 +2,8 @@
 
 import { Check } from "lucide-react";
 import Link from "next/link";
-import type { Task } from "@/lib/types";
-import { cn } from "@/lib/utils";
+import type { Task } from "~/lib/types";
+import { cn } from "~/lib/utils";
 
 interface TaskCardProps {
 	task: Task;

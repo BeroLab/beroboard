@@ -22,8 +22,8 @@ import {
 	DropdownMenuItem,
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { cn } from "@/lib/utils";
+} from "~/components/ui/dropdown-menu";
+import { cn } from "~/lib/utils";
 
 interface Organization {
 	id: string;

@@ -1,32 +1,17 @@
 import { Elysia } from "elysia";
-import {
-	columnIdParamSchema,
-	createColumnSchema,
-	getColumnsQuerySchema,
-	reorderColumnsSchema,
-	updateColumnSchema,
-} from "./schema";
-import * as columnUseCases from "./use-case";
 
-export const columnsRouter = new Elysia({ prefix: "/columns" })
-	.get("/", async ({ query }) => {
-		const parsed = getColumnsQuerySchema.parse(query);
-		return columnUseCases.getColumns(parsed.organizationId);
-	})
-	.post("/", async ({ body }) => {
-		const parsed = createColumnSchema.parse(body);
-		return columnUseCases.createColumn(parsed);
-	})
-	.patch("/:id", async ({ params, body }) => {
-		const { id } = columnIdParamSchema.parse(params);
-		const parsed = updateColumnSchema.parse(body);
-		return columnUseCases.updateColumn(id, parsed);
-	})
-	.delete("/:id", async ({ params }) => {
-		const { id } = columnIdParamSchema.parse(params);
-		return columnUseCases.deleteColumn(id);
-	})
-	.post("/reorder", async ({ body }) => {
-		const parsed = reorderColumnsSchema.parse(body);
-		return columnUseCases.reorderColumns(parsed);
-	});
+import { createColumnRouter } from "./create-column/router";
+import { deleteColumnRouter } from "./delete-column/router";
+import { getColumnsRouter } from "./get-columns/router";
+import { reorderColumnsRouter } from "./reorder-columns/router";
+import { updateColumnRouter } from "./update-column/router";
+
+export const columnsRouter = new Elysia({
+	prefix: "/columns",
+	tags: ["columns"],
+})
+	.use(getColumnsRouter)
+	.use(createColumnRouter)
+	.use(updateColumnRouter)
+	.use(deleteColumnRouter)
+	.use(reorderColumnsRouter);

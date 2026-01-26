@@ -5,8 +5,8 @@ import { CSS } from "@dnd-kit/utilities";
 import { CheckCircle } from "@phosphor-icons/react";
 import { useRouter } from "next/navigation";
 import { useRef } from "react";
-import type { Task } from "@/lib/types";
-import { cn } from "@/lib/utils";
+import type { Task } from "~/lib/types";
+import { cn } from "~/lib/utils";
 
 interface DraggableTaskCardProps {
 	task: Task;
@@ -53,7 +53,7 @@ export function DraggableTaskCard({
 
 	const style = {
 		transform: CSS.Transform.toString(transform),
-		transition: transition ?? undefined,
+		transition,
 	};
 
 	const firstLabel = task.labels?.[0];

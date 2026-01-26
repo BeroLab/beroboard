@@ -2,7 +2,6 @@ export { AddColumn } from "./add-column";
 export { BoardHeader } from "./board-header";
 export { CreateTaskModal } from "./create-task-modal";
 export { DraggableTaskCard } from "./draggable-task-card";
-export { EditTaskModal } from "./edit-task-modal";
 export { EmptyBoard } from "./empty-board";
 export { KanbanColumn } from "./kanban-column";
 export { Sidebar } from "./sidebar";

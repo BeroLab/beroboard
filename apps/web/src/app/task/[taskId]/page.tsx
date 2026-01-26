@@ -34,11 +34,43 @@ const priorityColors = {
 	NONE: "transparent",
 };
 
-const priorityLabels = {
-	HIGH: "High",
-	MEDIUM: "Medium",
-	LOW: "Low",
-	NONE: "None",
+const STATIC_TASK = {
+	title: "Design new dashboard",
+	status: "In Progress",
+	statusColor: "#FFB547",
+	priority: "Medium",
+	priorityColor: "#FFB547",
+	createdAt: "Jan 15, 2026",
+	dueDate: "Jan 28, 2026",
+	project: "Project Overview",
+	description:
+		"Create wireframes and mockups for the analytics dashboard. The design should include data visualization components, filtering options, and export functionality. Focus on creating an intuitive user experience that allows users to quickly understand their metrics.",
+	assignee: {
+		name: "Alice Martin",
+		initials: "AM",
+		color: "#E85A4F",
+	},
+	subtasks: [
+		{ id: "1", text: "Research competitor dashboards", completed: true },
+		{ id: "2", text: "Create low-fidelity wireframes", completed: true },
+		{ id: "3", text: "Design high-fidelity mockups", completed: false },
+		{ id: "4", text: "Create interactive prototype", completed: false },
+	],
+	tags: [
+		{ text: "Design", color: "#6366F1" },
+		{ text: "Dashboard", color: "#FFB547" },
+	],
+	attachments: [{ name: "dashboard-wireframe.fig", size: "2.4 MB" }],
+	comments: [
+		{
+			id: "1",
+			author: "Alex Wright",
+			initials: "AW",
+			color: "#E85A4F",
+			time: "2 hours ago",
+			text: "Great progress on the wireframes! I think we should add more filtering options to the sidebar.",
+		},
+	],
 };
 
 function getInitials(name: string): string {
@@ -184,6 +216,7 @@ export default function TaskDetailsPage({ params }: PageProps) {
 					</div>
 				</header>
 
+				{/* Content Area */}
 				<div className="flex flex-1 overflow-hidden">
 					<div className="flex flex-1 flex-col gap-6 overflow-y-auto border-border border-r p-8">
 						<div className="flex flex-col gap-4">
@@ -201,7 +234,7 @@ export default function TaskDetailsPage({ params }: PageProps) {
 							<div className="flex items-center gap-4">
 								<div
 									className="flex h-7 items-center gap-1.5 rounded-md px-3"
-									style={{ backgroundColor: `${task.column.color}20` }}
+									style={{ backgroundColor: `${task.statusColor}20` }}
 								>
 									<div
 										className="size-1.5 rounded-full"
@@ -211,7 +244,7 @@ export default function TaskDetailsPage({ params }: PageProps) {
 										className="font-medium text-xs"
 										style={{ color: task.column.color ?? undefined }}
 									>
-										{task.column.name}
+										{task.status}
 									</span>
 								</div>
 								<span className="text-[13px] text-muted-foreground">
@@ -243,17 +276,58 @@ export default function TaskDetailsPage({ params }: PageProps) {
 											className="flex h-7 items-center rounded-md px-3"
 											style={{ backgroundColor: `${label.color}15` }}
 										>
-											<span
-												className="font-medium text-xs"
-												style={{ color: label.color }}
-											>
-												{label.text}
-											</span>
-										</div>
-									))}
-								</div>
+											{subtask.text}
+										</span>
+									</div>
+								))}
 							</div>
-						)}
+						</div>
+
+						{/* Activity */}
+						<div className="flex flex-col gap-6">
+							<span className="font-semibold text-[#6B6B70] text-[13px]">
+								Activity
+							</span>
+
+							{/* Comment Input */}
+							<div className="flex h-12 items-center gap-3 rounded-lg border border-[#2A2A2E] bg-[#16161A] px-3.5">
+								<Avatar className="size-7">
+									<AvatarFallback className="bg-[#6366F1] font-semibold text-[10px] text-white">
+										JS
+									</AvatarFallback>
+								</Avatar>
+								<span className="text-[#4A4A50] text-sm">Add a comment...</span>
+							</div>
+
+							{/* Comments */}
+							<div className="flex flex-col gap-4">
+								{task.comments.map((comment) => (
+									<div key={comment.id} className="flex gap-3">
+										<Avatar className="size-8">
+											<AvatarFallback
+												className="font-semibold text-[11px] text-white"
+												style={{ backgroundColor: comment.color }}
+											>
+												{comment.initials}
+											</AvatarFallback>
+										</Avatar>
+										<div className="flex flex-1 flex-col gap-1.5">
+											<div className="flex items-center gap-2">
+												<span className="font-medium text-[#FAFAF9] text-sm">
+													{comment.author}
+												</span>
+												<span className="text-[#4A4A50] text-xs">
+													{comment.time}
+												</span>
+											</div>
+											<p className="text-[#6B6B70] text-sm leading-relaxed">
+												{comment.text}
+											</p>
+										</div>
+									</div>
+								))}
+							</div>
+						</div>
 					</div>
 
 					<div className="flex w-[360px] shrink-0 flex-col gap-6 bg-card p-6">
@@ -261,7 +335,9 @@ export default function TaskDetailsPage({ params }: PageProps) {
 							Details
 						</span>
 
+						{/* Details List */}
 						<div className="flex flex-col gap-5">
+							{/* Assignee */}
 							<div className="flex items-center justify-between">
 								<span className="text-[13px] text-muted-foreground">
 									Assignee
@@ -289,6 +365,7 @@ export default function TaskDetailsPage({ params }: PageProps) {
 								)}
 							</div>
 
+							{/* Due Date */}
 							<div className="flex items-center justify-between">
 								<span className="text-[13px] text-muted-foreground">
 									Due Date
@@ -301,6 +378,7 @@ export default function TaskDetailsPage({ params }: PageProps) {
 								</div>
 							</div>
 
+							{/* Priority */}
 							<div className="flex items-center justify-between">
 								<span className="text-[13px] text-muted-foreground">
 									Priority
@@ -318,6 +396,7 @@ export default function TaskDetailsPage({ params }: PageProps) {
 								</div>
 							</div>
 
+							{/* Project */}
 							<div className="flex items-center justify-between">
 								<span className="text-[13px] text-muted-foreground">
 									Status
@@ -336,17 +415,17 @@ export default function TaskDetailsPage({ params }: PageProps) {
 
 						<div className="h-px bg-border" />
 
+						{/* Tags */}
 						<div className="flex flex-col gap-3">
 							<span className="font-semibold text-base text-foreground">
 								Created by
 							</span>
-							<div className="flex items-center gap-2.5">
-								<Avatar className="size-8">
-									<AvatarFallback
-										className="font-semibold text-[11px] text-white"
-										style={{
-											backgroundColor: stringToColor(task.createdBy.name),
-										}}
+							<div className="flex flex-wrap gap-2">
+								{task.tags.map((tag) => (
+									<div
+										key={tag.text}
+										className="flex h-7 items-center rounded-md px-3"
+										style={{ backgroundColor: `${tag.color}33` }}
 									>
 										{getInitials(task.createdBy.name)}
 									</AvatarFallback>
@@ -361,17 +440,34 @@ export default function TaskDetailsPage({ params }: PageProps) {
 								</div>
 							</div>
 						</div>
+
+						<Separator className="bg-[#2A2A2E]" />
+
+						{/* Attachments */}
+						<div className="flex flex-col gap-3">
+							<span className="font-semibold text-[#FAFAF9] text-base">
+								Attachments
+							</span>
+							{task.attachments.map((attachment) => (
+								<div
+									key={attachment.name}
+									className="flex h-12 items-center gap-3 rounded-lg bg-[#16161A] px-3"
+								>
+									<FileImage className="size-5 text-[#6366F1]" />
+									<div className="flex flex-1 flex-col gap-0.5">
+										<span className="font-medium text-[#FAFAF9] text-[13px]">
+											{attachment.name}
+										</span>
+										<span className="text-[#4A4A50] text-[11px]">
+											{attachment.size}
+										</span>
+									</div>
+								</div>
+							))}
+						</div>
 					</div>
 				</div>
 			</main>
-
-			<EditTaskModal
-				isOpen={isEditModalOpen}
-				onClose={() => setIsEditModalOpen(false)}
-				task={task}
-				columns={columns}
-				onSubmit={handleUpdate}
-			/>
 		</div>
 	);
 }

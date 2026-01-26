@@ -1,7 +1,8 @@
-import prisma from "@blaboard/db";
+import { prisma } from "@blaboard/db";
 import { env } from "@blaboard/env/server";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
+import { organization } from "better-auth/plugins";
 
 export const auth = betterAuth({
 	database: prismaAdapter(prisma, {
@@ -52,7 +53,7 @@ export const auth = betterAuth({
 			httpOnly: true,
 		},
 	},
-	plugins: [],
+	plugins: [organization()],
 });
 
 export type Auth = typeof auth;

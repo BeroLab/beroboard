@@ -15,15 +15,15 @@ import {
 	DialogFooter,
 	DialogHeader,
 	DialogTitle,
-} from "@/components/ui/dialog";
+} from "~/components/ui/dialog";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuGroup,
 	DropdownMenuItem,
 	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import type { Column, CreateTaskInput, TaskLabel } from "@/lib/types";
+} from "~/components/ui/dropdown-menu";
+import type { Column, CreateTaskInput, TaskLabel } from "~/lib/types";
 
 interface CreateTaskModalProps {
 	isOpen: boolean;
