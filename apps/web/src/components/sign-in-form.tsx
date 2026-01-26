@@ -4,7 +4,7 @@ import { GithubLogo, GoogleLogo } from "@phosphor-icons/react";
 import Link from "next/link";
 import { toast } from "sonner";
 
-import { authClient } from "@/lib/auth-client";
+import { authClient } from "~/lib/auth-client";
 
 import Loader from "./loader";
 

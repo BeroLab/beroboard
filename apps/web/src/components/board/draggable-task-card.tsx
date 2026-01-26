@@ -5,8 +5,8 @@ import { CSS } from "@dnd-kit/utilities";
 import { Check } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useRef } from "react";
-import type { Task } from "@/lib/types";
-import { cn } from "@/lib/utils";
+import type { Task } from "~/lib/types";
+import { cn } from "~/lib/utils";
 
 interface DraggableTaskCardProps {
 	task: Task;
@@ -62,7 +62,7 @@ export function DraggableTaskCard({
 
 	const style = {
 		transform: CSS.Transform.toString(transform),
-		transition: transition ?? undefined,
+		transition,
 	};
 
 	const firstLabel = task.labels?.[0];
@@ -83,6 +83,16 @@ export function DraggableTaskCard({
 		}
 	};
 
+	if (isDragging) {
+		return (
+			<div
+				ref={setNodeRef}
+				style={style}
+				className="flex h-auto min-h-[80px] flex-col gap-3 rounded-xl border-2 border-[#6366F1] border-dashed bg-[#6366F1]/10 p-4 opacity-50"
+			/>
+		);
+	}
+
 	return (
 		<div
 			ref={setNodeRef}
@@ -93,12 +103,11 @@ export function DraggableTaskCard({
 			onMouseMove={handleMouseMove}
 			onClick={handleClick}
 			className={cn(
-				"flex flex-col gap-3 rounded-xl border p-4",
-				isDragging
-					? "border-[#6366F1]/50 border-dashed bg-[#6366F1]/5 opacity-40"
-					: "cursor-grab border-[#2A2A2E] bg-[#16161A] transition-colors hover:border-[#3A3A3E] hover:bg-[#1A1A1E] active:cursor-grabbing",
+				"flex cursor-pointer flex-col gap-3 rounded-xl border border-[#2A2A2E] bg-[#16161A] p-4 transition-colors hover:border-[#3A3A3E] hover:bg-[#1A1A1E]",
+				isDragging && "opacity-50",
 			)}
 		>
+			{/* Header */}
 			<div className="flex items-center gap-2">
 				{isCompleted ? (
 					<div className="flex size-[18px] items-center justify-center rounded-full bg-[#32D583]">
@@ -120,6 +129,7 @@ export function DraggableTaskCard({
 				</span>
 			</div>
 
+			{/* Description */}
 			{task.description && (
 				<p
 					className={cn(
@@ -131,6 +141,7 @@ export function DraggableTaskCard({
 				</p>
 			)}
 
+			{/* Footer */}
 			{(firstLabel || task.assignee) && (
 				<div className="flex items-center justify-between">
 					{firstLabel && (

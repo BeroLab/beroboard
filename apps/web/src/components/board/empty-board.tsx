@@ -1,7 +1,7 @@
 "use client";
 
 import { Columns3, Plus } from "lucide-react";
-import { DEFAULT_COLUMNS } from "@/lib/types";
+import { DEFAULT_COLUMNS } from "~/lib/types";
 
 interface EmptyBoardProps {
 	onCreateDefaultColumns: () => void;

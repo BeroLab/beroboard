@@ -1,12 +1,12 @@
 {
-	"name": "server",
+	"name": "@blaboard/server",
 	"type": "module",
-	"main": "src/http/index.ts",
+	"main": "src/shared/http/index.ts",
 	"scripts": {
 		"build": "tsdown",
 		"check-types": "tsc -b",
-		"compile": "bun build --compile --minify --sourcemap --bytecode ./src/http/index.ts --outfile server",
-		"dev": "bun run --hot src/http/index.ts",
+		"compile": "bun build --compile --minify --sourcemap --bytecode ./src/shared/http/index.ts --outfile server",
+		"dev": "bun run --hot src/shared/http/index.ts",
 		"start": "bun run dist/index.js"
 	},
 	"dependencies": {
@@ -16,7 +16,7 @@
 		"@elysiajs/cors": "1.4.1",
 		"better-auth": "catalog:",
 		"dotenv": "catalog:",
-		"elysia": "1.4.21",
+		"elysia": "1.4.22",
 		"zod": "catalog:"
 	},
 	"devDependencies": {

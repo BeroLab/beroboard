@@ -12,9 +12,9 @@ import {
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import type { Column } from "@/lib/types";
-import { cn } from "@/lib/utils";
+} from "~/components/ui/dropdown-menu";
+import type { Column } from "~/lib/types";
+import { cn } from "~/lib/utils";
 import { DraggableTaskCard } from "./draggable-task-card";
 
 interface KanbanColumnProps {
@@ -38,6 +38,7 @@ export function KanbanColumn({ column, onDelete }: KanbanColumnProps) {
 
 	return (
 		<div className="flex w-72 min-w-72 flex-col gap-3">
+			{/* Column Header */}
 			<div className="flex items-center justify-between pb-2">
 				<div className="flex items-center gap-2">
 					{column.color && (
@@ -78,10 +79,11 @@ export function KanbanColumn({ column, onDelete }: KanbanColumnProps) {
 				)}
 			</div>
 
+			{/* Cards */}
 			<div
 				ref={setNodeRef}
 				className={cn(
-					"flex min-h-[100px] flex-1 flex-col gap-2 overflow-y-auto rounded-lg p-1",
+					"flex flex-1 flex-col gap-3 overflow-y-auto rounded-lg p-1 transition-colors",
 					isOver && "bg-[#6366F1]/10",
 				)}
 			>
