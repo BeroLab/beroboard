@@ -1,210 +1,210 @@
 "use client";
 
 import {
-	Building2,
+	CaretUpDown,
 	Check,
-	ChevronsUpDown,
-	LayoutGrid,
-	List,
+	Gear,
+	House,
+	Kanban,
+	MagnifyingGlass,
 	Plus,
-	Settings,
+	Question,
+	SignOut,
 	Users,
-} from "lucide-react";
+	Warning,
+} from "@phosphor-icons/react";
 import { useState } from "react";
+import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuGroup,
 	DropdownMenuItem,
-	DropdownMenuLabel,
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { cn } from "~/lib/utils";
 
-interface Company {
+interface Organization {
 	id: string;
 	name: string;
 	initials: string;
-	color: string;
-}
-
-interface Project {
-	id: string;
-	name: string;
-	color: string;
-	active?: boolean;
 }
 
 interface NavItem {
 	icon: React.ReactNode;
 	label: string;
+	href?: string;
 	active?: boolean;
+	shortcut?: string;
 }
 
 interface SidebarProps {
 	className?: string;
 }
 
-const companies: Company[] = [
-	{ id: "1", name: "Acme Inc", initials: "A", color: "#6366F1" },
-	{ id: "2", name: "Stark Industries", initials: "SI", color: "#E85A4F" },
-	{ id: "3", name: "Wayne Enterprises", initials: "WE", color: "#32D583" },
-	{ id: "4", name: "Umbrella Corp", initials: "UC", color: "#FFB547" },
+const organizations: Organization[] = [
+	{ id: "1", name: "Acme Inc.", initials: "A" },
+	{ id: "2", name: "Stark Industries", initials: "SI" },
+	{ id: "3", name: "Wayne Enterprises", initials: "WE" },
 ];
 
-const navItems: NavItem[] = [
-	{ icon: <LayoutGrid className="size-5" />, label: "Board", active: true },
-	{ icon: <List className="size-5" />, label: "Tasks" },
-	{ icon: <Users className="size-5" />, label: "Team" },
-	{ icon: <Settings className="size-5" />, label: "Settings" },
+const mainNavItems: NavItem[] = [
+	{ icon: <House size={18} />, label: "Home" },
+	{
+		icon: <MagnifyingGlass size={18} />,
+		label: "Search",
+		shortcut: "Ctrl K",
+	},
 ];
 
-const projects: Project[] = [
-	{ id: "1", name: "BeroBoard App", color: "#6366F1", active: true },
-	{ id: "2", name: "Marketing Site", color: "#E85A4F" },
-	{ id: "3", name: "Mobile App", color: "#32D583" },
+const workspaceNavItems: NavItem[] = [
+	{ icon: <Kanban size={18} />, label: "Board", active: true },
+	{ icon: <Users size={18} />, label: "Team" },
+	{ icon: <Gear size={18} />, label: "Settings" },
+];
+
+const bottomNavItems: NavItem[] = [
+	{ icon: <Question size={18} />, label: "Support" },
+	{ icon: <Warning size={18} />, label: "Report an issue" },
 ];
 
 export function Sidebar({ className }: SidebarProps) {
-	const [selectedCompany, setSelectedCompany] = useState<Company>(companies[0]);
+	const [selectedOrg, setSelectedOrg] = useState<Organization>(
+		organizations[0],
+	);
 
 	return (
 		<aside
 			className={cn(
-				"flex h-screen w-60 shrink-0 flex-col bg-[#1A1A1E] py-6",
+				"flex h-screen w-56 shrink-0 flex-col border-border border-r bg-background",
 				className,
 			)}
 		>
-			{/* Top section */}
-			<div className="flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto px-5">
-				{/* Logo */}
-				<div className="flex items-center gap-3">
-					<div className="flex size-8 items-center justify-center rounded-lg bg-[#6366F1]">
-						<span className="font-bold text-sm text-white">B</span>
-					</div>
-					<span className="font-bold text-[#FAFAF9] text-lg">BeroBoard</span>
-				</div>
-
-				{/* Company Selector Dropdown */}
-				<DropdownMenu>
-					<DropdownMenuTrigger className="flex h-11 w-full items-center justify-between rounded-lg border border-[#2A2A2E] bg-[#16161A] px-3 outline-none transition-colors hover:border-[#3A3A3E] focus:border-[#6366F1]">
-						<div className="flex items-center gap-2.5">
-							<div
-								className="flex size-7 items-center justify-center rounded-md"
-								style={{ backgroundColor: selectedCompany.color }}
-							>
-								<span className="font-semibold text-[13px] text-white">
-									{selectedCompany.initials}
-								</span>
-							</div>
-							<span className="font-medium text-[#FAFAF9] text-sm">
-								{selectedCompany.name}
-							</span>
-						</div>
-						<ChevronsUpDown className="size-4 text-[#4A4A50]" />
-					</DropdownMenuTrigger>
-					<DropdownMenuContent
-						className="w-[200px] rounded-lg border border-[#2A2A2E] bg-[#1A1A1E] p-1"
-						align="start"
-						sideOffset={8}
-					>
-						<DropdownMenuGroup>
-							<DropdownMenuLabel className="px-2 py-1.5 font-semibold text-[#6B6B70] text-xs">
-								Companies
-							</DropdownMenuLabel>
-							{companies.map((company) => (
-								<DropdownMenuItem
-									key={company.id}
-									className="flex cursor-pointer items-center gap-2.5 rounded-md px-2 py-2 text-[#FAFAF9] hover:bg-[#16161A] focus:bg-[#16161A]"
-									onClick={() => setSelectedCompany(company)}
-								>
-									<div
-										className="flex size-6 items-center justify-center rounded-md"
-										style={{ backgroundColor: company.color }}
-									>
-										<span className="font-semibold text-[11px] text-white">
-											{company.initials}
-										</span>
-									</div>
-									<span className="flex-1 text-sm">{company.name}</span>
-									{selectedCompany.id === company.id && (
-										<Check className="size-4 text-[#6366F1]" />
-									)}
-								</DropdownMenuItem>
-							))}
-						</DropdownMenuGroup>
-						<DropdownMenuSeparator className="my-1 bg-[#2A2A2E]" />
-						<DropdownMenuItem className="flex cursor-pointer items-center gap-2.5 rounded-md px-2 py-2 text-[#6B6B70] hover:bg-[#16161A] hover:text-[#FAFAF9] focus:bg-[#16161A] focus:text-[#FAFAF9]">
-							<div className="flex size-6 items-center justify-center rounded-md border border-[#4A4A50] border-dashed">
-								<Plus className="size-3.5" />
-							</div>
-							<span className="text-sm">Create company</span>
-						</DropdownMenuItem>
-					</DropdownMenuContent>
-				</DropdownMenu>
-
-				{/* Navigation */}
-				<nav className="flex flex-col gap-1">
-					{navItems.map((item) => (
+			<div className="flex flex-1 flex-col overflow-y-auto">
+				{/* Main Navigation */}
+				<nav className="flex flex-col gap-0.5 p-2">
+					{mainNavItems.map((item) => (
 						<button
 							type="button"
 							key={item.label}
 							className={cn(
-								"flex items-center gap-3 rounded-lg px-5 py-2.5",
+								"flex items-center gap-2.5 rounded-md px-2 py-1.5 text-sm transition-colors",
 								item.active
-									? "bg-[#6366F1] text-[#FAFAF9]"
-									: "text-[#6B6B70] hover:bg-[#16161A]",
+									? "bg-accent font-medium text-foreground"
+									: "text-muted-foreground hover:bg-accent hover:text-foreground",
 							)}
 						>
 							{item.icon}
-							<span
-								className={cn(
-									"text-sm",
-									item.active ? "font-semibold" : "font-medium",
-								)}
-							>
-								{item.label}
-							</span>
+							<span className="flex-1 text-left">{item.label}</span>
+							{item.shortcut && (
+								<span className="flex items-center gap-0.5 text-muted-foreground text-xs">
+									{item.shortcut.split(" ").map((key) => (
+										<kbd
+											key={key}
+											className="rounded border border-border bg-muted px-1 py-0.5 font-mono text-[10px]"
+										>
+											{key}
+										</kbd>
+									))}
+								</span>
+							)}
 						</button>
 					))}
 				</nav>
 
-				{/* Projects */}
-				<div className="flex flex-col gap-2 px-5">
-					<span className="font-semibold text-[#4A4A50] text-xs">Projects</span>
-					{projects.map((project) => (
+				{/* Divider */}
+				<div className="mx-3 my-2 h-px bg-border" />
+
+				{/* Organization Selector */}
+				<div className="px-2">
+					<DropdownMenu>
+						<DropdownMenuTrigger className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-accent">
+							<div className="flex size-5 items-center justify-center rounded bg-foreground font-semibold text-[10px] text-background">
+								{selectedOrg.initials}
+							</div>
+							<span className="flex-1 text-left font-medium text-foreground">
+								{selectedOrg.name}
+							</span>
+							<CaretUpDown size={14} className="text-muted-foreground" />
+						</DropdownMenuTrigger>
+						<DropdownMenuContent
+							className="w-52 rounded-lg border border-border bg-popover p-1"
+							align="start"
+							sideOffset={4}
+						>
+							<DropdownMenuGroup>
+								{organizations.map((org) => (
+									<DropdownMenuItem
+										key={org.id}
+										className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-foreground text-sm hover:bg-accent focus:bg-accent"
+										onClick={() => setSelectedOrg(org)}
+									>
+										<div className="flex size-5 items-center justify-center rounded bg-foreground font-semibold text-[10px] text-background">
+											{org.initials}
+										</div>
+										<span className="flex-1">{org.name}</span>
+										{selectedOrg.id === org.id && (
+											<Check size={14} className="text-foreground" />
+										)}
+									</DropdownMenuItem>
+								))}
+							</DropdownMenuGroup>
+							<DropdownMenuSeparator className="my-1 bg-border" />
+							<DropdownMenuItem className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-muted-foreground text-sm hover:bg-accent hover:text-foreground focus:bg-accent focus:text-foreground">
+								<Plus size={14} />
+								<span>Create organization</span>
+							</DropdownMenuItem>
+						</DropdownMenuContent>
+					</DropdownMenu>
+				</div>
+
+				{/* Workspace Navigation */}
+				<nav className="mt-1 flex flex-col gap-0.5 px-2">
+					{workspaceNavItems.map((item) => (
 						<button
 							type="button"
-							key={project.id}
-							className="flex items-center gap-2.5 py-2"
+							key={item.label}
+							className={cn(
+								"flex items-center gap-2.5 rounded-md px-2 py-1.5 text-sm transition-colors",
+								item.active
+									? "bg-accent font-medium text-foreground"
+									: "text-muted-foreground hover:bg-accent hover:text-foreground",
+							)}
 						>
-							<div
-								className="size-2 rounded"
-								style={{ backgroundColor: project.color }}
-							/>
-							<span
-								className={cn(
-									"font-medium text-[13px]",
-									project.active ? "text-[#FAFAF9]" : "text-[#6B6B70]",
-								)}
-							>
-								{project.name}
-							</span>
+							{item.icon}
+							<span>{item.label}</span>
 						</button>
 					))}
-				</div>
+				</nav>
 			</div>
 
-			{/* User section */}
-			<div className="flex shrink-0 items-center gap-3 px-5 pt-4">
-				<div className="flex size-9 items-center justify-center rounded-full bg-[#6366F1]">
-					<span className="font-semibold text-[13px] text-white">JS</span>
+			{/* Bottom Navigation */}
+			<div className="flex flex-col gap-0.5 border-border border-t p-2">
+				{/* Theme Toggle */}
+				<div className="flex items-center justify-between rounded-md px-2 py-1.5">
+					<span className="text-muted-foreground text-sm">Theme</span>
+					<AnimatedThemeToggler className="flex size-7 items-center justify-center rounded-md border border-border text-muted-foreground transition-colors hover:bg-accent hover:text-foreground" />
 				</div>
-				<div className="flex flex-1 flex-col gap-0.5">
-					<span className="font-medium text-[#FAFAF9] text-sm">John Smith</span>
-					<span className="text-[#6B6B70] text-xs">john@company.com</span>
-				</div>
+
+				{bottomNavItems.map((item) => (
+					<button
+						type="button"
+						key={item.label}
+						className="flex items-center gap-2.5 rounded-md px-2 py-1.5 text-muted-foreground text-sm transition-colors hover:bg-accent hover:text-foreground"
+					>
+						{item.icon}
+						<span>{item.label}</span>
+					</button>
+				))}
+
+				<button
+					type="button"
+					className="flex items-center gap-2.5 rounded-md px-2 py-1.5 text-destructive text-sm transition-colors hover:bg-destructive/10"
+				>
+					<SignOut size={18} />
+					<span>Sign out</span>
+				</button>
 			</div>
 		</aside>
 	);

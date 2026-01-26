@@ -1,6 +1,13 @@
 "use client";
 
-import { Calendar, Check, ChevronDown, Plus, Save, X } from "lucide-react";
+import {
+	CalendarBlank,
+	CaretDown,
+	Check,
+	FloppyDisk,
+	Plus,
+	X,
+} from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 import {
 	Dialog,
@@ -39,10 +46,10 @@ interface TagProps {
 }
 
 const priorities = [
-	{ id: "HIGH" as const, label: "High", color: "#E85A4F" },
-	{ id: "MEDIUM" as const, label: "Medium", color: "#FFB547" },
-	{ id: "LOW" as const, label: "Low", color: "#32D583" },
-	{ id: "NONE" as const, label: "None", color: "#4A4A50" },
+	{ id: "HIGH" as const, label: "High", color: "#ef4444" },
+	{ id: "MEDIUM" as const, label: "Medium", color: "#f59e0b" },
+	{ id: "LOW" as const, label: "Low", color: "#22c55e" },
+	{ id: "NONE" as const, label: "None", color: "transparent" },
 ];
 
 const dueDates = [
@@ -86,15 +93,15 @@ function formatDueDate(date: Date | string | null): string {
 function Tag({ text, color, onRemove }: TagProps) {
 	return (
 		<div
-			className="flex h-7 items-center gap-1.5 rounded-md px-2.5"
-			style={{ backgroundColor: `${color}33` }}
+			className="flex h-6 items-center gap-1 rounded px-2"
+			style={{ backgroundColor: `${color}15` }}
 		>
 			<span className="font-medium text-xs" style={{ color }}>
 				{text}
 			</span>
 			{onRemove && (
 				<button type="button" onClick={onRemove}>
-					<X className="size-3" style={{ color }} />
+					<X size={12} style={{ color }} />
 				</button>
 			)}
 		</div>
@@ -182,50 +189,50 @@ export function EditTaskModal({
 		<Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
 			<DialogContent
 				showCloseButton={false}
-				className="w-[600px] max-w-[600px] gap-0 rounded-2xl border-none bg-[#1A1A1E] p-0 ring-0 sm:max-w-[600px]"
+				className="w-[480px] max-w-[480px] gap-0 rounded-xl border border-border bg-card p-0 sm:max-w-[480px]"
 			>
-				<DialogHeader className="flex-row items-center justify-between border-[#2A2A2E] border-b p-6">
-					<DialogTitle className="font-semibold text-[#FAFAF9] text-[22px] -tracking-wide">
-						Edit Task
+				<DialogHeader className="flex-row items-center justify-between border-border border-b px-5 py-4">
+					<DialogTitle className="font-semibold text-base text-foreground">
+						Edit task
 					</DialogTitle>
-					<DialogClose className="flex size-8 items-center justify-center rounded-lg bg-[#16161A] transition-colors hover:bg-[#1E1E22]">
-						<X className="size-[18px] text-[#6B6B70]" />
+					<DialogClose className="flex size-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground">
+						<X size={16} />
 					</DialogClose>
 				</DialogHeader>
 
-				<div className="flex flex-col gap-5 p-6">
-					<div className="flex flex-col gap-2">
-						<label className="font-medium text-[#6B6B70] text-[13px]">
-							Task Name
+				<div className="flex flex-col gap-4 p-5">
+					<div className="flex flex-col gap-1.5">
+						<label className="font-medium text-muted-foreground text-xs">
+							Task name
 						</label>
 						<input
 							type="text"
 							value={name}
 							onChange={(e) => setName(e.target.value)}
 							placeholder="Enter task name..."
-							className="h-11 rounded-lg border border-[#2A2A2E] bg-[#16161A] px-3.5 text-[#FAFAF9] text-sm placeholder:text-[#4A4A50] focus:outline-none focus:ring-1 focus:ring-[#6366F1]"
+							className="h-9 rounded-lg border border-border bg-background px-3 text-foreground text-sm placeholder:text-muted-foreground focus:border-foreground/30 focus:outline-none"
 						/>
 					</div>
 
-					<div className="flex flex-col gap-2">
-						<label className="font-medium text-[#6B6B70] text-[13px]">
+					<div className="flex flex-col gap-1.5">
+						<label className="font-medium text-muted-foreground text-xs">
 							Description
 						</label>
 						<textarea
 							value={description}
 							onChange={(e) => setDescription(e.target.value)}
 							placeholder="Add a description..."
-							className="h-[100px] resize-none rounded-lg border border-[#2A2A2E] bg-[#16161A] p-3.5 text-[#FAFAF9] text-sm placeholder:text-[#4A4A50] focus:outline-none focus:ring-1 focus:ring-[#6366F1]"
+							className="h-20 resize-none rounded-lg border border-border bg-background p-3 text-foreground text-sm placeholder:text-muted-foreground focus:border-foreground/30 focus:outline-none"
 						/>
 					</div>
 
-					<div className="flex gap-4">
-						<div className="flex flex-1 flex-col gap-2">
-							<label className="font-medium text-[#6B6B70] text-[13px]">
+					<div className="flex gap-3">
+						<div className="flex flex-1 flex-col gap-1.5">
+							<label className="font-medium text-muted-foreground text-xs">
 								Status
 							</label>
 							<DropdownMenu>
-								<DropdownMenuTrigger className="flex h-11 w-full items-center justify-between rounded-lg border border-[#2A2A2E] bg-[#16161A] px-3.5 outline-none transition-colors hover:border-[#3A3A3E] focus:border-[#6366F1]">
+								<DropdownMenuTrigger className="flex h-9 w-full items-center justify-between rounded-lg border border-border bg-background px-3 outline-none transition-colors hover:border-foreground/20">
 									<div className="flex items-center gap-2">
 										{selectedColumn?.color && (
 											<div
@@ -233,14 +240,14 @@ export function EditTaskModal({
 												style={{ backgroundColor: selectedColumn.color }}
 											/>
 										)}
-										<span className="text-[#FAFAF9] text-sm">
+										<span className="text-foreground text-sm">
 											{selectedColumn?.name ?? "Select status"}
 										</span>
 									</div>
-									<ChevronDown className="size-[18px] text-[#6B6B70]" />
+									<CaretDown size={14} className="text-muted-foreground" />
 								</DropdownMenuTrigger>
 								<DropdownMenuContent
-									className="w-[--trigger-width] rounded-lg border border-[#2A2A2E] bg-[#1A1A1E] p-1"
+									className="w-[--trigger-width] rounded-lg border border-border bg-popover p-1"
 									align="start"
 									sideOffset={4}
 								>
@@ -248,7 +255,7 @@ export function EditTaskModal({
 										{columns.map((col) => (
 											<DropdownMenuItem
 												key={col.id}
-												className="flex cursor-pointer items-center justify-between rounded-md px-3 py-2 text-[#FAFAF9] hover:bg-[#16161A] focus:bg-[#16161A]"
+												className="flex cursor-pointer items-center justify-between rounded-md px-2 py-1.5 text-foreground hover:bg-accent focus:bg-accent"
 												onClick={() => setSelectedColumn(col)}
 											>
 												<div className="flex items-center gap-2">
@@ -261,7 +268,7 @@ export function EditTaskModal({
 													<span className="text-sm">{col.name}</span>
 												</div>
 												{selectedColumn?.id === col.id && (
-													<Check className="size-4 text-[#6366F1]" />
+													<Check size={14} className="text-foreground" />
 												)}
 											</DropdownMenuItem>
 										))}
@@ -270,25 +277,27 @@ export function EditTaskModal({
 							</DropdownMenu>
 						</div>
 
-						<div className="flex flex-1 flex-col gap-2">
-							<label className="font-medium text-[#6B6B70] text-[13px]">
+						<div className="flex flex-1 flex-col gap-1.5">
+							<label className="font-medium text-muted-foreground text-xs">
 								Priority
 							</label>
 							<DropdownMenu>
-								<DropdownMenuTrigger className="flex h-11 w-full items-center justify-between rounded-lg border border-[#2A2A2E] bg-[#16161A] px-3.5 outline-none transition-colors hover:border-[#3A3A3E] focus:border-[#6366F1]">
+								<DropdownMenuTrigger className="flex h-9 w-full items-center justify-between rounded-lg border border-border bg-background px-3 outline-none transition-colors hover:border-foreground/20">
 									<div className="flex items-center gap-2">
-										<div
-											className="size-2 rounded-full"
-											style={{ backgroundColor: priority.color }}
-										/>
-										<span className="text-[#FAFAF9] text-sm">
+										{priority.color !== "transparent" && (
+											<div
+												className="size-2 rounded-full"
+												style={{ backgroundColor: priority.color }}
+											/>
+										)}
+										<span className="text-foreground text-sm">
 											{priority.label}
 										</span>
 									</div>
-									<ChevronDown className="size-[18px] text-[#6B6B70]" />
+									<CaretDown size={14} className="text-muted-foreground" />
 								</DropdownMenuTrigger>
 								<DropdownMenuContent
-									className="w-[--trigger-width] rounded-lg border border-[#2A2A2E] bg-[#1A1A1E] p-1"
+									className="w-[--trigger-width] rounded-lg border border-border bg-popover p-1"
 									align="start"
 									sideOffset={4}
 								>
@@ -296,18 +305,20 @@ export function EditTaskModal({
 										{priorities.map((p) => (
 											<DropdownMenuItem
 												key={p.id}
-												className="flex cursor-pointer items-center justify-between rounded-md px-3 py-2 text-[#FAFAF9] hover:bg-[#16161A] focus:bg-[#16161A]"
+												className="flex cursor-pointer items-center justify-between rounded-md px-2 py-1.5 text-foreground hover:bg-accent focus:bg-accent"
 												onClick={() => setPriority(p)}
 											>
 												<div className="flex items-center gap-2">
-													<div
-														className="size-2 rounded-full"
-														style={{ backgroundColor: p.color }}
-													/>
+													{p.color !== "transparent" && (
+														<div
+															className="size-2 rounded-full"
+															style={{ backgroundColor: p.color }}
+														/>
+													)}
 													<span className="text-sm">{p.label}</span>
 												</div>
 												{priority.id === p.id && (
-													<Check className="size-4 text-[#6366F1]" />
+													<Check size={14} className="text-foreground" />
 												)}
 											</DropdownMenuItem>
 										))}
@@ -317,20 +328,22 @@ export function EditTaskModal({
 						</div>
 					</div>
 
-					<div className="flex flex-col gap-2">
-						<label className="font-medium text-[#6B6B70] text-[13px]">
-							Due Date
+					<div className="flex flex-col gap-1.5">
+						<label className="font-medium text-muted-foreground text-xs">
+							Due date
 						</label>
 						<DropdownMenu>
-							<DropdownMenuTrigger className="flex h-11 w-full items-center justify-between rounded-lg border border-[#2A2A2E] bg-[#16161A] px-3.5 outline-none transition-colors hover:border-[#3A3A3E] focus:border-[#6366F1]">
-								<div className="flex items-center gap-2.5">
-									<Calendar className="size-4 text-[#6B6B70]" />
-									<span className="text-[#FAFAF9] text-sm">{dueDateLabel}</span>
+							<DropdownMenuTrigger className="flex h-9 w-full items-center justify-between rounded-lg border border-border bg-background px-3 outline-none transition-colors hover:border-foreground/20">
+								<div className="flex items-center gap-2">
+									<CalendarBlank size={14} className="text-muted-foreground" />
+									<span className="text-foreground text-sm">
+										{dueDateLabel}
+									</span>
 								</div>
-								<ChevronDown className="size-[18px] text-[#6B6B70]" />
+								<CaretDown size={14} className="text-muted-foreground" />
 							</DropdownMenuTrigger>
 							<DropdownMenuContent
-								className="w-[--trigger-width] rounded-lg border border-[#2A2A2E] bg-[#1A1A1E] p-1"
+								className="w-[--trigger-width] rounded-lg border border-border bg-popover p-1"
 								align="start"
 								sideOffset={4}
 							>
@@ -338,12 +351,12 @@ export function EditTaskModal({
 									{dueDates.map((d) => (
 										<DropdownMenuItem
 											key={d.id}
-											className="flex cursor-pointer items-center justify-between rounded-md px-3 py-2 text-[#FAFAF9] hover:bg-[#16161A] focus:bg-[#16161A]"
+											className="flex cursor-pointer items-center justify-between rounded-md px-2 py-1.5 text-foreground hover:bg-accent focus:bg-accent"
 											onClick={() => handleDueDateSelect(d)}
 										>
 											<span className="text-sm">{d.label}</span>
 											{dueDate?.id === d.id && (
-												<Check className="size-4 text-[#6366F1]" />
+												<Check size={14} className="text-foreground" />
 											)}
 										</DropdownMenuItem>
 									))}
@@ -352,11 +365,11 @@ export function EditTaskModal({
 						</DropdownMenu>
 					</div>
 
-					<div className="flex flex-col gap-2">
-						<label className="font-medium text-[#6B6B70] text-[13px]">
-							Tags
+					<div className="flex flex-col gap-1.5">
+						<label className="font-medium text-muted-foreground text-xs">
+							Labels
 						</label>
-						<div className="flex flex-wrap items-center gap-2">
+						<div className="flex flex-wrap items-center gap-1.5">
 							{tags.map((tag, index) => (
 								<Tag
 									key={`${tag.text}-${index}`}
@@ -367,30 +380,28 @@ export function EditTaskModal({
 							))}
 							<button
 								type="button"
-								className="flex h-7 items-center gap-1 rounded-md border border-[#2A2A2E] px-2.5 transition-colors hover:border-[#3A3A3E]"
+								className="flex h-6 items-center gap-1 rounded border border-border border-dashed px-2 text-muted-foreground transition-colors hover:border-foreground/30 hover:text-foreground"
 							>
-								<Plus className="size-3.5 text-[#4A4A50]" />
-								<span className="font-medium text-[#4A4A50] text-xs">
-									Add tag
-								</span>
+								<Plus size={12} />
+								<span className="text-xs">Add label</span>
 							</button>
 						</div>
 					</div>
 				</div>
 
-				<DialogFooter className="flex-row justify-end border-[#2A2A2E] border-t p-6">
-					<DialogClose className="flex h-11 items-center justify-center rounded-lg border border-[#2A2A2E] px-5 transition-colors hover:bg-[#16161A]">
-						<span className="font-medium text-[#6B6B70] text-sm">Cancel</span>
+				<DialogFooter className="flex-row justify-end gap-2 border-border border-t px-5 py-4">
+					<DialogClose className="flex h-8 items-center justify-center rounded-lg border border-border px-3 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground">
+						<span className="text-sm">Cancel</span>
 					</DialogClose>
 					<button
 						type="button"
 						onClick={handleSubmit}
 						disabled={!name.trim() || !selectedColumn || isSubmitting}
-						className="flex h-11 items-center justify-center gap-2 rounded-2xl bg-[#6366F1] px-6 transition-colors hover:bg-[#5558E3] disabled:cursor-not-allowed disabled:opacity-50"
+						className="flex h-8 items-center justify-center gap-1.5 rounded-full bg-foreground px-4 text-background transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
 					>
-						<Save className="size-[18px] text-white" />
-						<span className="font-semibold text-sm text-white">
-							{isSubmitting ? "Saving..." : "Save Changes"}
+						<FloppyDisk size={14} weight="bold" />
+						<span className="font-medium text-sm">
+							{isSubmitting ? "Saving..." : "Save changes"}
 						</span>
 					</button>
 				</DialogFooter>

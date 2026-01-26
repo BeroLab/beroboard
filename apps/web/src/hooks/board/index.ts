@@ -3,6 +3,7 @@ export {
 	useCreateColumn,
 	useCreateDefaultColumns,
 	useDeleteColumn,
+	useReorderColumns,
 	useUpdateColumn,
 } from "./use-column-mutations";
 export { useColumns } from "./use-columns";

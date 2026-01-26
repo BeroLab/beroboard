@@ -74,6 +74,27 @@ export function useDeleteColumn(organizationId: string) {
 	});
 }
 
+export function useReorderColumns(organizationId: string) {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: async (columns: { id: string; order: number }[]) => {
+			const { error } = await api.columns.reorder.post({ columns });
+
+			if (error) {
+				throw new Error("Failed to reorder columns");
+			}
+
+			return { success: true };
+		},
+		onSuccess: () => {
+			queryClient.invalidateQueries({
+				queryKey: boardKeys.columns(organizationId),
+			});
+		},
+	});
+}
+
 export function useCreateDefaultColumns(organizationId: string) {
 	const queryClient = useQueryClient();
 
@@ -81,21 +102,21 @@ export function useCreateDefaultColumns(organizationId: string) {
 		mutationFn: async (
 			columns: { name: string; color?: string; isCompleted?: boolean }[],
 		) => {
-			const results = await Promise.all(
-				columns.map((col) =>
-					api.columns.post({
-						...col,
-						organizationId,
-					}),
-				),
-			);
+			const results: Column[] = [];
+			for (const col of columns) {
+				const { data, error } = await api.columns.post({
+					...col,
+					organizationId,
+				});
 
-			const errors = results.filter((r) => r.error);
-			if (errors.length > 0) {
-				throw new Error("Failed to create some columns");
+				if (error) {
+					throw new Error("Failed to create column");
+				}
+
+				results.push(data as Column);
 			}
 
-			return results.map((r) => r.data as Column);
+			return results;
 		},
 		onSuccess: () => {
 			queryClient.invalidateQueries({

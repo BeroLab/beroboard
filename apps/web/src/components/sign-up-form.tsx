@@ -15,7 +15,7 @@ export default function SignUpForm() {
 		await authClient.signIn.social(
 			{
 				provider,
-				callbackURL: `${window.location.origin}/dashboard`,
+				callbackURL: `${window.location.origin}/`,
 			},
 			{
 				onSuccess: () => {
