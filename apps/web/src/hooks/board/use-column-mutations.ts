@@ -1,8 +1,8 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { api } from "@/lib/api";
-import type { Column, CreateColumnInput, UpdateColumnInput } from "@/lib/types";
+import { api } from "~/lib/api";
+import type { Column, CreateColumnInput, UpdateColumnInput } from "~/lib/types";
 import { boardKeys } from "./keys";
 
 export function useCreateColumn(organizationId: string) {

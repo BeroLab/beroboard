@@ -16,20 +16,20 @@ import {
 	DialogFooter,
 	DialogHeader,
 	DialogTitle,
-} from "@/components/ui/dialog";
+} from "~/components/ui/dialog";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuGroup,
 	DropdownMenuItem,
 	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "~/components/ui/dropdown-menu";
 import type {
 	Column,
 	TaskLabel,
 	TaskWithDetails,
 	UpdateTaskInput,
-} from "@/lib/types";
+} from "~/lib/types";
 
 interface EditTaskModalProps {
 	isOpen: boolean;

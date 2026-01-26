@@ -2,7 +2,7 @@
 
 import { Check, Plus, X } from "@phosphor-icons/react";
 import { useRef, useState } from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "~/lib/utils";
 
 interface AddColumnProps {
 	onAdd: (name: string, color?: string) => void;

@@ -1,7 +1,7 @@
 "use client";
 
 import { Columns, Plus } from "@phosphor-icons/react";
-import { DEFAULT_COLUMNS } from "@/lib/types";
+import { DEFAULT_COLUMNS } from "~/lib/types";
 
 interface EmptyBoardProps {
 	onCreateDefaultColumns: () => void;

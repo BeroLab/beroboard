@@ -1,13 +1,13 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { api } from "@/lib/api";
+import { api } from "~/lib/api";
 import type {
 	CreateTaskInput,
 	MoveTaskInput,
 	Task,
 	UpdateTaskInput,
-} from "@/lib/types";
+} from "~/lib/types";
 import { boardKeys } from "./keys";
 
 export function useCreateTask(organizationId: string) {

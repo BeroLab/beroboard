@@ -21,9 +21,9 @@ import {
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import type { Column, UpdateColumnInput } from "@/lib/types";
-import { cn } from "@/lib/utils";
+} from "~/components/ui/dropdown-menu";
+import type { Column, UpdateColumnInput } from "~/lib/types";
+import { cn } from "~/lib/utils";
 import { COLUMN_COLORS } from "./add-column";
 import { DraggableTaskCard } from "./draggable-task-card";
 

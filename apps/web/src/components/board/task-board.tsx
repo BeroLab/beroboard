@@ -28,14 +28,14 @@ import {
 	useReorderColumns,
 	useReorderTasks,
 	useUpdateColumn,
-} from "@/hooks/board";
+} from "~/hooks/board";
 import type {
 	Column,
 	CreateTaskInput,
 	Task,
 	UpdateColumnInput,
-} from "@/lib/types";
-import { DEFAULT_COLUMNS } from "@/lib/types";
+} from "~/lib/types";
+import { DEFAULT_COLUMNS } from "~/lib/types";
 import { AddColumn } from "./add-column";
 import { BoardHeader } from "./board-header";
 import { CreateTaskModal } from "./create-task-modal";
@@ -83,6 +83,7 @@ export function TaskBoard({ organizationId, userId }: TaskBoardProps) {
 	const isPendingMutation = useRef(false);
 
 	const lastMoveRef = useRef<{ taskId: string; columnId: string } | null>(null);
+	const prevColumnsRef = useRef<string>("");
 
 	const { data: columns = [], isLoading, error } = useColumns(organizationId);
 	const createTaskMutation = useCreateTask(organizationId);
@@ -95,7 +96,14 @@ export function TaskBoard({ organizationId, userId }: TaskBoardProps) {
 	const reorderColumnsMutation = useReorderColumns(organizationId);
 
 	useEffect(() => {
-		if (!activeTask && !activeColumn && !isPendingMutation.current) {
+		const columnsJson = JSON.stringify(columns);
+		if (
+			!activeTask &&
+			!activeColumn &&
+			!isPendingMutation.current &&
+			prevColumnsRef.current !== columnsJson
+		) {
+			prevColumnsRef.current = columnsJson;
 			setLocalColumns(columns);
 		}
 	}, [columns, activeTask, activeColumn]);

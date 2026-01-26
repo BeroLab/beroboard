@@ -1,8 +1,8 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { api } from "@/lib/api";
-import type { Column } from "@/lib/types";
+import { api } from "~/lib/api";
+import type { Column } from "~/lib/types";
 import { boardKeys } from "./keys";
 
 export function useColumns(organizationId: string) {

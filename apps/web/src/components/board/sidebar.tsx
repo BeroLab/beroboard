@@ -14,7 +14,7 @@ import {
 	Warning,
 } from "@phosphor-icons/react";
 import { useState } from "react";
-import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler";
+import { AnimatedThemeToggler } from "~/components/ui/animated-theme-toggler";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
