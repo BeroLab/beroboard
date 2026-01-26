@@ -2,6 +2,11 @@
 	"name": "@blaboard/server",
 	"type": "module",
 	"main": "src/shared/http/index.ts",
+	"exports": {
+		".": {
+			"import": "./src/shared/http/index.ts"
+		}
+	},
 	"scripts": {
 		"build": "tsdown",
 		"check-types": "tsc -b",

@@ -25,7 +25,7 @@
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
 		"dotenv": "catalog:",
-		"elysia": "^1.4.22",
+		"elysia": "1.4.22",
 		"lucide-react": "^0.563.0",
 		"next": "^16.1.1",
 		"next-themes": "^0.4.6",
