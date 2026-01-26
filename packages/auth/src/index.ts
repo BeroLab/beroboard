@@ -1,4 +1,4 @@
-import prisma from "@blaboard/db";
+import { prisma } from "@blaboard/db";
 import { env } from "@blaboard/env/server";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
