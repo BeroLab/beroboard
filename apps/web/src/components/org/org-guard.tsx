@@ -1,9 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { authClient } from "~/lib/auth-client";
-import { useOrganizations, useSetActiveOrganization } from "~/hooks/org";
 import Loader from "../loader";
 
 interface OrgGuardProps {
@@ -18,78 +17,62 @@ export default function OrgGuard({
 	const router = useRouter();
 	const { data: session, isPending: isSessionPending } =
 		authClient.useSession();
-	const { data: organizations = [], isLoading: isOrgsLoading } =
-		useOrganizations();
-	const setActiveOrganization = useSetActiveOrganization();
+	const { data: organizations, isPending: isOrgsLoading } =
+		authClient.useListOrganizations();
+
 	const [isSettingOrg, setIsSettingOrg] = useState(false);
+	const hasSetOrg = useRef(false);
 
 	useEffect(() => {
 		if (!isSessionPending && !session?.user) {
 			router.push("/login");
 			return;
 		}
+		if (!requireOrg) return;
 
-		if (
-			requireOrg &&
-			!isSessionPending &&
-			!isOrgsLoading &&
-			session?.user &&
-			!session?.session?.activeOrganizationId
-		) {
-			if (organizations.length > 0 && !isSettingOrg) {
-				setIsSettingOrg(true);
-				setActiveOrganization.mutate(organizations[0].id, {
-					onSuccess: () => {
-						setIsSettingOrg(false);
-						router.refresh();
-					},
-					onError: () => {
-						setIsSettingOrg(false);
-						router.push("/onboarding");
-					},
-				});
-			} else if (organizations.length === 0 && !isSettingOrg) {
+		if (isSessionPending) return;
+
+		if (isSettingOrg || hasSetOrg.current) return;
+
+		const activeOrgId = session?.session?.activeOrganizationId;
+
+		if (activeOrgId) return;
+
+		if (isOrgsLoading) return;
+
+		const orgs = organizations || [];
+
+		if (orgs.length === 0) {
+			router.push("/onboarding");
+			return;
+		}
+
+		setIsSettingOrg(true);
+		hasSetOrg.current = true;
+
+		authClient.organization
+			.setActive({ organizationId: orgs[0].id })
+			.then(async () => {
+				await authClient.getSession({ fetchOptions: { cache: "no-cache" } });
+				setIsSettingOrg(false);
+				router.refresh();
+			})
+			.catch(() => {
+				setIsSettingOrg(false);
+				hasSetOrg.current = false;
 				router.push("/onboarding");
-			}
-		}
-
-		if (
-			requireOrg &&
-			!isSessionPending &&
-			!isOrgsLoading &&
-			session?.session?.activeOrganizationId &&
-			organizations.length > 0
-		) {
-			const activeOrgExists = organizations.some(
-				(org) => org.id === session.session.activeOrganizationId,
-			);
-
-			if (!activeOrgExists && !isSettingOrg) {
-				setIsSettingOrg(true);
-				setActiveOrganization.mutate(organizations[0].id, {
-					onSuccess: () => {
-						setIsSettingOrg(false);
-						router.refresh();
-					},
-					onError: () => {
-						setIsSettingOrg(false);
-						router.push("/onboarding");
-					},
-				});
-			}
-		}
+			});
 	}, [
 		isSessionPending,
 		isOrgsLoading,
 		session,
+		organizations,
 		router,
 		requireOrg,
-		organizations,
-		setActiveOrganization,
 		isSettingOrg,
 	]);
 
-	if (isSessionPending || isOrgsLoading || isSettingOrg) {
+	if (isSessionPending || isSettingOrg) {
 		return (
 			<div className="flex h-screen items-center justify-center">
 				<Loader />
@@ -98,6 +81,14 @@ export default function OrgGuard({
 	}
 
 	if (!session?.user) {
+		return (
+			<div className="flex h-screen items-center justify-center">
+				<Loader />
+			</div>
+		);
+	}
+
+	if (requireOrg && !session?.session?.activeOrganizationId && isOrgsLoading) {
 		return (
 			<div className="flex h-screen items-center justify-center">
 				<Loader />
