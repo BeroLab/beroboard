@@ -10,7 +10,11 @@ export function useCreateColumn(organizationId: string) {
 
 	return useMutation({
 		mutationFn: async (input: CreateColumnInput) => {
-			const { data, error } = await api.columns.post(input);
+			const { data, error } = await api.columns.post({
+				name: input.name,
+				color: input.color,
+				isCompleted: input.isCompleted ?? false,
+			});
 
 			if (error) {
 				throw new Error("Failed to create column");
@@ -105,8 +109,9 @@ export function useCreateDefaultColumns(organizationId: string) {
 			const results: Column[] = [];
 			for (const col of columns) {
 				const { data, error } = await api.columns.post({
-					...col,
-					organizationId,
+					name: col.name,
+					color: col.color,
+					isCompleted: col.isCompleted ?? false,
 				});
 
 				if (error) {

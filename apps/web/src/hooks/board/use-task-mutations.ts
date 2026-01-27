@@ -15,7 +15,15 @@ export function useCreateTask(organizationId: string) {
 
 	return useMutation({
 		mutationFn: async (input: CreateTaskInput) => {
-			const { data, error } = await api.tasks.post(input);
+			const { data, error } = await api.tasks.post({
+				title: input.title,
+				description: input.description,
+				priority: input.priority ?? "NONE",
+				dueDate: input.dueDate,
+				labels: input.labels ?? [],
+				columnId: input.columnId,
+				assigneeId: input.assigneeId,
+			});
 
 			if (error) {
 				throw new Error("Failed to create task");

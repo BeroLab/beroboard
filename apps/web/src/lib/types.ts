@@ -4,14 +4,6 @@ export interface User {
 	image: string | null;
 }
 
-export interface Organization {
-	id: string;
-	name: string;
-	description: string;
-	createdAt: Date | string;
-	updatedAt: Date | string;
-}
-
 export interface CreateOrganizationInput {
 	name: string;
 	description?: string;
