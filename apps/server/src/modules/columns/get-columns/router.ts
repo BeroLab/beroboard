@@ -8,7 +8,6 @@ export const getColumnsRouter = new Elysia().use(authMiddleware).get(
 	"/",
 	async ({ session, status }) => {
 		const result = await getColumnsUseCase(session.activeOrganizationId);
-
 		return status(200, result);
 	},
 	{
