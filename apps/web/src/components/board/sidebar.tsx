@@ -18,11 +18,6 @@ import { useRouter } from "next/navigation";
 import { useState, useMemo, useCallback } from "react";
 import { toast } from "sonner";
 import { authClient } from "~/lib/auth-client";
-import {
-	useDeleteOrganization,
-	useOrganizations,
-	useSetActiveOrganization,
-} from "~/hooks/org";
 import { AnimatedThemeToggler } from "~/components/ui/animated-theme-toggler";
 import {
 	DropdownMenu,
@@ -34,6 +29,7 @@ import {
 } from "~/components/ui/dropdown-menu";
 import { ConfirmDialog } from "~/components/ui/confirm-dialog";
 import { cn } from "~/lib/utils";
+import type { Organization } from "better-auth/plugins";
 
 interface NavItem {
 	icon: React.ReactNode;
@@ -79,36 +75,53 @@ const bottomNavItems: NavItem[] = [
 export function Sidebar({ className }: SidebarProps) {
 	const router = useRouter();
 	const { data: session } = authClient.useSession();
-	const { data: organizations = [], isLoading } = useOrganizations();
-	const setActiveOrganization = useSetActiveOrganization();
-	const deleteOrganization = useDeleteOrganization();
+	const { data: organizations = [], isPending: isLoading } =
+		authClient.useListOrganizations();
 
 	const [orgToDelete, setOrgToDelete] = useState<{
 		id: string;
 		name: string;
 	} | null>(null);
+	const [isSettingActive, setIsSettingActive] = useState(false);
+	const [isDeletingOrg, setIsDeletingOrg] = useState(false);
 
 	const activeOrgId = session?.session?.activeOrganizationId;
+	const organizationsByCreation = useMemo(
+		() =>
+		  [...(organizations ?? [])].sort(
+			(a, b) =>
+			  +new Date((a as Organization).createdAt ?? 0) -
+			  +new Date((b as Organization).createdAt ?? 0),
+		  ),
+		[organizations],
+	  );
 	const selectedOrg = useMemo(
-		() => organizations.find((org) => org.id === activeOrgId),
+		() => organizations?.find((org) => org.id === activeOrgId),
 		[organizations, activeOrgId],
 	);
 
 	const handleOrgSwitch = useCallback(
 		async (orgId: string) => {
-			if (orgId === activeOrgId) return;
+			if (orgId === activeOrgId || isSettingActive) return;
 
-			setActiveOrganization.mutate(orgId, {
-				onSuccess: () => {
-					toast.success("Organization switched successfully");
-					window.location.reload();
-				},
-				onError: () => {
-					toast.error("Failed to switch organization");
-				},
+			setIsSettingActive(true);
+
+			const { error } = await authClient.organization.setActive({
+				organizationId: orgId,
 			});
+
+			if (error) {
+				toast.error("Failed to switch organization");
+				setIsSettingActive(false);
+				return;
+			}
+
+			await authClient.getSession({ fetchOptions: { cache: "no-cache" } });
+			toast.success("Organization switched successfully");
+			setIsSettingActive(false);
+			router.refresh();
 		},
-		[activeOrgId, setActiveOrganization],
+		[activeOrgId, router, isSettingActive],
 	);
 
 	const handleCreateOrg = useCallback(() => {
@@ -119,64 +132,63 @@ export function Sidebar({ className }: SidebarProps) {
 		(e: React.MouseEvent, orgId: string, orgName: string) => {
 			e.stopPropagation();
 
-			if (organizations.length === 1) {
+			if (!organizations || organizations.length === 1) {
 				toast.error("Cannot delete your only organization");
 				return;
 			}
 
 			setOrgToDelete({ id: orgId, name: orgName });
 		},
-		[organizations.length],
+		[organizations],
 	);
 
-	const confirmDeleteOrg = useCallback(() => {
-		if (!orgToDelete) return;
+	const confirmDeleteOrg = useCallback(async () => {
+		if (!orgToDelete || isDeletingOrg || !organizationsByCreation.length) return;
 
 		const { id: orgId } = orgToDelete;
 		const isActiveOrg = orgId === activeOrgId;
 
-		// Lógica sequencial: se é a última, vai para a anterior; senão, vai para a próxima
-		const currentIndex = organizations.findIndex((org) => org.id === orgId);
+		setIsDeletingOrg(true);
+
+		const currentIndex = organizationsByCreation.findIndex((org) => org.id === orgId);
 		let nextOrg;
 
-		if (currentIndex === organizations.length - 1) {
-			// É a última organização, vai para a anterior
-			nextOrg = organizations[currentIndex - 1];
+		if (currentIndex === organizationsByCreation.length - 1) {
+			nextOrg = organizationsByCreation[currentIndex - 1];
 		} else {
-			// Não é a última, vai para a próxima
-			nextOrg = organizations[currentIndex + 1];
+			nextOrg = organizationsByCreation[currentIndex + 1];
 		}
 
 		if (isActiveOrg && nextOrg) {
-			setActiveOrganization.mutate(nextOrg.id, {
-				onSuccess: () => {
-					deleteOrganization.mutate(orgId, {
-						onSuccess: () => {
-							toast.success("Organization deleted successfully");
-							setOrgToDelete(null);
-							window.location.reload();
-						},
-						onError: () => {
-							toast.error("Failed to delete organization");
-						},
-					});
-				},
-				onError: () => {
-					toast.error("Failed to switch organization");
-				},
-			});
-		} else {
-			deleteOrganization.mutate(orgId, {
-				onSuccess: () => {
-					toast.success("Organization deleted successfully");
-					setOrgToDelete(null);
-				},
-				onError: () => {
-					toast.error("Failed to delete organization");
-				},
-			});
+			const { error: setActiveError } =
+				await authClient.organization.setActive({
+					organizationId: nextOrg.id,
+				});
+
+			if (setActiveError) {
+				toast.error("Failed to switch organization");
+				setIsDeletingOrg(false);
+				return;
+			}
+
+			await authClient.getSession({ fetchOptions: { cache: "no-cache" } });
 		}
-	}, [orgToDelete, activeOrgId, organizations, setActiveOrganization, deleteOrganization]);
+
+		const { error: deleteError } = await authClient.organization.delete({
+			organizationId: orgId,
+		});
+
+		if (deleteError) {
+			toast.error("Failed to delete organization");
+			setIsDeletingOrg(false);
+			return;
+		}
+
+		toast.success("Organization deleted successfully");
+		setOrgToDelete(null);
+		setIsDeletingOrg(false);
+		router.refresh();
+	}, [orgToDelete, activeOrgId, organizationsByCreation, router, isDeletingOrg]);
 
 	const handleSignOut = useCallback(async () => {
 		await authClient.signOut();
@@ -253,12 +265,12 @@ export function Sidebar({ className }: SidebarProps) {
 							sideOffset={4}
 						>
 							<DropdownMenuGroup>
-								{organizations.map((org) => (
+								{organizationsByCreation?.map((org) => (
 									<DropdownMenuItem
 										key={org.id}
 										className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-foreground text-sm hover:bg-accent focus:bg-accent"
 										onClick={() => handleOrgSwitch(org.id)}
-										disabled={setActiveOrganization.isPending}
+										disabled={isSettingActive}
 									>
 										<div className="flex size-5 items-center justify-center rounded bg-foreground font-semibold text-[10px] text-background">
 											{getInitials(org.name)}
@@ -270,7 +282,7 @@ export function Sidebar({ className }: SidebarProps) {
 										<button
 											type="button"
 											onClick={(e) => handleDeleteOrg(e, org.id, org.name)}
-											disabled={deleteOrganization.isPending}
+											disabled={isDeletingOrg}
 											className="rounded p-1 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
 										>
 											<Trash size={14} />
@@ -348,7 +360,7 @@ export function Sidebar({ className }: SidebarProps) {
 				confirmText="Delete"
 				cancelText="Cancel"
 				variant="destructive"
-				isLoading={deleteOrganization.isPending || setActiveOrganization.isPending}
+				isLoading={isDeletingOrg}
 			/>
 		</aside>
 	);
