@@ -1,9 +1,8 @@
 model Organization {
-  id          String   @id @map("_id")
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
   name        String
   description String
   userIds     String[]
-  users       User[]   @relation(fields: [userIds], references: [id])
   columns     Column[]
   tasks       Task[]
   createdAt   DateTime @default(now())
