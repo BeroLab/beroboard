@@ -4,7 +4,7 @@ import { getUserOrganizationsUseCase } from "./use-case";
 
 export const getOrganizationsRouter = new Elysia()
 	.use(authMiddleware)
-	.get("/", async ({ session }) => {
-		const organizations = await getUserOrganizationsUseCase(session.userId);
+	.get("/", async ({ request }) => {
+		const organizations = await getUserOrganizationsUseCase(request.headers);
 		return organizations;
 	});

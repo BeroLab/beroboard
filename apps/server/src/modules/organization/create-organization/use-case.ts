@@ -1,41 +1,32 @@
-import { prisma } from "@blaboard/db";
 import { auth } from "@blaboard/auth";
+import { prisma } from "@blaboard/db";
+import { ConflictError } from "@/shared/errors/conflict.error";
 import type { CreateOrganizationInput } from "./schemas";
 
 export async function createOrganizationUseCase(
-	userId: string,
 	input: CreateOrganizationInput,
 	headers: Headers,
 ) {
-	const organization = await prisma.organization.create({
-		data: {
-			name: input.name,
-			description: input.description,
-			userIds: [userId],
-		},
+	const slug = input.name
+		.toLowerCase()
+		.replace(/[^a-z0-9]+/g, "-")
+		.replace(/^-+|-+$/g, "");
+
+	const existingOrg = await prisma.organization.findUnique({
+		where: { slug },
 	});
 
-	await prisma.member.create({
-		data: {
-			id: `${organization.id}_${userId}`,
-			organizationId: organization.id,
-			userId: userId,
-			role: "owner",
-		},
-	});
+	if (existingOrg) {
+		throw new ConflictError({
+			message: "An organization with this name already exists on this account",
+		});
+	}
 
-	await prisma.user.update({
-		where: { id: userId },
-		data: {
-			organizationIds: {
-				push: organization.id,
-			},
-		},
-	});
-
-	await auth.api.setActiveOrganization({
+	const organization = await auth.api.createOrganization({
 		body: {
-			organizationId: organization.id,
+			name: input.name,
+			slug,
+			metadata: input.description ? { description: input.description } : undefined,
 		},
 		headers,
 	});

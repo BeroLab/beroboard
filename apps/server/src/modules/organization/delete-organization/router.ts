@@ -7,12 +7,8 @@ export const deleteOrganizationRouter = new Elysia()
 	.use(authMiddleware)
 	.delete(
 		"/:organizationId",
-		async ({ params, session, status, request }) => {
-			const result = await deleteOrganizationUseCase(
-				session.userId,
-				params,
-				request.headers,
-			);
+		async ({ params, status, request }) => {
+			const result = await deleteOrganizationUseCase(params, request.headers);
 
 			return status(200, result);
 		},

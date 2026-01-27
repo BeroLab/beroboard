@@ -1,29 +1,12 @@
-import { prisma } from "@blaboard/db";
+import { auth } from "@blaboard/auth";
 
-export async function getUserOrganizationsUseCase(userId: string) {
-	const user = await prisma.user.findUnique({
-		where: { id: userId },
-		select: { organizationIds: true },
+export async function getUserOrganizationsUseCase(headers: Headers) {
+	const organizations = await auth.api.listOrganizations({
+		headers,
 	});
 
-	if (!user || !user.organizationIds || user.organizationIds.length === 0) {
-		return [];
-	}
-
-	const organizations = await prisma.organization.findMany({
-		where: {
-			id: {
-				in: user.organizationIds,
-			},
-		},
-		select: {
-			id: true,
-			name: true,
-			description: true,
-			createdAt: true,
-			updatedAt: true,
-		},
-	});
-
-	return organizations;
+	return organizations.sort(
+		(a, b) =>
+			new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+	);
 }
