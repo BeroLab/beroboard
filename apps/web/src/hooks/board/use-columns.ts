@@ -9,9 +9,7 @@ export function useColumns(organizationId: string) {
 	return useQuery({
 		queryKey: boardKeys.columns(organizationId),
 		queryFn: async () => {
-			const { data, error } = await api.columns.get({
-				query: { organizationId },
-			});
+			const { data, error } = await api.columns.get();
 
 			if (error) {
 				throw new Error("Failed to fetch columns");
