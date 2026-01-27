@@ -1,14 +1,8 @@
 "use client";
 
-import {
-	CalendarBlank,
-	CaretDown,
-	Check,
-	FloppyDisk,
-	Plus,
-	X,
-} from "@phosphor-icons/react";
+import { CaretDown, Check, FloppyDisk, Plus, X } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
+import { DatePicker } from "@/components/ui/date-picker";
 import {
 	Dialog,
 	DialogClose,
@@ -52,44 +46,6 @@ const priorities = [
 	{ id: "NONE" as const, label: "None", color: "transparent" },
 ];
 
-const dueDates = [
-	{
-		id: "today",
-		label: "Today",
-		getValue: () => new Date().toISOString(),
-	},
-	{
-		id: "tomorrow",
-		label: "Tomorrow",
-		getValue: () => new Date(Date.now() + 86400000).toISOString(),
-	},
-	{
-		id: "next-week",
-		label: "Next Week",
-		getValue: () => new Date(Date.now() + 7 * 86400000).toISOString(),
-	},
-	{
-		id: "next-month",
-		label: "Next Month",
-		getValue: () => new Date(Date.now() + 30 * 86400000).toISOString(),
-	},
-	{
-		id: "no-date",
-		label: "No due date",
-		getValue: () => undefined,
-	},
-];
-
-function formatDueDate(date: Date | string | null): string {
-	if (!date) return "No due date";
-	const d = new Date(date);
-	return d.toLocaleDateString("en-US", {
-		month: "short",
-		day: "numeric",
-		year: "numeric",
-	});
-}
-
 function Tag({ text, color, onRemove }: TagProps) {
 	return (
 		<div
@@ -123,11 +79,8 @@ export function EditTaskModal({
 	const [priority, setPriority] = useState(
 		priorities.find((p) => p.id === task.priority) ?? priorities[3],
 	);
-	const [dueDate, setDueDate] = useState<(typeof dueDates)[number] | null>(
-		task.dueDate ? null : dueDates[4],
-	);
-	const [customDueDate, setCustomDueDate] = useState<string | null>(
-		task.dueDate ? new Date(task.dueDate).toISOString() : null,
+	const [dueDate, setDueDate] = useState<Date | null>(
+		task.dueDate ? new Date(task.dueDate) : null,
 	);
 	const [tags, setTags] = useState<TaskLabel[]>(task.labels ?? []);
 	const [isSubmitting, setIsSubmitting] = useState(false);
@@ -140,10 +93,7 @@ export function EditTaskModal({
 			setPriority(
 				priorities.find((p) => p.id === task.priority) ?? priorities[3],
 			);
-			setDueDate(task.dueDate ? null : dueDates[4]);
-			setCustomDueDate(
-				task.dueDate ? new Date(task.dueDate).toISOString() : null,
-			);
+			setDueDate(task.dueDate ? new Date(task.dueDate) : null);
 			setTags(task.labels ?? []);
 		}
 	}, [isOpen, task, columns]);
@@ -153,14 +103,11 @@ export function EditTaskModal({
 
 		setIsSubmitting(true);
 		try {
-			const finalDueDate = dueDate
-				? dueDate.getValue()
-				: (customDueDate ?? undefined);
 			await onSubmit({
 				title: name,
 				description: description || undefined,
 				priority: priority.id,
-				dueDate: finalDueDate,
+				dueDate: dueDate?.toISOString(),
 				labels: tags.length > 0 ? tags : undefined,
 				columnId: selectedColumn.id,
 			});
@@ -173,17 +120,6 @@ export function EditTaskModal({
 	const removeTag = (index: number) => {
 		setTags(tags.filter((_, i) => i !== index));
 	};
-
-	const handleDueDateSelect = (d: (typeof dueDates)[number]) => {
-		setDueDate(d);
-		setCustomDueDate(null);
-	};
-
-	const dueDateLabel = dueDate
-		? dueDate.label
-		: customDueDate
-			? formatDueDate(customDueDate)
-			: "No due date";
 
 	return (
 		<Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -332,37 +268,11 @@ export function EditTaskModal({
 						<label className="font-medium text-muted-foreground text-xs">
 							Due date
 						</label>
-						<DropdownMenu>
-							<DropdownMenuTrigger className="flex h-9 w-full items-center justify-between rounded-lg border border-border bg-background px-3 outline-none transition-colors hover:border-foreground/20">
-								<div className="flex items-center gap-2">
-									<CalendarBlank size={14} className="text-muted-foreground" />
-									<span className="text-foreground text-sm">
-										{dueDateLabel}
-									</span>
-								</div>
-								<CaretDown size={14} className="text-muted-foreground" />
-							</DropdownMenuTrigger>
-							<DropdownMenuContent
-								className="w-[--trigger-width] rounded-lg border border-border bg-popover p-1"
-								align="start"
-								sideOffset={4}
-							>
-								<DropdownMenuGroup>
-									{dueDates.map((d) => (
-										<DropdownMenuItem
-											key={d.id}
-											className="flex cursor-pointer items-center justify-between rounded-md px-2 py-1.5 text-foreground hover:bg-accent focus:bg-accent"
-											onClick={() => handleDueDateSelect(d)}
-										>
-											<span className="text-sm">{d.label}</span>
-											{dueDate?.id === d.id && (
-												<Check size={14} className="text-foreground" />
-											)}
-										</DropdownMenuItem>
-									))}
-								</DropdownMenuGroup>
-							</DropdownMenuContent>
-						</DropdownMenu>
+						<DatePicker
+							value={dueDate}
+							onChange={(date) => setDueDate(date ?? null)}
+							placeholder="No due date"
+						/>
 					</div>
 
 					<div className="flex flex-col gap-1.5">
