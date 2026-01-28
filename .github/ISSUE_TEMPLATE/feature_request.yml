@@ -1,0 +1,44 @@
+name: "Feature request"
+description: "Suggest a new feature or improvement."
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for your suggestion. The more context, the better.
+  - type: textarea
+    id: problem
+    attributes:
+      label: "What problem do you want to solve?"
+      description: "Explain the pain point or need."
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: "What is your suggested solution?"
+      description: "Describe the desired functionality."
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: "Alternatives considered"
+      description: "Other approaches you have evaluated."
+    validations:
+      required: false
+  - type: textarea
+    id: context
+    attributes:
+      label: "Additional context"
+      description: "Links, references, screenshots, etc."
+    validations:
+      required: false
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: "Checklist"
+      options:
+        - label: "I checked if a similar issue already exists"
+          required: true

@@ -1,0 +1,56 @@
+name: "Bug report"
+description: "Report a problem so we can fix it."
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting a bug. Please fill in the fields below.
+  - type: input
+    id: environment
+    attributes:
+      label: "Environment"
+      description: "Operating system, browser, app version, etc."
+      placeholder: "e.g.: macOS 14, Chrome 121, app 1.2.3"
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: "Steps to reproduce"
+      description: "List the step-by-step process to reproduce the problem."
+      placeholder: "1. ...\n2. ...\n3. ..."
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: "Expected behavior"
+      placeholder: "What should happen?"
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: "Actual behavior"
+      placeholder: "What happens today?"
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: "Evidence"
+      description: "Include screenshots, logs, or videos (if any)."
+      placeholder: "Paste links or attachments here."
+    validations:
+      required: false
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: "Checklist"
+      options:
+        - label: "I checked if a similar issue already exists"
+          required: true
+        - label: "I can reproduce the problem"
+          required: true

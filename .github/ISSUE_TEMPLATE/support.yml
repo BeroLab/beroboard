@@ -1,0 +1,30 @@
+name: "Support"
+description: "Need help using the product?"
+title: "[Support]: "
+labels: ["support"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Describe your question so we can help you.
+  - type: textarea
+    id: question
+    attributes:
+      label: "Question"
+      description: "Explain what you are trying to do."
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: "Context"
+      description: "Environment, screenshots, links, logs, etc."
+    validations:
+      required: false
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: "Checklist"
+      options:
+        - label: "I checked the documentation"
+          required: false

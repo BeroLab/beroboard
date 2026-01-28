@@ -1,0 +1,38 @@
+name: "Task"
+description: "Create a technical or organizational task."
+title: "[Task]: "
+labels: ["task"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form for internal tasks.
+  - type: textarea
+    id: objective
+    attributes:
+      label: "Objective"
+      description: "Describe what should be delivered."
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: "Scope"
+      description: "What is included and what is out of scope."
+    validations:
+      required: false
+  - type: textarea
+    id: criteria
+    attributes:
+      label: "Acceptance criteria"
+      description: "How do we know it's done?"
+      placeholder: "- ...\n- ..."
+    validations:
+      required: true
+  - type: input
+    id: deadline
+    attributes:
+      label: "Deadline (optional)"
+      placeholder: "e.g.: 2026-02-15"
+    validations:
+      required: false
