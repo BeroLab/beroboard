@@ -1,94 +1,105 @@
-# blaboard - AI Agent & Developer Guide
+# Blaboard - AI Agent & Developer Guide
 
-This document serves as the primary context source for AI agents and developers working on the **blaboard** project. It outlines the architectural patterns, technology stack, and specifically the authentication implementation details.
+This document serves as the primary context source for AI agents and developers working on the **Blaboard** project.
 
-## 🏗 Project Architecture
+## Commands
 
-This is a Monorepo managed by **Turborepo** and **Bun**.
+```bash
+# Development
+bun run dev              # Start all apps (web + server)
+bun run dev:web          # Frontend only (port 3001)
+bun run dev:server       # Backend only (port 3000)
 
-### Workspace Structure
-- **apps/**
-  - `web`: Frontend application (Next.js 15, React 19, Tailwind, Shadcn/UI). Runs on **port 3001**.
-  - `server`: Backend API (ElysiaJS). Runs on **port 3000**.
-- **packages/**
-  - `auth`: Centralized Better Auth configuration and logic.
-  - `db`: Prisma ORM setup and MongoDB connection.
-  - `env`: Type-safe environment variable validation (T3 Env).
-  - `config`: Shared TypeScript and configuration files.
+# Build & Type Check
+bun run build            # Build all workspaces
+bun run check-types      # TypeScript check across all
 
-## 🔐 Authentication (Better Auth) Implementation
+# Code Quality (Biome)
+bun run check            # Format & lint
+bun run lint             # Alias for check
 
-The project uses **Better Auth** for authentication, integrated deeply into the monorepo structure.
+# Database (MongoDB + Prisma)
+bun run db:start         # Start Docker container
+bun run db:push          # Push schema to database
+bun run db:generate      # Generate Prisma client
+bun run db:studio        # Open Prisma Studio UI
+bun run db:stop          # Stop container
+```
 
-### 1. Configuration (`packages/auth`)
+## Architecture
+
+**Monorepo** managed by Turborepo + Bun workspaces.
+
+### Apps
+- **`apps/web`** - Next.js 16, React 19, Tailwind v4, shadcn/ui (port 3001)
+- **`apps/server`** - ElysiaJS backend API (port 3000)
+
+### Packages
+- **`packages/auth`** - Better Auth config (Google + GitHub social login, no email/password)
+- **`packages/db`** - Prisma ORM + MongoDB (requires Replica Set for transactions)
+- **`packages/env`** - T3 Env type-safe environment variables
+- **`packages/config`** - Shared TypeScript configuration
+
+## Tech Stack
+
+- **Runtime:** Bun
+- **Frontend:** Next.js 16 + React 19 + React Compiler + Tailwind v4
+- **Backend:** ElysiaJS (type-safe HTTP framework)
+- **Database:** MongoDB 7 (Replica Set required) + Prisma 7
+- **Auth:** Better Auth with database sessions (7-day expiry)
+- **UI Components:** shadcn/ui + Base UI + Lucide icons
+- **Linting/Formatting:** Biome (tabs, double quotes, Tailwind class sorting)
+
+## Authentication (Better Auth)
+
+### Configuration (`packages/auth`)
 - **Location:** `packages/auth/src/index.ts`
-- **Strategies:**
-  - **Social Only:** Google and GitHub are enabled.
-  - **Email/Password:** Explicitly **DISABLED**.
-- **Database Adapter:** Prisma Adapter (MongoDB).
-- **Session Management:** Database-backed sessions.
+- **Strategies:** Social only (Google and GitHub). Email/Password is **disabled**.
+- **Database Adapter:** Prisma Adapter (MongoDB)
+- **Session Management:** Database-backed sessions
 
-### 2. Role Management
-- **Default Role:** `ADMIN`.
-- **Implementation:** The default role is injected at the application level via `user.additionalFields` in the Better Auth config, not as a database default.
-- **Schema:** The `User` model in Prisma has a `role` field.
+### Role Management
+- **Default Role:** `ADMIN`
+- **Implementation:** Injected via `user.additionalFields` in Better Auth config
+- **Schema:** `User` model in Prisma has a `role` field
 
-### 3. Cross-Origin & Environment Handling
-Since the Web App (3001) and API (3000) run on different ports, specific configurations are in place:
-- **CORS:** The server allows `env.CORS_ORIGIN` (http://localhost:3001).
-- **Cookies:**
-  - **Production:** `SameSite: "none"`, `Secure: true`.
-  - **Development:** `SameSite: "lax"`, `Secure: false`.
-  - *Reasoning:* Prevents `state_mismatch` errors during local development where HTTPS is not used.
-- **Base URL:** The server uses `env.BETTER_AUTH_URL` (http://localhost:3000).
+### Cross-Origin & Cookie Settings
+Since Web (3001) and API (3000) run on different ports:
+- **CORS:** Server allows `env.CORS_ORIGIN` (http://localhost:3001)
+- **Production:** `SameSite: "none"`, `Secure: true`
+- **Development:** `SameSite: "lax"`, `Secure: false`
 
-### 4. Frontend Integration (`apps/web`)
-- **Client:** `apps/web/src/lib/auth-client.ts` creates the client pointing to `NEXT_PUBLIC_SERVER_URL`.
-- **Login Flow:**
-  - Uses `authClient.signIn.social`.
-  - **Callback URL:** Must be absolute to ensure redirection to the frontend.
-  - Pattern: `callbackURL: 
-${window.location.origin}/dashboard
-`.
+### Frontend Integration
+- **Client:** `apps/web/src/lib/auth-client.ts` points to `NEXT_PUBLIC_SERVER_URL`
+- **Login:** Uses `authClient.signIn.social`
+- **Callback URL:** Must be absolute: `${window.location.origin}/dashboard`
 
-### 5. Backend Integration (`apps/server`)
-- **Plugin:** `apps/server/src/plugins/auth.plugin.ts` exposes the Better Auth handler at `/api/auth/*`.
-- **Middleware:** `apps/server/src/middleware/auth.middleware.ts` provides a derivation to inject `user` and `session` into the Elysia context.
+### Backend Integration
+- **Plugin:** `apps/server/src/plugins/auth.plugin.ts` exposes `/api/auth/*`
+- **Middleware:** `apps/server/src/middleware/auth.middleware.ts` injects `user` and `session` into Elysia context
 
-## 🗄 Database (MongoDB & Prisma)
+## Database (MongoDB & Prisma)
 
-- **Type:** MongoDB.
-- **Deployment Requirement:** **Replica Set** (`rs0`).
-  - *Why?* Better Auth and Prisma require transactions, which are only supported in MongoDB Replica Sets.
-- **Docker Setup:**
-  - Located in `packages/db/docker-compose.yml`.
-  - Includes a healthcheck that automatically initializes the Replica Set (`rs.initiate()`)
-  - Uses a **KeyFile** (`packages/db/mongo-key/replica.key`) for internal authentication between nodes.
+- **Type:** MongoDB with **Replica Set** (`rs0`) required for transactions
+- **Docker Setup:** Located in `packages/db/docker-compose.yml`
+- **Prisma Schema:** Split across `packages/db/prisma/schema/` (schema.prisma, auth.prisma, org.prisma)
+- **KeyFile:** `packages/db/mongo-key/replica.key` for internal authentication
 
-### Common Commands
-- **Generate Client:** `bun run db:generate`
-- **Push Schema:** `bun run db:push` (Preferred over migrations for MongoDB in dev).
+Always run `db:generate` after schema changes.
 
-## 💻 Development Patterns
+## UI Components
 
-- **Package Manager:** Bun (v1.3+).
-- **Linting/Formatting:** Biome (`biome.json`).
-- **Typing:** Strict TypeScript.
-- **Environment Variables:**
-  - Managed via `@beroboard/env`.
-  - **Web:** `.env` (needs `NEXT_PUBLIC_SERVER_URL`).
-  - **Server:** `.env` (needs `DATABASE_URL`, `BETTER_AUTH_SECRET`, `GOOGLE_*`, `GITHUB_*`).
+**Always check for shadcn components first:**
+1. If the component exists in `apps/web/src/components/ui/`, use it
+2. If it doesn't exist but is available in shadcn, install it: `npx shadcn@latest add <component>`
+3. Only create custom components if shadcn doesn't have what you need
 
-## 🚀 How to Run
+## Environment Variables
 
-1. **Start Database:**
-   ```bash
-   docker compose -f packages/db/docker-compose.yml up -d
-   ```
-2. **Setup Env:** Ensure `.env` files are created in `apps/server` and `apps/web`.
-3. **Start Dev Server:**
-   ```bash
-   bun run dev
-   ```
-   - Access Web: http://localhost:3001
-   - Access API: http://localhost:3000
+Managed via `@beroboard/env`:
+- **Web:** `.env` (needs `NEXT_PUBLIC_SERVER_URL`)
+- **Server:** `.env` (needs `DATABASE_URL`, `BETTER_AUTH_SECRET`, `GOOGLE_*`, `GITHUB_*`)
+
+## Key Patterns
+
+**Biome Config:** Uses `cn`, `clsx`, `cva` for Tailwind class sorting. Format with tabs, double quotes.

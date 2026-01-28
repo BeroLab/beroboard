@@ -147,7 +147,11 @@ Leave a comment saying you want to work on that issue. This prevents two people 
 
 ### 3. Create your branch
 
+**Important:** Always create your branch from `staging`, which is our reference branch for development.
+
 ```bash
+git checkout staging
+git pull origin staging
 git checkout -b feat/feature-name
 # or
 git checkout -b fix/bug-name
@@ -170,6 +174,12 @@ git push origin feat/feature-name
 ```
 
 Then, open a Pull Request on GitHub describing your changes.
+
+## Design
+
+Interested in contributing to UI/UX? Check out our Figma file with the project prototype:
+
+[Blaboard - Figma Prototype](https://www.figma.com/design/fwgpxrsQ9mFoA30JR3c7xu/Blaboard---Prototype?t=Nz5gRhSQHB09UtHp-0) - Maintained by [Matheus Henry](https://github.com/WatheusHenry), social link: [X](https://x.com/watheushenry)
 
 ## Join the Community
 
