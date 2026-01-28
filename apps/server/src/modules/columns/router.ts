@@ -9,9 +9,10 @@ import { updateColumnRouter } from "./update-column/router";
 export const columnsRouter = new Elysia({
 	prefix: "/columns",
 	tags: ["columns"],
-})
-	.use(getColumnsRouter)
-	.use(createColumnRouter)
-	.use(updateColumnRouter)
-	.use(deleteColumnRouter)
-	.use(reorderColumnsRouter);
+}).use([
+	getColumnsRouter,
+	createColumnRouter,
+	updateColumnRouter,
+	deleteColumnRouter,
+	reorderColumnsRouter,
+]);

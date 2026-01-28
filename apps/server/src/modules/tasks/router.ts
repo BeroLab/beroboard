@@ -10,10 +10,11 @@ import { updateTaskRouter } from "./update-task/router";
 export const tasksRouter = new Elysia({
 	prefix: "/tasks",
 	tags: ["tasks"],
-})
-	.use(getTaskRouter)
-	.use(createTaskRouter)
-	.use(updateTaskRouter)
-	.use(deleteTaskRouter)
-	.use(moveTaskRouter)
-	.use(reorderTasksRouter);
+}).use([
+	getTaskRouter,
+	createTaskRouter,
+	updateTaskRouter,
+	deleteTaskRouter,
+	moveTaskRouter,
+	reorderTasksRouter,
+]);
