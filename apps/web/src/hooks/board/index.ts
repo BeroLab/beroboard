@@ -7,6 +7,7 @@ export {
 	useUpdateColumn,
 } from "./use-column-mutations";
 export { useColumns } from "./use-columns";
+export { useMembers } from "./use-members";
 export { useTask } from "./use-task";
 export {
 	useCreateTask,
