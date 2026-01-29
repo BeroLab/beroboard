@@ -1,6 +1,11 @@
 import { Elysia } from "elysia";
 import { authMiddleware } from "@/shared/http/middleware/auth.middleware";
-import { updateColumnBodySchema, updateColumnParamsSchema } from "./schemas";
+import { authMiddlewareErrorSchemas } from "@/shared/schemas/auth-middleware-errors";
+import {
+	updateColumnBodySchema,
+	updateColumnParamsSchema,
+	updateColumnResponseSchema,
+} from "./schemas";
 import { updateColumnUseCase } from "./use-case";
 
 export const updateColumnRouter = new Elysia().use(authMiddleware).patch(
@@ -14,5 +19,9 @@ export const updateColumnRouter = new Elysia().use(authMiddleware).patch(
 		requireOrganization: true,
 		params: updateColumnParamsSchema,
 		body: updateColumnBodySchema,
+		response: {
+			200: updateColumnResponseSchema,
+			...authMiddlewareErrorSchemas,
+		},
 	},
 );

@@ -1,4 +1,5 @@
 import { prisma } from "@blaboard/db";
+import { NotFoundError } from "@/shared/errors/not-found.error";
 
 const taskInclude = {
 	column: true,
@@ -11,8 +12,12 @@ const taskInclude = {
 } as const;
 
 export async function getTaskUseCase(id: string) {
-	return prisma.task.findUnique({
+	const task = await prisma.task.findUnique({
 		where: { id },
 		include: taskInclude,
 	});
+
+	if (!task) throw new NotFoundError({ resource: "Task", identifier: id });
+
+	return task;
 }

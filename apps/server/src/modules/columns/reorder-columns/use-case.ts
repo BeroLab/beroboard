@@ -8,6 +8,5 @@ export async function reorderColumnsUseCase(input: ReorderColumnsInput) {
 			data: { order: col.order },
 		}),
 	);
-	await prisma.$transaction(updates);
-	return { success: true };
+	return await prisma.$transaction(updates);
 }

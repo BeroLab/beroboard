@@ -8,6 +8,5 @@ export async function reorderTasksUseCase(input: ReorderTasksInput) {
 			data: { order: task.order, columnId: task.columnId },
 		}),
 	);
-	await prisma.$transaction(updates);
-	return { success: true };
+	return await prisma.$transaction(updates);
 }

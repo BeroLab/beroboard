@@ -1,6 +1,7 @@
 import { Elysia } from "elysia";
 import { authMiddleware } from "@/shared/http/middleware/auth.middleware";
-import { deleteTaskParamsSchema } from "./schemas";
+import { authMiddlewareErrorSchemas } from "@/shared/schemas/auth-middleware-errors";
+import { deleteTaskParamsSchema, deleteTaskResponseSchema } from "./schemas";
 import { deleteTaskUseCase } from "./use-case";
 
 export const deleteTaskRouter = new Elysia().use(authMiddleware).delete(
@@ -13,5 +14,9 @@ export const deleteTaskRouter = new Elysia().use(authMiddleware).delete(
 	{
 		requireOrganization: true,
 		params: deleteTaskParamsSchema,
+		response: {
+			200: deleteTaskResponseSchema,
+			...authMiddlewareErrorSchemas,
+		},
 	},
 );

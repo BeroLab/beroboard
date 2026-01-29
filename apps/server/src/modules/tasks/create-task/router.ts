@@ -1,6 +1,7 @@
 import { Elysia } from "elysia";
 import { authMiddleware } from "@/shared/http/middleware/auth.middleware";
-import { createTaskBodySchema } from "./schemas";
+import { authMiddlewareErrorSchemas } from "@/shared/schemas/auth-middleware-errors";
+import { createTaskBodySchema, createTaskResponseSchema } from "./schemas";
 import { createTaskUseCase } from "./use-case";
 
 export const createTaskRouter = new Elysia().use(authMiddleware).post(
@@ -17,5 +18,9 @@ export const createTaskRouter = new Elysia().use(authMiddleware).post(
 	{
 		requireOrganization: true,
 		body: createTaskBodySchema,
+		response: {
+			201: createTaskResponseSchema,
+			...authMiddlewareErrorSchemas,
+		},
 	},
 );

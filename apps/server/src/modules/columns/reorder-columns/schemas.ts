@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { zDate } from "@/shared/schemas/zod-date";
 
 export const reorderColumnsBodySchema = z.object({
 	columns: z.array(
@@ -10,3 +11,16 @@ export const reorderColumnsBodySchema = z.object({
 });
 
 export type ReorderColumnsInput = z.infer<typeof reorderColumnsBodySchema>;
+
+export const reorderColumnsResponseSchema = z
+	.object({
+		id: z.string(),
+		name: z.string(),
+		createdAt: zDate,
+		updatedAt: zDate,
+		organizationId: z.string(),
+		color: z.string().nullable(),
+		isCompleted: z.boolean(),
+		order: z.number(),
+	})
+	.array();

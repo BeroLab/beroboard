@@ -1,6 +1,11 @@
 import { Elysia } from "elysia";
 import { authMiddleware } from "@/shared/http/middleware/auth.middleware";
-import { updateTaskBodySchema, updateTaskParamsSchema } from "./schemas";
+import { authMiddlewareErrorSchemas } from "@/shared/schemas/auth-middleware-errors";
+import {
+	updateTaskBodySchema,
+	updateTaskParamsSchema,
+	updateTaskResponseSchema,
+} from "./schemas";
 import { updateTaskUseCase } from "./use-case";
 
 export const updateTaskRouter = new Elysia().use(authMiddleware).patch(
@@ -14,5 +19,9 @@ export const updateTaskRouter = new Elysia().use(authMiddleware).patch(
 		requireOrganization: true,
 		params: updateTaskParamsSchema,
 		body: updateTaskBodySchema,
+		response: {
+			200: updateTaskResponseSchema,
+			...authMiddlewareErrorSchemas,
+		},
 	},
 );

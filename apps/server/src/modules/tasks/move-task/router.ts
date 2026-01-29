@@ -1,6 +1,7 @@
 import { Elysia } from "elysia";
 import { authMiddleware } from "@/shared/http/middleware/auth.middleware";
-import { moveTaskBodySchema } from "./schemas";
+import { authMiddlewareErrorSchemas } from "@/shared/schemas/auth-middleware-errors";
+import { moveTaskBodySchema, moveTaskResponseSchema } from "./schemas";
 import { moveTaskUseCase } from "./use-case";
 
 export const moveTaskRouter = new Elysia().use(authMiddleware).post(
@@ -13,5 +14,9 @@ export const moveTaskRouter = new Elysia().use(authMiddleware).post(
 	{
 		requireOrganization: true,
 		body: moveTaskBodySchema,
+		response: {
+			200: moveTaskResponseSchema,
+			...authMiddlewareErrorSchemas,
+		},
 	},
 );

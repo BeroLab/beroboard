@@ -1,6 +1,10 @@
 import { Elysia } from "elysia";
 import { authMiddleware } from "@/shared/http/middleware/auth.middleware";
-import { deleteColumnParamsSchema } from "./schemas";
+import { authMiddlewareErrorSchemas } from "@/shared/schemas/auth-middleware-errors";
+import {
+	deleteColumnParamsSchema,
+	deleteColumnResponseSchema,
+} from "./schemas";
 import { deleteColumnUseCase } from "./use-case";
 
 export const deleteColumnRouter = new Elysia().use(authMiddleware).delete(
@@ -13,5 +17,9 @@ export const deleteColumnRouter = new Elysia().use(authMiddleware).delete(
 	{
 		requireOrganization: true,
 		params: deleteColumnParamsSchema,
+		response: {
+			200: deleteColumnResponseSchema,
+			...authMiddlewareErrorSchemas,
+		},
 	},
 );
