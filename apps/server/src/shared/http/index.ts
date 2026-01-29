@@ -4,7 +4,6 @@ import { openapi } from "@elysiajs/openapi";
 import { Elysia } from "elysia";
 
 import { columnsRouter } from "../../modules/columns/router";
-import { orgRouter } from "../../modules/organization/router";
 import { tasksRouter } from "../../modules/tasks/router";
 import { openapiConfig } from "../config/openapi";
 import { authPlugin } from "./plugins/auth.plugin";
@@ -20,7 +19,7 @@ const app = new Elysia()
 	)
 	.use(openapi(openapiConfig))
 	.use(authPlugin)
-	.use([columnsRouter, orgRouter, tasksRouter])
+	.use([columnsRouter, tasksRouter])
 	.listen(env.PORT, ({ hostname, port }) =>
 		console.log(`Server is running on http://${hostname}:${port}`),
 	);
