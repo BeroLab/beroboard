@@ -20,9 +20,9 @@ export const getColumnsSucessResponseSchema = z
 				order: z.number(),
 				title: z.string(),
 				priority: z.enum(["LOW", "MEDIUM", "HIGH", "NONE"]),
-				columnId: z.uuid(),
+				columnId: z.string(),
 				dueDate: zDate.nullable(),
-				assigneeId: z.uuid().nullable(),
+				assigneeId: z.string().nullable(),
 				labels: z
 					.object({
 						text: z.string(),
