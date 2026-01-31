@@ -56,6 +56,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning className={fontVariables}>
       <head>
         <script
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: required to prevent theme flash before hydration
           dangerouslySetInnerHTML={{
             __html: `
               try {
