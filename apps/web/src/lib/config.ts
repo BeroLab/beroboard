@@ -1,7 +1,7 @@
 export const siteConfig = {
   name: "Blaboard",
-  url: "https://berolab.app",
-  ogImage: "https://berolab.app/og.jpg",
+  url: process.env.NEXT_PUBLIC_SERVER_URL,
+  ogImage: process.env.NEXT_PUBLIC_SERVER_URL + "/og.jpg",
   description:
     "Blaboard is an open-source Kanban board built by the BeroLab community to help beginner developers gain their first open-source experience while collaboratively creating a practical task management tool.",
   links: {
