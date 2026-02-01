@@ -44,7 +44,6 @@ import { CreateTaskModal } from "./create-task-modal";
 import { DraggableTaskCard } from "./draggable-task-card";
 import { EmptyBoard } from "./empty-board";
 import { KanbanColumn } from "./kanban-column";
-import { Sidebar } from "./sidebar";
 
 interface TaskBoardProps {
   organizationId: string;
@@ -488,7 +487,7 @@ export function TaskBoard({ organizationId, userId }: TaskBoardProps) {
 
   if (isLoading) {
     return (
-      <div className="flex h-screen items-center justify-center bg-background">
+      <div className="flex flex-1 items-center justify-center">
         <div className="text-muted-foreground">Loading board...</div>
       </div>
     );
@@ -496,96 +495,92 @@ export function TaskBoard({ organizationId, userId }: TaskBoardProps) {
 
   if (error) {
     return (
-      <div className="flex h-screen items-center justify-center bg-background">
+      <div className="flex flex-1 items-center justify-center">
         <div className="text-destructive">{error.message}</div>
       </div>
     );
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background">
-      <Sidebar />
+    <div className="flex flex-1 flex-col gap-5 overflow-hidden p-5">
+      <BoardHeader
+        title="Project Overview"
+        subtitle={`${totalTasks} tasks · ${columns.length} columns`}
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        onNewTask={() => setIsModalOpen(true)}
+      />
 
-      <main className="flex flex-1 flex-col gap-5 overflow-hidden p-5">
-        <BoardHeader
-          title="Project Overview"
-          subtitle={`${totalTasks} tasks · ${columns.length} columns`}
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          onNewTask={() => setIsModalOpen(true)}
+      {localColumns.length === 0 ? (
+        <EmptyBoard
+          onCreateDefaultColumns={handleCreateDefaultColumns}
+          isLoading={createDefaultColumnsMutation.isPending}
         />
-
-        {localColumns.length === 0 ? (
-          <EmptyBoard
-            onCreateDefaultColumns={handleCreateDefaultColumns}
-            isLoading={createDefaultColumnsMutation.isPending}
-          />
-        ) : (
-          <DndContext
-            sensors={sensors}
-            collisionDetection={pointerWithin}
-            measuring={measuring}
-            onDragStart={handleDragStart}
-            onDragOver={handleDragOver}
-            onDragEnd={handleDragEnd}
-            onDragCancel={handleDragCancel}
+      ) : (
+        <DndContext
+          sensors={sensors}
+          collisionDetection={pointerWithin}
+          measuring={measuring}
+          onDragStart={handleDragStart}
+          onDragOver={handleDragOver}
+          onDragEnd={handleDragEnd}
+          onDragCancel={handleDragCancel}
+        >
+          <SortableContext
+            items={columnIds}
+            strategy={horizontalListSortingStrategy}
           >
-            <SortableContext
-              items={columnIds}
-              strategy={horizontalListSortingStrategy}
-            >
-              <div className="flex flex-1 gap-4 overflow-x-auto pb-4">
-                {filteredColumns.map((column) => (
-                  <KanbanColumn
-                    key={column.id}
-                    column={column}
-                    onDelete={handleDeleteColumn}
-                    onUpdate={handleUpdateColumn}
-                  />
-                ))}
-                <AddColumn
-                  onAdd={handleCreateColumn}
-                  isLoading={createColumnMutation.isPending}
+            <div className="flex flex-1 gap-4 overflow-x-auto pb-4">
+              {filteredColumns.map((column) => (
+                <KanbanColumn
+                  key={column.id}
+                  column={column}
+                  onDelete={handleDeleteColumn}
+                  onUpdate={handleUpdateColumn}
+                />
+              ))}
+              <AddColumn
+                onAdd={handleCreateColumn}
+                isLoading={createColumnMutation.isPending}
+              />
+            </div>
+          </SortableContext>
+
+          <DragOverlay dropAnimation={null}>
+            {activeTask && (
+              <div className="rotate-1 scale-[1.02] cursor-grabbing opacity-95 shadow-lg">
+                <DraggableTaskCard
+                  task={activeTask}
+                  isCompleted={
+                    findColumnByTaskId(activeTask.id)?.isCompleted ?? false
+                  }
                 />
               </div>
-            </SortableContext>
-
-            <DragOverlay dropAnimation={null}>
-              {activeTask && (
-                <div className="rotate-1 scale-[1.02] cursor-grabbing opacity-95 shadow-lg">
-                  <DraggableTaskCard
-                    task={activeTask}
-                    isCompleted={
-                      findColumnByTaskId(activeTask.id)?.isCompleted ?? false
-                    }
-                  />
+            )}
+            {activeColumn && (
+              <div className="w-64 rotate-1 scale-[1.02] cursor-grabbing rounded-lg border border-border/50 bg-card/80 p-3 opacity-95 shadow-lg backdrop-blur-sm">
+                <div className="flex items-center gap-2 pb-2">
+                  {activeColumn.color && (
+                    <div
+                      className="size-2 rounded-full"
+                      style={{ backgroundColor: activeColumn.color }}
+                    />
+                  )}
+                  <span className="font-medium text-foreground text-sm">
+                    {activeColumn.name}
+                  </span>
+                  <span className="text-muted-foreground text-xs">
+                    {activeColumn.tasks.length}
+                  </span>
                 </div>
-              )}
-              {activeColumn && (
-                <div className="w-64 rotate-1 scale-[1.02] cursor-grabbing rounded-lg border border-border/50 bg-card/80 p-3 opacity-95 shadow-lg backdrop-blur-sm">
-                  <div className="flex items-center gap-2 pb-2">
-                    {activeColumn.color && (
-                      <div
-                        className="size-2 rounded-full"
-                        style={{ backgroundColor: activeColumn.color }}
-                      />
-                    )}
-                    <span className="font-medium text-foreground text-sm">
-                      {activeColumn.name}
-                    </span>
-                    <span className="text-muted-foreground text-xs">
-                      {activeColumn.tasks.length}
-                    </span>
-                  </div>
-                  <div className="flex min-h-[60px] items-center justify-center rounded-lg bg-accent/30 text-muted-foreground text-xs">
-                    {activeColumn.tasks.length} tasks
-                  </div>
+                <div className="flex min-h-[60px] items-center justify-center rounded-lg bg-accent/30 text-muted-foreground text-xs">
+                  {activeColumn.tasks.length} tasks
                 </div>
-              )}
-            </DragOverlay>
-          </DndContext>
-        )}
-      </main>
+              </div>
+            )}
+          </DragOverlay>
+        </DndContext>
+      )}
 
       <CreateTaskModal
         isOpen={isModalOpen}
