@@ -1,16 +1,5 @@
 import { ImageResponse } from "next/og";
 
-/**
- * Nota para futuros contribuidores:
- *
- * Este arquivo existe apenas como uma implementação funcional do Open Graph.
- * Não sou alguém ligado à área de design/arte, então fique totalmente à vontade
- * para melhorar, refatorar ou redesenhar o layout do OG como achar melhor.
- *
- * Documentação de referência:
- * https://nextjs.org/docs/app/api-reference/file-conventions/metadata/opengraph-image
- */
-
 async function loadAssets(): Promise<
   { name: string; data: Buffer; weight: 400 | 600; style: "normal" }[]
 > {
