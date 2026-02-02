@@ -309,9 +309,9 @@ function SidebarContent({ className }: { className?: string }) {
       )}
     >
       {/* Organization Selector - Fixed Header */}
-      <div className="shrink-0 p-3">
+      <div className="shrink-0 px-1.5 py-3">
         <DropdownMenu>
-          <DropdownMenuTrigger className="flex w-full items-center gap-3 rounded-lg p-2 transition-colors hover:bg-sidebar-accent">
+          <DropdownMenuTrigger className="flex w-full items-center gap-1.5 px-1.5 py-2 rounded-xl transition-colors hover:bg-sidebar-accent">
             {selectedOrg?.logo ? (
               <Image
                 src={selectedOrg.logo}
@@ -387,13 +387,13 @@ function SidebarContent({ className }: { className?: string }) {
       </div>
 
       {/* Scrollable Content */}
-      <div className="flex-1 overflow-y-auto px-3">
+      <div className="flex-1 overflow-y-auto px-1.5">
         {/* Search & Main Navigation */}
-        <nav className="flex flex-col gap-[18px]">
+        <nav className="flex flex-col">
           {/* Search */}
           <button
             type="button"
-            className="flex w-full items-center gap-1.5 text-sidebar-foreground"
+            className="flex w-full items-center gap-1.5 text-sidebar-foreground px-1.5 py-2 rounded-lg transition-colors hover:bg-sidebar-accent"
           >
             <MagnifyingGlassIcon size={20} />
             <span className="flex-1 text-left text-sm">Search</span>
@@ -417,7 +417,7 @@ function SidebarContent({ className }: { className?: string }) {
               type="button"
               key={item.label}
               className={cn(
-                "flex items-center gap-1.5 text-sm text-sidebar-foreground",
+                "flex items-center gap-1.5 text-sm text-sidebar-foreground px-1.5 py-2 rounded-lg transition-colors hover:bg-sidebar-accent",
                 item.active && "font-medium",
               )}
             >
@@ -428,77 +428,73 @@ function SidebarContent({ className }: { className?: string }) {
         </nav>
 
         {/* Projects Section */}
-        <div className="mt-8 flex flex-col gap-2">
-          <span className="text-sm font-medium text-muted-foreground">
+        <div className="mt-8 flex flex-col">
+          <span className="px-1.5 text-sm font-medium text-muted-foreground mb-2">
             Projects
           </span>
-          <div className="flex flex-col gap-4">
-            {pinnedProjects.map((project) => (
-              <button
-                type="button"
-                key={project.id}
-                className="group flex items-center gap-1.5 text-sm text-sidebar-foreground"
+          {pinnedProjects.map((project) => (
+            <button
+              type="button"
+              key={project.id}
+              className="group flex items-center gap-1.5 text-sm text-sidebar-foreground px-1.5 py-2 rounded-lg transition-colors hover:bg-sidebar-accent"
+            >
+              <div
+                className={cn(
+                  "flex size-5 items-center justify-center rounded-lg",
+                  project.color,
+                )}
               >
-                <div
-                  className={cn(
-                    "flex size-5 items-center justify-center rounded-lg",
-                    project.color,
-                  )}
-                >
-                  {project.icon}
-                </div>
-                <span className="flex-1 text-left">{project.name}</span>
-                <PushPin
-                  size={16}
-                  weight="fill"
-                  className="text-sidebar-foreground/30"
-                />
-              </button>
-            ))}
-          </div>
+                {project.icon}
+              </div>
+              <span className="flex-1 text-left">{project.name}</span>
+              <PushPin
+                size={16}
+                weight="fill"
+                className="text-sidebar-foreground/30"
+              />
+            </button>
+          ))}
         </div>
 
         {/* Teams Section */}
-        <div className="mt-8 flex flex-col gap-2">
-          <span className="text-sm font-medium text-muted-foreground">
+        <div className="mt-8 flex flex-col">
+          <span className="px-1.5 text-sm font-medium text-muted-foreground mb-2">
             Teams
           </span>
-          <div className="flex flex-col gap-4">
-            {pinnedTeams.map((team) => (
-              <button
-                type="button"
-                key={team.id}
-                className="group flex items-center gap-1.5 text-sm text-sidebar-foreground"
+          {pinnedTeams.map((team) => (
+            <button
+              type="button"
+              key={team.id}
+              className="group flex items-center gap-1.5 text-sm text-sidebar-foreground px-1.5 py-2 rounded-lg transition-colors hover:bg-sidebar-accent"
+            >
+              <div
+                className={cn(
+                  "flex size-5 items-center justify-center rounded-lg",
+                  team.color,
+                )}
               >
-                <div
-                  className={cn(
-                    "flex size-5 items-center justify-center rounded-lg",
-                    team.color,
-                  )}
-                >
-                  {team.icon}
-                </div>
-                <span className="flex-1 text-left">{team.name}</span>
-                <PushPin
-                  size={16}
-                  weight="fill"
-                  className="text-sidebar-foreground/30"
-                />
-              </button>
-            ))}
-          </div>
+                {team.icon}
+              </div>
+              <span className="flex-1 text-left">{team.name}</span>
+              <PushPin
+                size={16}
+                weight="fill"
+                className="text-sidebar-foreground/30"
+              />
+            </button>
+          ))}
         </div>
       </div>
 
       {/* Fixed Footer */}
-      <div className="shrink-0 px-3 pb-3">
+      <div className="shrink-0 px-1.5 pb-3">
         {/* Bottom Navigation */}
-        <div className="flex flex-col gap-[18px] pb-6">
+        <div className="flex flex-col pb-4">
           {bottomNavItems.map((item) => (
             <button
               type="button"
               key={item.label}
-              className="flex items-center gap-1.5 text-sm text-muted-foreground"
+              className="flex items-center gap-1.5 text-sm text-muted-foreground px-1.5 py-2 rounded-lg transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground"
             >
               {item.icon}
               <span>{item.label}</span>
@@ -509,7 +505,7 @@ function SidebarContent({ className }: { className?: string }) {
         {/* User Card */}
         <button
           type="button"
-          className="flex w-full items-center gap-1.5 rounded-2xl bg-sidebar-accent p-2 pr-4"
+          className="flex w-full items-center gap-1.5 rounded-2xl bg-sidebar-accent p-2 pr-4 transition-colors hover:bg-sidebar-accent/80"
         >
           <Avatar className="size-9">
             <AvatarImage src={session?.user?.image ?? undefined} />
