@@ -1,22 +1,22 @@
 "use client";
 
 import {
-  Cube,
   CheckIcon,
   CaretUpDownIcon,
-  GearSix,
-  Headphones,
-  Article,
   List,
   MagnifyingGlassIcon,
   PlusIcon,
   PushPin,
-  Kanban,
   TrashIcon,
-  UsersThree,
-  WarningCircle,
   XIcon,
   FadersHorizontalIcon,
+  KanbanIcon,
+  ArticleIcon,
+  UsersThreeIcon,
+  CubeIcon,
+  HeadphonesIcon,
+  WarningCircleIcon,
+  GearSixIcon,
 } from "@phosphor-icons/react";
 import { useRouter } from "next/navigation";
 import {
@@ -40,6 +40,7 @@ import {
 import { ConfirmDialog } from "~/components/ui/confirm-dialog";
 import { cn } from "~/lib/utils";
 import type { Organization } from "better-auth/plugins";
+import Image from "next/image";
 
 // Sidebar Context for mobile state management
 interface SidebarContextValue {
@@ -115,16 +116,16 @@ function getInitials(name: string): string {
 }
 
 const mainNavItems: NavItem[] = [
-  { icon: <Kanban size={20} />, label: "Board", active: true },
-  { icon: <Article size={20} />, label: "Reports" },
-  { icon: <UsersThree size={20} />, label: "Teams" },
-  { icon: <Cube size={20} />, label: "Projects" },
+  { icon: <KanbanIcon size={20} />, label: "Board", active: true },
+  { icon: <ArticleIcon size={20} />, label: "Reports" },
+  { icon: <UsersThreeIcon size={20} />, label: "Teams" },
+  { icon: <CubeIcon size={20} />, label: "Projects" },
 ];
 
 const bottomNavItems: NavItem[] = [
-  { icon: <Headphones size={18} />, label: "Suport" },
-  { icon: <WarningCircle size={18} />, label: "Report a issue" },
-  { icon: <GearSix size={18} />, label: "Settings" },
+  { icon: <HeadphonesIcon size={18} />, label: "Suport" },
+  { icon: <WarningCircleIcon size={18} />, label: "Report a issue" },
+  { icon: <GearSixIcon size={18} />, label: "Settings" },
 ];
 
 const keys = ["Ctrl", "/"];
@@ -311,18 +312,27 @@ function SidebarContent({ className }: { className?: string }) {
       <div className="shrink-0 p-3">
         <DropdownMenu>
           <DropdownMenuTrigger className="flex w-full items-center gap-3 rounded-lg p-2 transition-colors hover:bg-sidebar-accent">
-            <div className="flex size-10 items-center justify-center rounded-lg bg-sidebar-accent text-lg font-bold">
-              {selectedOrg?.name?.[0]?.toUpperCase() ?? "B"}
-            </div>
-            <div className="flex flex-1 flex-col items-start">
+            {selectedOrg?.logo ? (
+              <Image
+                src={selectedOrg.logo}
+                alt={selectedOrg.name}
+                fill
+                className="size-11 shrink-0 rounded-xl object-cover"
+              />
+            ) : (
+              <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-sidebar-accent text-xl font-bold">
+                {selectedOrg?.name?.[0]?.toUpperCase() ?? "B"}
+              </div>
+            )}
+            <div className="flex flex-1 flex-col items-start min-w-0">
               <span className="text-sm text-muted-foreground">
                 Organization
               </span>
-              <span className="font-semibold text-xl">
+              <span className="font-semibold text-lg truncate w-full text-start">
                 {selectedOrg?.name ?? "Select org"}
               </span>
             </div>
-            <div className="p-px bg-gradient-to-t from-[#1d1d1d] to-[#353535] rounded-lg">
+            <div className="shrink-0 p-px bg-gradient-to-t from-[#1d1d1d] to-[#353535] rounded-lg">
               <div className="bg-[#1e2025] p-1.5 rounded-lg">
                 <CaretUpDownIcon size={20} />
               </div>
@@ -336,13 +346,23 @@ function SidebarContent({ className }: { className?: string }) {
                   onClick={() => handleOrgSwitch(org.id)}
                   className="flex items-center justify-between"
                 >
-                  <div className="flex items-center gap-2">
-                    <div className="flex size-6 items-center justify-center rounded bg-muted text-xs font-medium">
-                      {getInitials(org.name)}
-                    </div>
-                    <span>{org.name}</span>
+                  <div className="flex items-center gap-2 min-w-0 flex-1">
+                    {org.logo ? (
+                      <Image
+                        src={org.logo}
+                        alt={org.name}
+                        width={24}
+                        height={24}
+                        className="size-6 shrink-0 rounded object-cover"
+                      />
+                    ) : (
+                      <div className="flex size-6 shrink-0 items-center justify-center rounded bg-muted text-xs font-medium">
+                        {getInitials(org.name)}
+                      </div>
+                    )}
+                    <span className="truncate">{org.name}</span>
                   </div>
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-1 shrink-0">
                     {org.id === activeOrgId && (
                       <CheckIcon size={16} className="text-primary" />
                     )}
