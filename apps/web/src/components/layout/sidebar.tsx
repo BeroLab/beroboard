@@ -4,10 +4,10 @@ import {
   Cube,
   CheckIcon,
   CaretUpDownIcon,
-  FadersHorizontal,
   GearSix,
   Headphones,
   Article,
+  List,
   MagnifyingGlassIcon,
   PlusIcon,
   PushPin,
@@ -15,9 +15,17 @@ import {
   TrashIcon,
   UsersThree,
   WarningCircle,
+  XIcon,
+  FadersHorizontalIcon,
 } from "@phosphor-icons/react";
 import { useRouter } from "next/navigation";
-import { useState, useMemo, useCallback } from "react";
+import {
+  useState,
+  useMemo,
+  useCallback,
+  createContext,
+  useContext,
+} from "react";
 import { toast } from "sonner";
 import { authClient } from "~/lib/auth-client";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
@@ -32,6 +40,51 @@ import {
 import { ConfirmDialog } from "~/components/ui/confirm-dialog";
 import { cn } from "~/lib/utils";
 import type { Organization } from "better-auth/plugins";
+
+// Sidebar Context for mobile state management
+interface SidebarContextValue {
+  isOpen: boolean;
+  setIsOpen: (open: boolean) => void;
+  toggle: () => void;
+}
+
+const SidebarContext = createContext<SidebarContextValue | null>(null);
+
+export function useSidebar() {
+  const context = useContext(SidebarContext);
+  if (!context) {
+    throw new Error("useSidebar must be used within a SidebarProvider");
+  }
+  return context;
+}
+
+export function SidebarProvider({ children }: { children: React.ReactNode }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const toggle = useCallback(() => setIsOpen((prev) => !prev), []);
+
+  return (
+    <SidebarContext.Provider value={{ isOpen, setIsOpen, toggle }}>
+      {children}
+    </SidebarContext.Provider>
+  );
+}
+
+export function SidebarTrigger({ className }: { className?: string }) {
+  const { toggle } = useSidebar();
+
+  return (
+    <button
+      type="button"
+      onClick={toggle}
+      className={cn(
+        "flex items-center justify-center rounded-lg p-2 text-foreground hover:bg-accent md:hidden",
+        className,
+      )}
+    >
+      <List size={24} />
+    </button>
+  );
+}
 
 interface NavItem {
   icon: React.ReactNode;
@@ -119,7 +172,7 @@ const pinnedTeams: PinnedItem[] = [
   },
 ];
 
-export function Sidebar({ className }: SidebarProps) {
+function SidebarContent({ className }: { className?: string }) {
   const router = useRouter();
   const { data: session } = authClient.useSession();
   const { data: organizations = [], isPending: isLoading } =
@@ -254,8 +307,8 @@ export function Sidebar({ className }: SidebarProps) {
         className,
       )}
     >
-      {/* Organization Selector */}
-      <div className="p-3">
+      {/* Organization Selector - Fixed Header */}
+      <div className="shrink-0 p-3">
         <DropdownMenu>
           <DropdownMenuTrigger className="flex w-full items-center gap-3 rounded-lg p-2 transition-colors hover:bg-sidebar-accent">
             <div className="flex size-10 items-center justify-center rounded-lg bg-sidebar-accent text-lg font-bold">
@@ -313,146 +366,146 @@ export function Sidebar({ className }: SidebarProps) {
         </DropdownMenu>
       </div>
 
-      {/* Search */}
-      <div className="px-3 pb-2">
-        <button
-          type="button"
-          className="flex w-full items-center gap-3 rounded-lg px-1.5 py-2 text-sidebar-foreground transition-colors hover:bg-sidebar-accent"
-        >
-          <MagnifyingGlassIcon size={20} />
-          <span className="flex-1 text-left text-sm">Search</span>
-          {keys.map((key) => (
-            <div
-              key={key}
-              className="text-[10px] p-px bg-gradient-to-t from-[#1d1d1d] to-[#353535] rounded-[0.5em]"
-            >
-              <div className="bg-[#1e2025] p-[0.375em] rounded-[0.4em]">
-                <kbd className="font-medium block">{key}</kbd>
-              </div>
+      {/* Scrollable Content */}
+      <div className="flex-1 overflow-y-auto px-3">
+        {/* Search & Main Navigation */}
+        <nav className="flex flex-col gap-[18px]">
+          {/* Search */}
+          <button
+            type="button"
+            className="flex w-full items-center gap-1.5 text-sidebar-foreground"
+          >
+            <MagnifyingGlassIcon size={20} />
+            <span className="flex-1 text-left text-sm">Search</span>
+            <div className="flex items-center gap-1">
+              {keys.map((key) => (
+                <div
+                  key={key}
+                  className="text-[10px] p-px bg-gradient-to-t from-[#1d1d1d] to-[#353535] rounded-[0.4em]"
+                >
+                  <div className="bg-[#1e2025] px-2 py-1 rounded-[0.3em]">
+                    <kbd className="font-medium block font-sans">{key}</kbd>
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
-        </button>
-      </div>
-
-      {/* Main Navigation */}
-      <nav className="flex flex-col gap-0.5 px-3">
-        {mainNavItems.map((item) => (
-          <button
-            type="button"
-            key={item.label}
-            className={cn(
-              "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors text-sidebar-foreground",
-              item.active
-                ? "bg-sidebar-accent font-medium"
-                : "hover:bg-sidebar-accent",
-            )}
-          >
-            {item.icon}
-            <span>{item.label}</span>
           </button>
-        ))}
-      </nav>
 
-      {/* Projects Section */}
-      <div className="mt-6 flex flex-col gap-1 px-3">
-        <span className="px-3 text-sm font-medium text-muted-foreground">
-          Projects
-        </span>
-        <div className="flex flex-col gap-0.5">
-          {pinnedProjects.map((project) => (
+          {/* Nav Items */}
+          {mainNavItems.map((item) => (
             <button
               type="button"
-              key={project.id}
-              className="group flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-sidebar-foreground transition-colors hover:bg-sidebar-accent"
+              key={item.label}
+              className={cn(
+                "flex items-center gap-1.5 text-sm text-sidebar-foreground",
+                item.active && "font-medium",
+              )}
             >
-              <div
-                className={cn(
-                  "flex size-6 items-center justify-center rounded",
-                  project.color,
-                )}
-              >
-                {project.icon}
-              </div>
-              <span className="flex-1 text-left font-medium">
-                {project.name}
-              </span>
-              <PushPin
-                size={16}
-                weight="fill"
-                className="text-sidebar-foreground/30 transition-colors group-hover:text-sidebar-foreground/60"
-              />
+              {item.icon}
+              <span>{item.label}</span>
             </button>
           ))}
+        </nav>
+
+        {/* Projects Section */}
+        <div className="mt-8 flex flex-col gap-2">
+          <span className="text-sm font-medium text-muted-foreground">
+            Projects
+          </span>
+          <div className="flex flex-col gap-4">
+            {pinnedProjects.map((project) => (
+              <button
+                type="button"
+                key={project.id}
+                className="group flex items-center gap-1.5 text-sm text-sidebar-foreground"
+              >
+                <div
+                  className={cn(
+                    "flex size-5 items-center justify-center rounded-lg",
+                    project.color,
+                  )}
+                >
+                  {project.icon}
+                </div>
+                <span className="flex-1 text-left">{project.name}</span>
+                <PushPin
+                  size={16}
+                  weight="fill"
+                  className="text-sidebar-foreground/30"
+                />
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Teams Section */}
+        <div className="mt-8 flex flex-col gap-2">
+          <span className="text-sm font-medium text-muted-foreground">
+            Teams
+          </span>
+          <div className="flex flex-col gap-4">
+            {pinnedTeams.map((team) => (
+              <button
+                type="button"
+                key={team.id}
+                className="group flex items-center gap-1.5 text-sm text-sidebar-foreground"
+              >
+                <div
+                  className={cn(
+                    "flex size-5 items-center justify-center rounded-lg",
+                    team.color,
+                  )}
+                >
+                  {team.icon}
+                </div>
+                <span className="flex-1 text-left">{team.name}</span>
+                <PushPin
+                  size={16}
+                  weight="fill"
+                  className="text-sidebar-foreground/30"
+                />
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* Teams Section */}
-      <div className="mt-4 flex flex-col gap-1 px-3">
-        <span className="px-3 text-sm font-medium text-muted-foreground">
-          Teams
-        </span>
-        <div className="flex flex-col   gap-0.5">
-          {pinnedTeams.map((team) => (
+      {/* Fixed Footer */}
+      <div className="shrink-0 px-3 pb-3">
+        {/* Bottom Navigation */}
+        <div className="flex flex-col gap-[18px] pb-6">
+          {bottomNavItems.map((item) => (
             <button
               type="button"
-              key={team.id}
-              className="group flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-sidebar-foreground transition-colors hover:bg-sidebar-accent"
+              key={item.label}
+              className="flex items-center gap-1.5 text-sm text-muted-foreground"
             >
-              <div
-                className={cn(
-                  "flex size-6 items-center justify-center rounded",
-                  team.color,
-                )}
-              >
-                {team.icon}
-              </div>
-              <span className="flex-1 text-left">{team.name}</span>
-              <PushPin
-                size={16}
-                weight="fill"
-                className="text-sidebar-foreground/30 transition-colors group-hover:text-sidebar-foreground/60"
-              />
+              {item.icon}
+              <span>{item.label}</span>
             </button>
           ))}
         </div>
-      </div>
 
-      {/* Spacer */}
-      <div className="flex-1" />
-
-      {/* Bottom Navigation */}
-      <div className="flex flex-col gap-0.5 px-3 pb-2">
-        {bottomNavItems.map((item) => (
-          <button
-            type="button"
-            key={item.label}
-            className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-sidebar-foreground/60 transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground"
-          >
-            {item.icon}
-            <span>{item.label}</span>
-          </button>
-        ))}
-      </div>
-
-      {/* User Card */}
-      <div className="border-sidebar-border border-t p-3">
+        {/* User Card */}
         <button
           type="button"
-          className="flex w-full items-center gap-3 rounded-lg p-2 transition-colors hover:bg-sidebar-accent"
+          className="flex w-full items-center gap-1.5 rounded-2xl bg-sidebar-accent p-2 pr-4"
         >
-          <Avatar>
+          <Avatar className="size-9">
             <AvatarImage src={session?.user?.image ?? undefined} />
             <AvatarFallback>
               {getInitials(session?.user?.name ?? "U")}
             </AvatarFallback>
           </Avatar>
-          <div className="flex flex-1 flex-col items-start">
-            <span className="text-sm font-medium">
+          <div className="flex flex-col flex-grow items-start min-w-0">
+            <span className="text-sm font-medium w-full truncate text-start">
               {session?.user?.name ?? "User"}
             </span>
             <span className="text-xs text-muted-foreground">Developer</span>
           </div>
-          <FadersHorizontal size={20} className="text-muted-foreground" />
+          <div className="text-muted-foreground">
+            <FadersHorizontalIcon size={20} />
+          </div>
         </button>
       </div>
 
@@ -468,5 +521,44 @@ export function Sidebar({ className }: SidebarProps) {
         isLoading={isDeletingOrg}
       />
     </aside>
+  );
+}
+
+export function Sidebar({ className }: SidebarProps) {
+  const sidebarContext = useContext(SidebarContext);
+  const isOpen = sidebarContext?.isOpen ?? false;
+  const setIsOpen = sidebarContext?.setIsOpen ?? (() => {});
+
+  return (
+    <>
+      {/* Desktop Sidebar */}
+      <SidebarContent className={cn("hidden md:flex", className)} />
+
+      {/* Mobile Overlay */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/50 md:hidden"
+          onClick={() => setIsOpen(false)}
+          onKeyDown={(e) => e.key === "Escape" && setIsOpen(false)}
+        />
+      )}
+
+      {/* Mobile Sidebar */}
+      <div
+        className={cn(
+          "fixed inset-y-0 left-0 z-50 w-64 transform transition-transform duration-300 ease-in-out md:hidden",
+          isOpen ? "translate-x-0" : "-translate-x-full",
+        )}
+      >
+        <SidebarContent className="h-full" />
+        <button
+          type="button"
+          onClick={() => setIsOpen(false)}
+          className="absolute right-2 top-3 rounded-lg p-2 text-sidebar-foreground hover:bg-sidebar-accent"
+        >
+          <XIcon size={20} />
+        </button>
+      </div>
+    </>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { Sidebar } from "~/components/layout";
+import { Sidebar, SidebarProvider, SidebarTrigger } from "~/components/layout";
 import { OrgGuard } from "~/components/org";
 
 export default function AuthenticatedLayout({
@@ -10,10 +10,21 @@ export default function AuthenticatedLayout({
 }) {
   return (
     <OrgGuard>
-      <div className="flex h-screen overflow-hidden bg-background">
-        <Sidebar />
-        <main className="flex flex-1 flex-col overflow-hidden">{children}</main>
-      </div>
+      <SidebarProvider>
+        <div className="flex h-screen overflow-hidden bg-background">
+          <Sidebar />
+          <div className="flex flex-1 flex-col overflow-hidden">
+            {/* Mobile Header */}
+            <header className="flex h-14 shrink-0 items-center gap-4 border-b border-border bg-background px-4 md:hidden">
+              <SidebarTrigger />
+              <span className="font-semibold">Blaboard</span>
+            </header>
+            <main className="flex flex-1 flex-col overflow-hidden">
+              {children}
+            </main>
+          </div>
+        </div>
+      </SidebarProvider>
     </OrgGuard>
   );
 }
