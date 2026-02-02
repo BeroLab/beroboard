@@ -4,6 +4,7 @@ import {
   Noto_Sans_Hebrew as FontNotoSansHebrew,
   Geist as FontSans,
   Inter,
+  Onest,
 } from "next/font/google";
 
 import { cn } from "./utils";
@@ -34,10 +35,17 @@ const fontNotoSansHebrew = FontNotoSansHebrew({
   variable: "--font-he",
 });
 
+const fontOnest = Onest({
+  subsets: ["latin"],
+  variable: "--font-onest",
+  weight: ["500"],
+});
+
 export const fontVariables = cn(
   fontSans.variable,
   fontMono.variable,
   fontInter.variable,
   fontNotoSansArabic.variable,
   fontNotoSansHebrew.variable,
+  fontOnest.variable,
 );

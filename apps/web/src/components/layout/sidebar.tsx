@@ -1,24 +1,26 @@
 "use client";
 
 import {
-  CaretUpDown,
-  Check,
-  Gear,
-  House,
+  Cube,
+  CheckIcon,
+  CaretUpDownIcon,
+  FadersHorizontal,
+  GearSix,
+  Headphones,
+  Article,
+  MagnifyingGlassIcon,
+  PlusIcon,
+  PushPin,
   Kanban,
-  MagnifyingGlass,
-  Plus,
-  Question,
-  SignOut,
-  Trash,
-  Users,
-  Warning,
+  TrashIcon,
+  UsersThree,
+  WarningCircle,
 } from "@phosphor-icons/react";
 import { useRouter } from "next/navigation";
 import { useState, useMemo, useCallback } from "react";
 import { toast } from "sonner";
 import { authClient } from "~/lib/auth-client";
-import { AnimatedThemeToggler } from "~/components/ui/animated-theme-toggler";
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -39,6 +41,13 @@ interface NavItem {
   shortcut?: string;
 }
 
+interface PinnedItem {
+  id: string;
+  name: string;
+  icon: React.ReactNode;
+  color: string;
+}
+
 interface SidebarProps {
   className?: string;
 }
@@ -53,23 +62,61 @@ function getInitials(name: string): string {
 }
 
 const mainNavItems: NavItem[] = [
-  { icon: <House size={18} />, label: "Home" },
-  {
-    icon: <MagnifyingGlass size={18} />,
-    label: "Search",
-    shortcut: "Ctrl K",
-  },
-];
-
-const workspaceNavItems: NavItem[] = [
-  { icon: <Kanban size={18} />, label: "Board", active: true },
-  { icon: <Users size={18} />, label: "Team" },
-  { icon: <Gear size={18} />, label: "Settings" },
+  { icon: <Kanban size={20} />, label: "Board", active: true },
+  { icon: <Article size={20} />, label: "Reports" },
+  { icon: <UsersThree size={20} />, label: "Teams" },
+  { icon: <Cube size={20} />, label: "Projects" },
 ];
 
 const bottomNavItems: NavItem[] = [
-  { icon: <Question size={18} />, label: "Support" },
-  { icon: <Warning size={18} />, label: "Report an issue" },
+  { icon: <Headphones size={18} />, label: "Suport" },
+  { icon: <WarningCircle size={18} />, label: "Report a issue" },
+  { icon: <GearSix size={18} />, label: "Settings" },
+];
+
+const keys = ["Ctrl", "/"];
+
+// Mock data - these will come from API later
+const pinnedProjects: PinnedItem[] = [
+  {
+    id: "1",
+    name: "FrontEnd",
+    icon: <span className="text-xs font-bold">F</span>,
+    color: "bg-purple-600",
+  },
+  {
+    id: "2",
+    name: "API",
+    icon: <span className="text-xs font-bold">A</span>,
+    color: "bg-pink-600",
+  },
+  {
+    id: "3",
+    name: "Protótipo",
+    icon: <span className="text-xs font-bold">P</span>,
+    color: "bg-emerald-600",
+  },
+];
+
+const pinnedTeams: PinnedItem[] = [
+  {
+    id: "1",
+    name: "Devs",
+    icon: <span className="text-xs font-bold">&lt;/&gt;</span>,
+    color: "bg-blue-600",
+  },
+  {
+    id: "2",
+    name: "Design",
+    icon: <span className="text-xs font-bold">D</span>,
+    color: "bg-orange-600",
+  },
+  {
+    id: "3",
+    name: "Mktg",
+    icon: <span className="text-xs font-bold">M</span>,
+    color: "bg-yellow-500",
+  },
 ];
 
 export function Sidebar({ className }: SidebarProps) {
@@ -200,164 +247,212 @@ export function Sidebar({ className }: SidebarProps) {
     isDeletingOrg,
   ]);
 
-  const handleSignOut = useCallback(async () => {
-    await authClient.signOut();
-    router.push("/login");
-  }, [router]);
-
   return (
     <aside
       className={cn(
-        "flex h-full w-56 shrink-0 flex-col border-border border-r bg-background",
+        "flex h-full w-64 shrink-0 flex-col bg-sidebar text-sidebar-foreground",
         className,
       )}
     >
-      <div className="flex flex-1 flex-col overflow-y-auto">
-        {/* Main Navigation */}
-        <nav className="flex flex-col gap-0.5 p-2">
-          {mainNavItems.map((item) => (
-            <button
-              type="button"
-              key={item.label}
-              className={cn(
-                "flex items-center gap-2.5 rounded-md px-2 py-1.5 text-sm transition-colors",
-                item.active
-                  ? "bg-accent font-medium text-foreground"
-                  : "text-muted-foreground hover:bg-accent hover:text-foreground",
-              )}
-            >
-              {item.icon}
-              <span className="flex-1 text-left">{item.label}</span>
-              {item.shortcut && (
-                <span className="flex items-center gap-0.5 text-muted-foreground text-xs">
-                  {item.shortcut.split(" ").map((key) => (
-                    <kbd
-                      key={key}
-                      className="rounded border border-border bg-muted px-1 py-0.5 font-mono text-[10px]"
-                    >
-                      {key}
-                    </kbd>
-                  ))}
-                </span>
-              )}
-            </button>
-          ))}
-        </nav>
-
-        {/* Divider */}
-        <div className="mx-3 my-2 h-px bg-border" />
-
-        {/* Organization Selector */}
-        <div className="px-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-accent">
-              {isLoading ? (
-                <div className="flex size-5 animate-pulse items-center justify-center rounded bg-muted" />
-              ) : selectedOrg ? (
-                <>
-                  <div className="flex size-5 items-center justify-center rounded bg-foreground font-semibold text-[10px] text-background">
-                    {getInitials(selectedOrg.name)}
-                  </div>
-                  <span className="flex-1 text-left font-medium text-foreground">
-                    {selectedOrg.name}
-                  </span>
-                </>
-              ) : (
-                <span className="flex-1 text-left text-muted-foreground">
-                  No organization
-                </span>
-              )}
-              <CaretUpDown size={14} className="text-muted-foreground" />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              className="w-52 rounded-lg border border-border bg-popover p-1"
-              align="start"
-              sideOffset={4}
-            >
-              <DropdownMenuGroup>
-                {organizationsByCreation?.map((org) => (
-                  <DropdownMenuItem
-                    key={org.id}
-                    className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-foreground text-sm hover:bg-accent focus:bg-accent"
-                    onClick={() => handleOrgSwitch(org.id)}
-                    disabled={isSettingActive}
-                  >
-                    <div className="flex size-5 items-center justify-center rounded bg-foreground font-semibold text-[10px] text-background">
+      {/* Organization Selector */}
+      <div className="p-3">
+        <DropdownMenu>
+          <DropdownMenuTrigger className="flex w-full items-center gap-3 rounded-lg p-2 transition-colors hover:bg-sidebar-accent">
+            <div className="flex size-10 items-center justify-center rounded-lg bg-sidebar-accent text-lg font-bold">
+              {selectedOrg?.name?.[0]?.toUpperCase() ?? "B"}
+            </div>
+            <div className="flex flex-1 flex-col items-start">
+              <span className="text-sm text-muted-foreground">
+                Organization
+              </span>
+              <span className="font-semibold text-xl">
+                {selectedOrg?.name ?? "Select org"}
+              </span>
+            </div>
+            <div className="p-px bg-gradient-to-t from-[#1d1d1d] to-[#353535] rounded-lg">
+              <div className="bg-[#1e2025] p-1.5 rounded-lg">
+                <CaretUpDownIcon size={20} />
+              </div>
+            </div>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="w-56">
+            <DropdownMenuGroup>
+              {organizationsByCreation.map((org) => (
+                <DropdownMenuItem
+                  key={org.id}
+                  onClick={() => handleOrgSwitch(org.id)}
+                  className="flex items-center justify-between"
+                >
+                  <div className="flex items-center gap-2">
+                    <div className="flex size-6 items-center justify-center rounded bg-muted text-xs font-medium">
                       {getInitials(org.name)}
                     </div>
-                    <span className="flex-1">{org.name}</span>
-                    {selectedOrg?.id === org.id && (
-                      <Check size={14} className="text-foreground" />
+                    <span>{org.name}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    {org.id === activeOrgId && (
+                      <CheckIcon size={16} className="text-primary" />
                     )}
                     <button
                       type="button"
                       onClick={(e) => handleDeleteOrg(e, org.id, org.name)}
-                      disabled={isDeletingOrg}
-                      className="rounded p-1 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
+                      className="rounded p-1 opacity-0 transition-opacity hover:bg-destructive/10 group-hover:opacity-100"
                     >
-                      <Trash size={14} />
+                      <TrashIcon size={14} className="text-destructive" />
                     </button>
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuGroup>
-              <DropdownMenuSeparator className="my-1 bg-border" />
-              <DropdownMenuItem
-                className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-muted-foreground text-sm hover:bg-accent hover:text-foreground focus:bg-accent focus:text-foreground"
-                onClick={handleCreateOrg}
-              >
-                <Plus size={14} />
-                <span>Create organization </span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-
-        {/* Workspace Navigation */}
-        <nav className="mt-1 flex flex-col gap-0.5 px-2">
-          {workspaceNavItems.map((item) => (
-            <button
-              type="button"
-              key={item.label}
-              className={cn(
-                "flex items-center gap-2.5 rounded-md px-2 py-1.5 text-sm transition-colors",
-                item.active
-                  ? "bg-accent font-medium text-foreground"
-                  : "text-muted-foreground hover:bg-accent hover:text-foreground",
-              )}
-            >
-              {item.icon}
-              <span>{item.label}</span>
-            </button>
-          ))}
-        </nav>
+                  </div>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuGroup>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={handleCreateOrg}>
+              <PlusIcon size={16} className="mr-2" />
+              Create organization
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
-      {/* Bottom Navigation */}
-      <div className="flex flex-col gap-0.5 border-border border-t p-2">
-        {/* Theme Toggle */}
-        <div className="flex items-center justify-between rounded-md px-2 py-1.5">
-          <span className="text-muted-foreground text-sm">Theme</span>
-          <AnimatedThemeToggler className="flex size-7 items-center justify-center rounded-md border border-border text-muted-foreground transition-colors hover:bg-accent hover:text-foreground" />
-        </div>
+      {/* Search */}
+      <div className="px-3 pb-2">
+        <button
+          type="button"
+          className="flex w-full items-center gap-3 rounded-lg px-1.5 py-2 text-sidebar-foreground transition-colors hover:bg-sidebar-accent"
+        >
+          <MagnifyingGlassIcon size={20} />
+          <span className="flex-1 text-left text-sm">Search</span>
+          {keys.map((key) => (
+            <div
+              key={key}
+              className="text-[10px] p-px bg-gradient-to-t from-[#1d1d1d] to-[#353535] rounded-[0.5em]"
+            >
+              <div className="bg-[#1e2025] p-[0.375em] rounded-[0.4em]">
+                <kbd className="font-medium block">{key}</kbd>
+              </div>
+            </div>
+          ))}
+        </button>
+      </div>
 
-        {bottomNavItems.map((item) => (
+      {/* Main Navigation */}
+      <nav className="flex flex-col gap-0.5 px-3">
+        {mainNavItems.map((item) => (
           <button
             type="button"
             key={item.label}
-            className="flex items-center gap-2.5 rounded-md px-2 py-1.5 text-muted-foreground text-sm transition-colors hover:bg-accent hover:text-foreground"
+            className={cn(
+              "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors text-sidebar-foreground",
+              item.active
+                ? "bg-sidebar-accent font-medium"
+                : "hover:bg-sidebar-accent",
+            )}
           >
             {item.icon}
             <span>{item.label}</span>
           </button>
         ))}
+      </nav>
 
+      {/* Projects Section */}
+      <div className="mt-6 flex flex-col gap-1 px-3">
+        <span className="px-3 text-sm font-medium text-muted-foreground">
+          Projects
+        </span>
+        <div className="flex flex-col gap-0.5">
+          {pinnedProjects.map((project) => (
+            <button
+              type="button"
+              key={project.id}
+              className="group flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-sidebar-foreground transition-colors hover:bg-sidebar-accent"
+            >
+              <div
+                className={cn(
+                  "flex size-6 items-center justify-center rounded",
+                  project.color,
+                )}
+              >
+                {project.icon}
+              </div>
+              <span className="flex-1 text-left font-medium">
+                {project.name}
+              </span>
+              <PushPin
+                size={16}
+                weight="fill"
+                className="text-sidebar-foreground/30 transition-colors group-hover:text-sidebar-foreground/60"
+              />
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Teams Section */}
+      <div className="mt-4 flex flex-col gap-1 px-3">
+        <span className="px-3 text-sm font-medium text-muted-foreground">
+          Teams
+        </span>
+        <div className="flex flex-col   gap-0.5">
+          {pinnedTeams.map((team) => (
+            <button
+              type="button"
+              key={team.id}
+              className="group flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-sidebar-foreground transition-colors hover:bg-sidebar-accent"
+            >
+              <div
+                className={cn(
+                  "flex size-6 items-center justify-center rounded",
+                  team.color,
+                )}
+              >
+                {team.icon}
+              </div>
+              <span className="flex-1 text-left">{team.name}</span>
+              <PushPin
+                size={16}
+                weight="fill"
+                className="text-sidebar-foreground/30 transition-colors group-hover:text-sidebar-foreground/60"
+              />
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Spacer */}
+      <div className="flex-1" />
+
+      {/* Bottom Navigation */}
+      <div className="flex flex-col gap-0.5 px-3 pb-2">
+        {bottomNavItems.map((item) => (
+          <button
+            type="button"
+            key={item.label}
+            className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-sidebar-foreground/60 transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground"
+          >
+            {item.icon}
+            <span>{item.label}</span>
+          </button>
+        ))}
+      </div>
+
+      {/* User Card */}
+      <div className="border-sidebar-border border-t p-3">
         <button
           type="button"
-          onClick={handleSignOut}
-          className="flex items-center gap-2.5 rounded-md px-2 py-1.5 text-destructive text-sm transition-colors hover:bg-destructive/10"
+          className="flex w-full items-center gap-3 rounded-lg p-2 transition-colors hover:bg-sidebar-accent"
         >
-          <SignOut size={18} />
-          <span>Sign out</span>
+          <Avatar>
+            <AvatarImage src={session?.user?.image ?? undefined} />
+            <AvatarFallback>
+              {getInitials(session?.user?.name ?? "U")}
+            </AvatarFallback>
+          </Avatar>
+          <div className="flex flex-1 flex-col items-start">
+            <span className="text-sm font-medium">
+              {session?.user?.name ?? "User"}
+            </span>
+            <span className="text-xs text-muted-foreground">Developer</span>
+          </div>
+          <FadersHorizontal size={20} className="text-muted-foreground" />
         </button>
       </div>
 
