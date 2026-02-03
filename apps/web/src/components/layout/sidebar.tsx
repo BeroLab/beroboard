@@ -3,6 +3,8 @@
 import {
   CheckIcon,
   CaretUpDownIcon,
+  CaretDownIcon,
+  CaretRightIcon,
   List,
   MagnifyingGlassIcon,
   PlusIcon,
@@ -185,6 +187,8 @@ function SidebarContent({ className }: { className?: string }) {
   } | null>(null);
   const [isSettingActive, setIsSettingActive] = useState(false);
   const [isDeletingOrg, setIsDeletingOrg] = useState(false);
+  const [isProjectsExpanded, setIsProjectsExpanded] = useState(true);
+  const [isTeamsExpanded, setIsTeamsExpanded] = useState(true);
 
   const activeOrgId = session?.session?.activeOrganizationId;
   const organizationsByCreation = useMemo(
@@ -418,7 +422,7 @@ function SidebarContent({ className }: { className?: string }) {
               key={item.label}
               className={cn(
                 "flex items-center gap-1.5 text-sm text-sidebar-foreground px-1.5 py-2 rounded-lg transition-colors hover:bg-sidebar-accent",
-                item.active && "font-medium",
+                item.active && "font-medium bg-sidebar-accent",
               )}
             >
               {item.icon}
@@ -428,73 +432,97 @@ function SidebarContent({ className }: { className?: string }) {
         </nav>
 
         {/* Projects Section */}
-        <div className="mt-8 flex flex-col">
-          <span className="px-1.5 text-sm font-medium text-muted-foreground mb-2">
-            Projects
-          </span>
-          {pinnedProjects.map((project) => (
-            <button
-              type="button"
-              key={project.id}
-              className="group flex items-center gap-1.5 text-sm text-sidebar-foreground px-1.5 py-2 rounded-lg transition-colors hover:bg-sidebar-accent"
-            >
-              <div
-                className={cn(
-                  "flex size-5 items-center justify-center rounded-lg",
-                  project.color,
-                )}
+        <div className="mt-4 flex flex-col">
+          <button
+            type="button"
+            onClick={() => setIsProjectsExpanded(!isProjectsExpanded)}
+            className="flex items-center gap-1.5 px-1.5 py-2 rounded-lg transition-colors hover:bg-sidebar-accent"
+          >
+            <span className="flex-1 text-left text-sm font-medium text-muted-foreground">
+              Projects
+            </span>
+            {isProjectsExpanded ? (
+              <CaretDownIcon size={16} className="text-muted-foreground" />
+            ) : (
+              <CaretRightIcon size={16} className="text-muted-foreground" />
+            )}
+          </button>
+          {isProjectsExpanded &&
+            pinnedProjects.map((project) => (
+              <button
+                type="button"
+                key={project.id}
+                className="group flex items-center gap-1.5 text-sm text-sidebar-foreground px-1.5 py-2 rounded-lg transition-colors hover:bg-sidebar-accent"
               >
-                {project.icon}
-              </div>
-              <span className="flex-1 text-left">{project.name}</span>
-              <PushPin
-                size={16}
-                weight="fill"
-                className="text-sidebar-foreground/30"
-              />
-            </button>
-          ))}
+                <div
+                  className={cn(
+                    "flex size-5 items-center justify-center rounded-lg",
+                    project.color,
+                  )}
+                >
+                  {project.icon}
+                </div>
+                <span className="flex-1 text-left">{project.name}</span>
+                <PushPin
+                  size={16}
+                  weight="fill"
+                  className="text-sidebar-foreground/30"
+                />
+              </button>
+            ))}
         </div>
 
         {/* Teams Section */}
-        <div className="mt-8 flex flex-col">
-          <span className="px-1.5 text-sm font-medium text-muted-foreground mb-2">
-            Teams
-          </span>
-          {pinnedTeams.map((team) => (
-            <button
-              type="button"
-              key={team.id}
-              className="group flex items-center gap-1.5 text-sm text-sidebar-foreground px-1.5 py-2 rounded-lg transition-colors hover:bg-sidebar-accent"
-            >
-              <div
-                className={cn(
-                  "flex size-5 items-center justify-center rounded-lg",
-                  team.color,
-                )}
+        <div className="mt-4 flex flex-col">
+          <button
+            type="button"
+            onClick={() => setIsTeamsExpanded(!isTeamsExpanded)}
+            className="flex items-center gap-1.5 px-1.5 py-2 rounded-lg transition-colors hover:bg-sidebar-accent"
+          >
+            <span className="flex-1 text-left text-sm font-medium text-muted-foreground">
+              Teams
+            </span>
+            {isTeamsExpanded ? (
+              <CaretDownIcon size={16} className="text-muted-foreground" />
+            ) : (
+              <CaretRightIcon size={16} className="text-muted-foreground" />
+            )}
+          </button>
+          {isTeamsExpanded &&
+            pinnedTeams.map((team) => (
+              <button
+                type="button"
+                key={team.id}
+                className="group flex items-center gap-1.5 text-sm text-sidebar-foreground px-1.5 py-2 rounded-lg transition-colors hover:bg-sidebar-accent"
               >
-                {team.icon}
-              </div>
-              <span className="flex-1 text-left">{team.name}</span>
-              <PushPin
-                size={16}
-                weight="fill"
-                className="text-sidebar-foreground/30"
-              />
-            </button>
-          ))}
+                <div
+                  className={cn(
+                    "flex size-5 items-center justify-center rounded-lg",
+                    team.color,
+                  )}
+                >
+                  {team.icon}
+                </div>
+                <span className="flex-1 text-left">{team.name}</span>
+                <PushPin
+                  size={16}
+                  weight="fill"
+                  className="text-sidebar-foreground/30"
+                />
+              </button>
+            ))}
         </div>
       </div>
 
       {/* Fixed Footer */}
       <div className="shrink-0 px-1.5 pb-3">
         {/* Bottom Navigation */}
-        <div className="flex flex-col pb-4">
+        <div className="flex flex-col gap-1 pb-4">
           {bottomNavItems.map((item) => (
             <button
               type="button"
               key={item.label}
-              className="flex items-center gap-1.5 text-sm text-muted-foreground px-1.5 py-2 rounded-lg transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground"
+              className="flex items-center gap-1.5 text-sm text-muted-foreground px-1.5 py-1 cursor-pointer transition-colors hover:underline"
             >
               {item.icon}
               <span>{item.label}</span>
