@@ -18,6 +18,7 @@ import {
   HeadphonesIcon,
   WarningCircleIcon,
   GearSixIcon,
+  DotsSixVerticalIcon,
 } from "@phosphor-icons/react";
 import { useRouter } from "next/navigation";
 import {
@@ -42,6 +43,7 @@ import { ConfirmDialog } from "~/components/ui/confirm-dialog";
 import { cn } from "~/lib/utils";
 import type { Organization } from "better-auth/plugins";
 import Image from "next/image";
+import { motion, Reorder } from "framer-motion";
 
 // Sidebar Context for mobile state management
 interface SidebarContextValue {
@@ -192,6 +194,10 @@ function SidebarContent({ className }: { className?: string }) {
     new Set(),
   );
   const [pinnedTeamIds, setPinnedTeamIds] = useState<Set<string>>(new Set());
+  const [sectionOrder, setSectionOrder] = useState<string[]>([
+    "projects",
+    "teams",
+  ]);
 
   const activeOrgId = session?.session?.activeOrganizationId;
   const organizationsByCreation = useMemo(
@@ -478,137 +484,185 @@ function SidebarContent({ className }: { className?: string }) {
           ))}
         </nav>
 
-        {/* Projects Section */}
-        <div className="mt-4 flex flex-col">
-          <button
-            type="button"
-            onClick={() => setIsProjectsExpanded(!isProjectsExpanded)}
-            className="flex items-center gap-1.5 px-1.5 py-2 rounded-lg transition-colors hover:bg-sidebar-accent"
-          >
-            <span className="flex-1 text-left text-sm font-medium text-muted-foreground">
-              Projects
-            </span>
-            <CaretRightIcon
-              size={16}
-              className={cn(
-                "text-muted-foreground transition-transform duration-200 ease-[cubic-bezier(0.32,0.72,0,1)]",
-                isProjectsExpanded && "rotate-90",
-              )}
-            />
-          </button>
-          <div
-            className={cn(
-              "grid transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]",
-              isProjectsExpanded ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
-            )}
-          >
-            <div className="overflow-hidden">
-              {sortedProjects.map((project) => (
-                <div
-                  key={project.id}
-                  className="group flex items-center gap-1.5 text-sm text-sidebar-foreground px-1.5 py-2 rounded-lg transition-colors hover:bg-sidebar-accent"
-                >
+        {/* Reorderable Sections */}
+        <Reorder.Group
+          axis="y"
+          values={sectionOrder}
+          onReorder={setSectionOrder}
+          className="mt-4 flex flex-col gap-2"
+        >
+          {sectionOrder.map((section) => (
+            <Reorder.Item
+              key={section}
+              value={section}
+              transition={{
+                layout: {
+                  duration: 0.3,
+                  ease: [0.32, 0.72, 0, 1],
+                },
+              }}
+              className="flex flex-col"
+            >
+              {section === "projects" ? (
+                <>
+                  <div className="group flex items-center gap-1.5 px-1.5 py-2 rounded-lg transition-colors hover:bg-sidebar-accent">
+                    <DotsSixVerticalIcon
+                      size={16}
+                      className="cursor-grab text-muted-foreground/50 opacity-0 group-hover:opacity-100 transition-opacity active:cursor-grabbing"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setIsProjectsExpanded(!isProjectsExpanded)}
+                      className="flex flex-1 items-center gap-1.5"
+                    >
+                      <span className="flex-1 text-left text-sm font-medium text-muted-foreground">
+                        Projects
+                      </span>
+                      <CaretRightIcon
+                        size={16}
+                        className={cn(
+                          "text-muted-foreground transition-transform duration-200 ease-[cubic-bezier(0.32,0.72,0,1)]",
+                          isProjectsExpanded && "rotate-90",
+                        )}
+                      />
+                    </button>
+                  </div>
                   <div
                     className={cn(
-                      "flex size-5 items-center justify-center rounded-lg",
-                      project.color,
+                      "grid transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]",
+                      isProjectsExpanded ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
                     )}
                   >
-                    {project.icon}
+                    <div className="overflow-hidden">
+                      {sortedProjects.map((project) => (
+                        <motion.div
+                          key={project.id}
+                          layout
+                          transition={{
+                            layout: {
+                              duration: 0.3,
+                              ease: [0.32, 0.72, 0, 1],
+                            },
+                          }}
+                          className="group flex items-center gap-1.5 text-sm text-sidebar-foreground px-1.5 py-2 rounded-lg transition-colors hover:bg-sidebar-accent"
+                        >
+                          <div
+                            className={cn(
+                              "flex size-5 items-center justify-center rounded-lg",
+                              project.color,
+                            )}
+                          >
+                            {project.icon}
+                          </div>
+                          <span className="flex-1 text-left">{project.name}</span>
+                          <button
+                            type="button"
+                            onClick={() => toggleProjectPin(project.id)}
+                            className={cn(
+                              "transition-opacity",
+                              pinnedProjectIds.has(project.id)
+                                ? "opacity-100"
+                                : "opacity-0 group-hover:opacity-100",
+                            )}
+                          >
+                            <PushPin
+                              size={16}
+                              weight={pinnedProjectIds.has(project.id) ? "fill" : "regular"}
+                              className={cn(
+                                "transition-colors",
+                                pinnedProjectIds.has(project.id)
+                                  ? "text-sidebar-foreground"
+                                  : "text-sidebar-foreground/30 hover:text-sidebar-foreground/60",
+                              )}
+                            />
+                          </button>
+                        </motion.div>
+                      ))}
+                    </div>
                   </div>
-                  <span className="flex-1 text-left">{project.name}</span>
-                  <button
-                    type="button"
-                    onClick={() => toggleProjectPin(project.id)}
-                    className={cn(
-                      "transition-opacity",
-                      pinnedProjectIds.has(project.id)
-                        ? "opacity-100"
-                        : "opacity-0 group-hover:opacity-100",
-                    )}
-                  >
-                    <PushPin
+                </>
+              ) : (
+                <>
+                  <div className="group flex items-center gap-1.5 px-1.5 py-2 rounded-lg transition-colors hover:bg-sidebar-accent">
+                    <DotsSixVerticalIcon
                       size={16}
-                      weight={pinnedProjectIds.has(project.id) ? "fill" : "regular"}
-                      className={cn(
-                        "transition-colors",
-                        pinnedProjectIds.has(project.id)
-                          ? "text-sidebar-foreground"
-                          : "text-sidebar-foreground/30 hover:text-sidebar-foreground/60",
-                      )}
+                      className="cursor-grab text-muted-foreground/50 opacity-0 group-hover:opacity-100 transition-opacity active:cursor-grabbing"
                     />
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Teams Section */}
-        <div className="mt-4 flex flex-col">
-          <button
-            type="button"
-            onClick={() => setIsTeamsExpanded(!isTeamsExpanded)}
-            className="flex items-center gap-1.5 px-1.5 py-2 rounded-lg transition-colors hover:bg-sidebar-accent"
-          >
-            <span className="flex-1 text-left text-sm font-medium text-muted-foreground">
-              Teams
-            </span>
-            <CaretRightIcon
-              size={16}
-              className={cn(
-                "text-muted-foreground transition-transform duration-200 ease-[cubic-bezier(0.32,0.72,0,1)]",
-                isTeamsExpanded && "rotate-90",
-              )}
-            />
-          </button>
-          <div
-            className={cn(
-              "grid transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]",
-              isTeamsExpanded ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
-            )}
-          >
-            <div className="overflow-hidden">
-              {sortedTeams.map((team) => (
-                <div
-                  key={team.id}
-                  className="group flex items-center gap-1.5 text-sm text-sidebar-foreground px-1.5 py-2 rounded-lg transition-colors hover:bg-sidebar-accent"
-                >
+                    <button
+                      type="button"
+                      onClick={() => setIsTeamsExpanded(!isTeamsExpanded)}
+                      className="flex flex-1 items-center gap-1.5"
+                    >
+                      <span className="flex-1 text-left text-sm font-medium text-muted-foreground">
+                        Teams
+                      </span>
+                      <CaretRightIcon
+                        size={16}
+                        className={cn(
+                          "text-muted-foreground transition-transform duration-200 ease-[cubic-bezier(0.32,0.72,0,1)]",
+                          isTeamsExpanded && "rotate-90",
+                        )}
+                      />
+                    </button>
+                  </div>
                   <div
                     className={cn(
-                      "flex size-5 items-center justify-center rounded-lg",
-                      team.color,
+                      "grid transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]",
+                      isTeamsExpanded ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
                     )}
                   >
-                    {team.icon}
+                    <div className="overflow-hidden">
+                      {sortedTeams.map((team) => (
+                        <motion.div
+                          key={team.id}
+                          layout
+                          transition={{
+                            layout: {
+                              duration: 0.3,
+                              ease: [0.32, 0.72, 0, 1],
+                            },
+                          }}
+                          className="group flex items-center gap-1.5 text-sm text-sidebar-foreground px-1.5 py-2 rounded-lg transition-colors hover:bg-sidebar-accent"
+                        >
+                          <div
+                            className={cn(
+                              "flex size-5 items-center justify-center rounded-lg",
+                              team.color,
+                            )}
+                          >
+                            {team.icon}
+                          </div>
+                          <span className="flex-1 text-left">{team.name}</span>
+                          <button
+                            type="button"
+                            onClick={() => toggleTeamPin(team.id)}
+                            className={cn(
+                              "transition-opacity",
+                              pinnedTeamIds.has(team.id)
+                                ? "opacity-100"
+                                : "opacity-0 group-hover:opacity-100",
+                            )}
+                          >
+                            <PushPin
+                              size={16}
+                              weight={pinnedTeamIds.has(team.id) ? "fill" : "regular"}
+                              className={cn(
+                                "transition-colors",
+                                pinnedTeamIds.has(team.id)
+                                  ? "text-sidebar-foreground"
+                                  : "text-sidebar-foreground/30 hover:text-sidebar-foreground/60",
+                              )}
+                            />
+                          </button>
+                        </motion.div>
+                      ))}
+                    </div>
                   </div>
-                  <span className="flex-1 text-left">{team.name}</span>
-                  <button
-                    type="button"
-                    onClick={() => toggleTeamPin(team.id)}
-                    className={cn(
-                      "transition-opacity",
-                      pinnedTeamIds.has(team.id)
-                        ? "opacity-100"
-                        : "opacity-0 group-hover:opacity-100",
-                    )}
-                  >
-                    <PushPin
-                      size={16}
-                      weight={pinnedTeamIds.has(team.id) ? "fill" : "regular"}
-                      className={cn(
-                        "transition-colors",
-                        pinnedTeamIds.has(team.id)
-                          ? "text-sidebar-foreground"
-                          : "text-sidebar-foreground/30 hover:text-sidebar-foreground/60",
-                      )}
-                    />
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+                </>
+              )}
+            </Reorder.Item>
+          ))}
+        </Reorder.Group>
       </div>
 
       {/* Fixed Footer */}
