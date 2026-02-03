@@ -8,7 +8,7 @@ import {
   MagnifyingGlassIcon,
   PlusIcon,
   PushPin,
-  TrashIcon,
+  PencilSimpleIcon,
   XIcon,
   FadersHorizontalIcon,
   KanbanIcon,
@@ -288,6 +288,14 @@ function SidebarContent({ className }: { className?: string }) {
     router.push("/onboarding");
   }, [router]);
 
+  const handleEditOrg = useCallback(
+    (e: React.MouseEvent, orgId: string) => {
+      e.stopPropagation();
+      router.push(`/settings/organization/${orgId}`);
+    },
+    [router],
+  );
+
   const handleDeleteOrg = useCallback(
     (e: React.MouseEvent, orgId: string, orgName: string) => {
       e.stopPropagation();
@@ -397,13 +405,13 @@ function SidebarContent({ className }: { className?: string }) {
               </div>
             </div>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-56">
+          <DropdownMenuContent align="start" sideOffset={8}>
             <DropdownMenuGroup>
               {organizationsByCreation.map((org) => (
                 <DropdownMenuItem
                   key={org.id}
                   onClick={() => handleOrgSwitch(org.id)}
-                  className="flex items-center justify-between"
+                  className="group flex items-center justify-between"
                 >
                   <div className="flex items-center gap-2 min-w-0 flex-1">
                     {org.logo ? (
@@ -412,25 +420,32 @@ function SidebarContent({ className }: { className?: string }) {
                         alt={org.name}
                         width={24}
                         height={24}
-                        className="size-6 shrink-0 rounded object-cover"
+                        className="size-6 shrink-0 rounded-md object-cover"
                       />
                     ) : (
-                      <div className="flex size-6 shrink-0 items-center justify-center rounded bg-muted text-xs font-medium">
+                      <div className="flex size-6 shrink-0 items-center justify-center rounded-md bg-muted text-xs font-medium">
                         {getInitials(org.name)}
                       </div>
                     )}
-                    <span className="truncate">{org.name}</span>
+                    <span className="truncate text-sm">{org.name}</span>
                   </div>
                   <div className="flex items-center gap-1 shrink-0">
                     {org.id === activeOrgId && (
-                      <CheckIcon size={16} className="text-primary" />
+                      <CheckIcon
+                        size={16}
+                        weight="bold"
+                        className="text-primary"
+                      />
                     )}
                     <button
                       type="button"
-                      onClick={(e) => handleDeleteOrg(e, org.id, org.name)}
-                      className="rounded p-1 opacity-0 transition-opacity hover:bg-destructive/10 group-hover:opacity-100"
+                      onClick={(e) => handleEditOrg(e, org.id)}
+                      className="rounded p-1 opacity-0 transition-all hover:bg-accent group-hover:opacity-100"
                     >
-                      <TrashIcon size={14} className="text-destructive" />
+                      <PencilSimpleIcon
+                        size={14}
+                        className="text-muted-foreground"
+                      />
                     </button>
                   </div>
                 </DropdownMenuItem>
@@ -533,7 +548,9 @@ function SidebarContent({ className }: { className?: string }) {
                   <div
                     className={cn(
                       "grid transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]",
-                      isProjectsExpanded ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
+                      isProjectsExpanded
+                        ? "grid-rows-[1fr] opacity-100"
+                        : "grid-rows-[0fr] opacity-0",
                     )}
                   >
                     <div className="overflow-hidden flex flex-col gap-0.5">
@@ -557,7 +574,9 @@ function SidebarContent({ className }: { className?: string }) {
                           >
                             {project.icon}
                           </div>
-                          <span className="flex-1 text-left">{project.name}</span>
+                          <span className="flex-1 text-left">
+                            {project.name}
+                          </span>
                           <button
                             type="button"
                             onClick={() => toggleProjectPin(project.id)}
@@ -570,7 +589,11 @@ function SidebarContent({ className }: { className?: string }) {
                           >
                             <PushPin
                               size={16}
-                              weight={pinnedProjectIds.has(project.id) ? "fill" : "regular"}
+                              weight={
+                                pinnedProjectIds.has(project.id)
+                                  ? "fill"
+                                  : "regular"
+                              }
                               className={cn(
                                 "transition-colors",
                                 pinnedProjectIds.has(project.id)
@@ -611,7 +634,9 @@ function SidebarContent({ className }: { className?: string }) {
                   <div
                     className={cn(
                       "grid transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]",
-                      isTeamsExpanded ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
+                      isTeamsExpanded
+                        ? "grid-rows-[1fr] opacity-100"
+                        : "grid-rows-[0fr] opacity-0",
                     )}
                   >
                     <div className="overflow-hidden flex flex-col gap-0.5">
@@ -648,7 +673,9 @@ function SidebarContent({ className }: { className?: string }) {
                           >
                             <PushPin
                               size={16}
-                              weight={pinnedTeamIds.has(team.id) ? "fill" : "regular"}
+                              weight={
+                                pinnedTeamIds.has(team.id) ? "fill" : "regular"
+                              }
                               className={cn(
                                 "transition-colors",
                                 pinnedTeamIds.has(team.id)
