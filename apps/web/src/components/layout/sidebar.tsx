@@ -3,7 +3,6 @@
 import {
   CheckIcon,
   CaretUpDownIcon,
-  CaretDownIcon,
   CaretRightIcon,
   List,
   MagnifyingGlassIcon,
@@ -133,7 +132,7 @@ const bottomNavItems: NavItem[] = [
 const keys = ["Ctrl", "/"];
 
 // Mock data - these will come from API later
-const pinnedProjects: PinnedItem[] = [
+const projects: PinnedItem[] = [
   {
     id: "1",
     name: "FrontEnd",
@@ -154,7 +153,7 @@ const pinnedProjects: PinnedItem[] = [
   },
 ];
 
-const pinnedTeams: PinnedItem[] = [
+const teams: PinnedItem[] = [
   {
     id: "1",
     name: "Devs",
@@ -189,6 +188,10 @@ function SidebarContent({ className }: { className?: string }) {
   const [isDeletingOrg, setIsDeletingOrg] = useState(false);
   const [isProjectsExpanded, setIsProjectsExpanded] = useState(true);
   const [isTeamsExpanded, setIsTeamsExpanded] = useState(true);
+  const [pinnedProjectIds, setPinnedProjectIds] = useState<Set<string>>(
+    new Set(),
+  );
+  const [pinnedTeamIds, setPinnedTeamIds] = useState<Set<string>>(new Set());
 
   const activeOrgId = session?.session?.activeOrganizationId;
   const organizationsByCreation = useMemo(
@@ -204,6 +207,50 @@ function SidebarContent({ className }: { className?: string }) {
     () => organizations?.find((org) => org.id === activeOrgId),
     [organizations, activeOrgId],
   );
+
+  const sortedProjects = useMemo(() => {
+    return [...projects].sort((a, b) => {
+      const aIsPinned = pinnedProjectIds.has(a.id);
+      const bIsPinned = pinnedProjectIds.has(b.id);
+      if (aIsPinned && !bIsPinned) return -1;
+      if (!aIsPinned && bIsPinned) return 1;
+      return a.name.localeCompare(b.name);
+    });
+  }, [pinnedProjectIds]);
+
+  const sortedTeams = useMemo(() => {
+    return [...teams].sort((a, b) => {
+      const aIsPinned = pinnedTeamIds.has(a.id);
+      const bIsPinned = pinnedTeamIds.has(b.id);
+      if (aIsPinned && !bIsPinned) return -1;
+      if (!aIsPinned && bIsPinned) return 1;
+      return a.name.localeCompare(b.name);
+    });
+  }, [pinnedTeamIds]);
+
+  const toggleProjectPin = useCallback((projectId: string) => {
+    setPinnedProjectIds((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(projectId)) {
+        newSet.delete(projectId);
+      } else {
+        newSet.add(projectId);
+      }
+      return newSet;
+    });
+  }, []);
+
+  const toggleTeamPin = useCallback((teamId: string) => {
+    setPinnedTeamIds((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(teamId)) {
+        newSet.delete(teamId);
+      } else {
+        newSet.add(teamId);
+      }
+      return newSet;
+    });
+  }, []);
 
   const handleOrgSwitch = useCallback(
     async (orgId: string) => {
@@ -441,35 +488,60 @@ function SidebarContent({ className }: { className?: string }) {
             <span className="flex-1 text-left text-sm font-medium text-muted-foreground">
               Projects
             </span>
-            {isProjectsExpanded ? (
-              <CaretDownIcon size={16} className="text-muted-foreground" />
-            ) : (
-              <CaretRightIcon size={16} className="text-muted-foreground" />
-            )}
+            <CaretRightIcon
+              size={16}
+              className={cn(
+                "text-muted-foreground transition-transform duration-200 ease-[cubic-bezier(0.32,0.72,0,1)]",
+                isProjectsExpanded && "rotate-90",
+              )}
+            />
           </button>
-          {isProjectsExpanded &&
-            pinnedProjects.map((project) => (
-              <button
-                type="button"
-                key={project.id}
-                className="group flex items-center gap-1.5 text-sm text-sidebar-foreground px-1.5 py-2 rounded-lg transition-colors hover:bg-sidebar-accent"
-              >
+          <div
+            className={cn(
+              "grid transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]",
+              isProjectsExpanded ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
+            )}
+          >
+            <div className="overflow-hidden">
+              {sortedProjects.map((project) => (
                 <div
-                  className={cn(
-                    "flex size-5 items-center justify-center rounded-lg",
-                    project.color,
-                  )}
+                  key={project.id}
+                  className="group flex items-center gap-1.5 text-sm text-sidebar-foreground px-1.5 py-2 rounded-lg transition-colors hover:bg-sidebar-accent"
                 >
-                  {project.icon}
+                  <div
+                    className={cn(
+                      "flex size-5 items-center justify-center rounded-lg",
+                      project.color,
+                    )}
+                  >
+                    {project.icon}
+                  </div>
+                  <span className="flex-1 text-left">{project.name}</span>
+                  <button
+                    type="button"
+                    onClick={() => toggleProjectPin(project.id)}
+                    className={cn(
+                      "transition-opacity",
+                      pinnedProjectIds.has(project.id)
+                        ? "opacity-100"
+                        : "opacity-0 group-hover:opacity-100",
+                    )}
+                  >
+                    <PushPin
+                      size={16}
+                      weight={pinnedProjectIds.has(project.id) ? "fill" : "regular"}
+                      className={cn(
+                        "transition-colors",
+                        pinnedProjectIds.has(project.id)
+                          ? "text-sidebar-foreground"
+                          : "text-sidebar-foreground/30 hover:text-sidebar-foreground/60",
+                      )}
+                    />
+                  </button>
                 </div>
-                <span className="flex-1 text-left">{project.name}</span>
-                <PushPin
-                  size={16}
-                  weight="fill"
-                  className="text-sidebar-foreground/30"
-                />
-              </button>
-            ))}
+              ))}
+            </div>
+          </div>
         </div>
 
         {/* Teams Section */}
@@ -482,35 +554,60 @@ function SidebarContent({ className }: { className?: string }) {
             <span className="flex-1 text-left text-sm font-medium text-muted-foreground">
               Teams
             </span>
-            {isTeamsExpanded ? (
-              <CaretDownIcon size={16} className="text-muted-foreground" />
-            ) : (
-              <CaretRightIcon size={16} className="text-muted-foreground" />
-            )}
+            <CaretRightIcon
+              size={16}
+              className={cn(
+                "text-muted-foreground transition-transform duration-200 ease-[cubic-bezier(0.32,0.72,0,1)]",
+                isTeamsExpanded && "rotate-90",
+              )}
+            />
           </button>
-          {isTeamsExpanded &&
-            pinnedTeams.map((team) => (
-              <button
-                type="button"
-                key={team.id}
-                className="group flex items-center gap-1.5 text-sm text-sidebar-foreground px-1.5 py-2 rounded-lg transition-colors hover:bg-sidebar-accent"
-              >
+          <div
+            className={cn(
+              "grid transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]",
+              isTeamsExpanded ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
+            )}
+          >
+            <div className="overflow-hidden">
+              {sortedTeams.map((team) => (
                 <div
-                  className={cn(
-                    "flex size-5 items-center justify-center rounded-lg",
-                    team.color,
-                  )}
+                  key={team.id}
+                  className="group flex items-center gap-1.5 text-sm text-sidebar-foreground px-1.5 py-2 rounded-lg transition-colors hover:bg-sidebar-accent"
                 >
-                  {team.icon}
+                  <div
+                    className={cn(
+                      "flex size-5 items-center justify-center rounded-lg",
+                      team.color,
+                    )}
+                  >
+                    {team.icon}
+                  </div>
+                  <span className="flex-1 text-left">{team.name}</span>
+                  <button
+                    type="button"
+                    onClick={() => toggleTeamPin(team.id)}
+                    className={cn(
+                      "transition-opacity",
+                      pinnedTeamIds.has(team.id)
+                        ? "opacity-100"
+                        : "opacity-0 group-hover:opacity-100",
+                    )}
+                  >
+                    <PushPin
+                      size={16}
+                      weight={pinnedTeamIds.has(team.id) ? "fill" : "regular"}
+                      className={cn(
+                        "transition-colors",
+                        pinnedTeamIds.has(team.id)
+                          ? "text-sidebar-foreground"
+                          : "text-sidebar-foreground/30 hover:text-sidebar-foreground/60",
+                      )}
+                    />
+                  </button>
                 </div>
-                <span className="flex-1 text-left">{team.name}</span>
-                <PushPin
-                  size={16}
-                  weight="fill"
-                  className="text-sidebar-foreground/30"
-                />
-              </button>
-            ))}
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
