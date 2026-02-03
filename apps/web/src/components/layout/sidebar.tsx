@@ -44,6 +44,7 @@ import { cn } from "~/lib/utils";
 import type { Organization } from "better-auth/plugins";
 import Image from "next/image";
 import { motion, Reorder } from "framer-motion";
+import { useCommandPalette } from "~/components/command-palette";
 
 // Sidebar Context for mobile state management
 interface SidebarContextValue {
@@ -131,7 +132,7 @@ const bottomNavItems: NavItem[] = [
   { icon: <GearSixIcon size={18} />, label: "Settings" },
 ];
 
-const keys = ["Ctrl", "/"];
+const keys = ["⌘", "K"];
 
 // Mock data - these will come from API later
 const projects: PinnedItem[] = [
@@ -181,6 +182,7 @@ function SidebarContent({ className }: { className?: string }) {
   const { data: session } = authClient.useSession();
   const { data: organizations = [], isPending: isLoading } =
     authClient.useListOrganizations();
+  const { open: openCommandPalette } = useCommandPalette();
 
   const [orgToDelete, setOrgToDelete] = useState<{
     id: string;
@@ -446,10 +448,11 @@ function SidebarContent({ className }: { className?: string }) {
       {/* Scrollable Content */}
       <div className="flex-1 overflow-y-auto px-1.5">
         {/* Search & Main Navigation */}
-        <nav className="flex flex-col">
+        <nav className="flex flex-col gap-0.5">
           {/* Search */}
           <button
             type="button"
+            onClick={openCommandPalette}
             className="flex w-full items-center gap-1.5 text-sidebar-foreground px-1.5 py-2 rounded-lg transition-colors hover:bg-sidebar-accent"
           >
             <MagnifyingGlassIcon size={20} />
@@ -533,7 +536,7 @@ function SidebarContent({ className }: { className?: string }) {
                       isProjectsExpanded ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
                     )}
                   >
-                    <div className="overflow-hidden">
+                    <div className="overflow-hidden flex flex-col gap-0.5">
                       {sortedProjects.map((project) => (
                         <motion.div
                           key={project.id}
@@ -611,7 +614,7 @@ function SidebarContent({ className }: { className?: string }) {
                       isTeamsExpanded ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
                     )}
                   >
-                    <div className="overflow-hidden">
+                    <div className="overflow-hidden flex flex-col gap-0.5">
                       {sortedTeams.map((team) => (
                         <motion.div
                           key={team.id}
