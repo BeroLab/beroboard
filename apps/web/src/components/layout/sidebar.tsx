@@ -378,7 +378,7 @@ function SidebarContent({ className }: { className?: string }) {
       {/* Organization Selector - Fixed Header */}
       <div className="shrink-0 px-1.5 py-3">
         <DropdownMenu>
-          <DropdownMenuTrigger className="flex w-full items-center gap-1.5 px-1.5 py-2 rounded-xl transition-colors hover:bg-sidebar-accent">
+          <DropdownMenuTrigger className="flex w-full items-center gap-1.5 px-1.5 py-2 rounded-xl transition-colors hover:bg-sidebar-accent cursor-pointer">
             {selectedOrg?.logo ? (
               <Image
                 src={selectedOrg.logo}
@@ -437,16 +437,6 @@ function SidebarContent({ className }: { className?: string }) {
                         className="text-primary"
                       />
                     )}
-                    <button
-                      type="button"
-                      onClick={(e) => handleEditOrg(e, org.id)}
-                      className="rounded p-1 opacity-0 transition-all hover:bg-accent group-hover:opacity-100"
-                    >
-                      <PencilSimpleIcon
-                        size={14}
-                        className="text-muted-foreground"
-                      />
-                    </button>
                   </div>
                 </DropdownMenuItem>
               ))}
@@ -468,7 +458,7 @@ function SidebarContent({ className }: { className?: string }) {
           <button
             type="button"
             onClick={openCommandPalette}
-            className="flex w-full items-center gap-1.5 text-sidebar-foreground px-1.5 py-2 rounded-lg transition-colors hover:bg-sidebar-accent"
+            className="flex w-full items-center gap-1.5 text-sidebar-foreground px-1.5 py-2 rounded-lg transition-colors hover:bg-sidebar-accent cursor-pointer"
           >
             <MagnifyingGlassIcon size={20} />
             <span className="flex-1 text-left text-sm">Search</span>
@@ -492,7 +482,7 @@ function SidebarContent({ className }: { className?: string }) {
               type="button"
               key={item.label}
               className={cn(
-                "flex items-center gap-1.5 text-sm text-sidebar-foreground px-1.5 py-2 rounded-lg transition-colors hover:bg-sidebar-accent",
+                "flex items-center gap-1.5 text-sm text-sidebar-foreground px-1.5 py-2 rounded-lg transition-colors hover:bg-sidebar-accent cursor-pointer",
                 item.active && "font-medium bg-sidebar-accent",
               )}
             >
@@ -519,7 +509,11 @@ function SidebarContent({ className }: { className?: string }) {
                   ease: [0.32, 0.72, 0, 1],
                 },
               }}
-              className="flex flex-col"
+              whileDrag={{
+                backgroundColor: "var(--sidebar)",
+                borderRadius: "0.75rem",
+              }}
+              className="flex flex-col bg-sidebar rounded-xl"
             >
               {section === "projects" ? (
                 <>
@@ -531,7 +525,7 @@ function SidebarContent({ className }: { className?: string }) {
                     <button
                       type="button"
                       onClick={() => setIsProjectsExpanded(!isProjectsExpanded)}
-                      className="flex flex-1 items-center gap-1.5"
+                      className="flex flex-1 items-center gap-1.5 cursor-pointer"
                     >
                       <span className="flex-1 text-left text-sm font-medium text-muted-foreground">
                         Projects
@@ -564,7 +558,7 @@ function SidebarContent({ className }: { className?: string }) {
                               ease: [0.32, 0.72, 0, 1],
                             },
                           }}
-                          className="group flex items-center gap-1.5 text-sm text-sidebar-foreground px-1.5 py-2 rounded-lg transition-colors hover:bg-sidebar-accent"
+                          className="group flex items-center gap-1.5 text-sm text-sidebar-foreground px-1.5 py-2 rounded-lg transition-colors hover:bg-sidebar-accent cursor-pointer"
                         >
                           <div
                             className={cn(
@@ -581,7 +575,7 @@ function SidebarContent({ className }: { className?: string }) {
                             type="button"
                             onClick={() => toggleProjectPin(project.id)}
                             className={cn(
-                              "transition-opacity",
+                              "transition-opacity cursor-pointer",
                               pinnedProjectIds.has(project.id)
                                 ? "opacity-100"
                                 : "opacity-0 group-hover:opacity-100",
@@ -617,7 +611,7 @@ function SidebarContent({ className }: { className?: string }) {
                     <button
                       type="button"
                       onClick={() => setIsTeamsExpanded(!isTeamsExpanded)}
-                      className="flex flex-1 items-center gap-1.5"
+                      className="flex flex-1 items-center gap-1.5 cursor-pointer"
                     >
                       <span className="flex-1 text-left text-sm font-medium text-muted-foreground">
                         Teams
@@ -650,7 +644,7 @@ function SidebarContent({ className }: { className?: string }) {
                               ease: [0.32, 0.72, 0, 1],
                             },
                           }}
-                          className="group flex items-center gap-1.5 text-sm text-sidebar-foreground px-1.5 py-2 rounded-lg transition-colors hover:bg-sidebar-accent"
+                          className="group flex items-center gap-1.5 text-sm text-sidebar-foreground px-1.5 py-2 rounded-lg transition-colors hover:bg-sidebar-accent cursor-pointer"
                         >
                           <div
                             className={cn(
@@ -665,7 +659,7 @@ function SidebarContent({ className }: { className?: string }) {
                             type="button"
                             onClick={() => toggleTeamPin(team.id)}
                             className={cn(
-                              "transition-opacity",
+                              "transition-opacity cursor-pointer",
                               pinnedTeamIds.has(team.id)
                                 ? "opacity-100"
                                 : "opacity-0 group-hover:opacity-100",
@@ -703,7 +697,7 @@ function SidebarContent({ className }: { className?: string }) {
             <button
               type="button"
               key={item.label}
-              className="flex items-center gap-1.5 text-sm text-muted-foreground px-1.5 py-1 cursor-pointer transition-colors hover:underline"
+              className="flex items-center gap-1.5 text-sm text-muted-foreground py-1 cursor-pointer transition-colors hover:underline w-fit"
             >
               {item.icon}
               <span>{item.label}</span>
@@ -714,7 +708,7 @@ function SidebarContent({ className }: { className?: string }) {
         {/* User Card */}
         <button
           type="button"
-          className="flex w-full items-center gap-1.5 rounded-2xl bg-sidebar-accent p-2 pr-4 transition-colors hover:bg-sidebar-accent/80"
+          className="flex w-full items-center gap-1.5 rounded-2xl bg-sidebar-accent p-2 pr-4 transition-colors hover:bg-sidebar-accent/80 cursor-pointer"
         >
           <Avatar className="size-9">
             <AvatarImage src={session?.user?.image ?? undefined} />
