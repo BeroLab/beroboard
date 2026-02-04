@@ -588,7 +588,7 @@ export function TaskBoard({ organizationId, userId }: TaskBoardProps) {
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         onNewTask={() => setIsModalOpen(true)}
-        />
+      />
 
       {localColumns.length === 0 ? (
         <EmptyBoard
