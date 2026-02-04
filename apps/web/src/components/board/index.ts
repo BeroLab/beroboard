@@ -4,6 +4,5 @@ export { CreateTaskModal } from "./create-task-modal";
 export { DraggableTaskCard } from "./draggable-task-card";
 export { EmptyBoard } from "./empty-board";
 export { KanbanColumn } from "./kanban-column";
-export { Sidebar } from "./sidebar";
 export { TaskBoard } from "./task-board";
 export { TaskCard } from "./task-card";
