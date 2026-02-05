@@ -10,7 +10,12 @@ import type {
 } from "~/lib/types";
 import { boardKeys } from "./keys";
 
-export function useCreateTask(organizationId: string) {
+export function useCreateTask(
+	organizationId: string,
+	options?: {
+		onSuccess?: (task: Task) => void;
+	},
+) {
 	const queryClient = useQueryClient();
 
 	return useMutation({
@@ -31,15 +36,21 @@ export function useCreateTask(organizationId: string) {
 
 			return data as Task;
 		},
-		onSuccess: () => {
+		onSuccess: (task) => {
 			queryClient.invalidateQueries({
 				queryKey: boardKeys.columns(organizationId),
 			});
+			options?.onSuccess?.(task);
 		},
 	});
 }
 
-export function useUpdateTask(organizationId: string) {
+export function useUpdateTask(
+	organizationId: string,
+	options?: {
+		onSuccess?: (task: Task) => void;
+	},
+) {
 	const queryClient = useQueryClient();
 
 	return useMutation({
@@ -58,15 +69,21 @@ export function useUpdateTask(organizationId: string) {
 
 			return data as Task;
 		},
-		onSuccess: () => {
+		onSuccess: (task) => {
 			queryClient.invalidateQueries({
 				queryKey: boardKeys.columns(organizationId),
 			});
+			options?.onSuccess?.(task);
 		},
 	});
 }
 
-export function useDeleteTask(organizationId: string) {
+export function useDeleteTask(
+	organizationId: string,
+	options?: {
+		onSuccess?: (id: string) => void;
+	},
+) {
 	const queryClient = useQueryClient();
 
 	return useMutation({
@@ -77,17 +94,23 @@ export function useDeleteTask(organizationId: string) {
 				throw new Error("Failed to delete task");
 			}
 
-			return { success: true };
+			return id;
 		},
-		onSuccess: () => {
+		onSuccess: (id) => {
 			queryClient.invalidateQueries({
 				queryKey: boardKeys.columns(organizationId),
 			});
+			options?.onSuccess?.(id);
 		},
 	});
 }
 
-export function useMoveTask(organizationId: string) {
+export function useMoveTask(
+	organizationId: string,
+	options?: {
+		onSuccess?: (task: Task, input: MoveTaskInput) => void;
+	},
+) {
 	const queryClient = useQueryClient();
 
 	return useMutation({
@@ -98,12 +121,13 @@ export function useMoveTask(organizationId: string) {
 				throw new Error("Failed to move task");
 			}
 
-			return data as Task;
+			return { task: data as Task, input };
 		},
-		onSuccess: () => {
+		onSuccess: ({ task, input }) => {
 			queryClient.invalidateQueries({
 				queryKey: boardKeys.columns(organizationId),
 			});
+			options?.onSuccess?.(task, input);
 		},
 	});
 }

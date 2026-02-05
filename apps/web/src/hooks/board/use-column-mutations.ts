@@ -5,7 +5,12 @@ import { api } from "~/lib/api";
 import type { Column, CreateColumnInput, UpdateColumnInput } from "~/lib/types";
 import { boardKeys } from "./keys";
 
-export function useCreateColumn(organizationId: string) {
+export function useCreateColumn(
+	organizationId: string,
+	options?: {
+		onSuccess?: (column: Column) => void;
+	},
+) {
 	const queryClient = useQueryClient();
 
 	return useMutation({
@@ -22,15 +27,21 @@ export function useCreateColumn(organizationId: string) {
 
 			return data as Column;
 		},
-		onSuccess: () => {
+		onSuccess: (column) => {
 			queryClient.invalidateQueries({
 				queryKey: boardKeys.columns(organizationId),
 			});
+			options?.onSuccess?.(column);
 		},
 	});
 }
 
-export function useUpdateColumn(organizationId: string) {
+export function useUpdateColumn(
+	organizationId: string,
+	options?: {
+		onSuccess?: (column: Column) => void;
+	},
+) {
 	const queryClient = useQueryClient();
 
 	return useMutation({
@@ -49,15 +60,21 @@ export function useUpdateColumn(organizationId: string) {
 
 			return data as Column;
 		},
-		onSuccess: () => {
+		onSuccess: (column) => {
 			queryClient.invalidateQueries({
 				queryKey: boardKeys.columns(organizationId),
 			});
+			options?.onSuccess?.(column);
 		},
 	});
 }
 
-export function useDeleteColumn(organizationId: string) {
+export function useDeleteColumn(
+	organizationId: string,
+	options?: {
+		onSuccess?: (id: string) => void;
+	},
+) {
 	const queryClient = useQueryClient();
 
 	return useMutation({
@@ -68,17 +85,23 @@ export function useDeleteColumn(organizationId: string) {
 				throw new Error("Failed to delete column");
 			}
 
-			return { success: true };
+			return id;
 		},
-		onSuccess: () => {
+		onSuccess: (id) => {
 			queryClient.invalidateQueries({
 				queryKey: boardKeys.columns(organizationId),
 			});
+			options?.onSuccess?.(id);
 		},
 	});
 }
 
-export function useReorderColumns(organizationId: string) {
+export function useReorderColumns(
+	organizationId: string,
+	options?: {
+		onSuccess?: (columns: { id: string; order: number }[]) => void;
+	},
+) {
 	const queryClient = useQueryClient();
 
 	return useMutation({
@@ -89,12 +112,13 @@ export function useReorderColumns(organizationId: string) {
 				throw new Error("Failed to reorder columns");
 			}
 
-			return { success: true };
+			return columns;
 		},
-		onSuccess: () => {
+		onSuccess: (columns) => {
 			queryClient.invalidateQueries({
 				queryKey: boardKeys.columns(organizationId),
 			});
+			options?.onSuccess?.(columns);
 		},
 	});
 }

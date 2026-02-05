@@ -102,3 +102,86 @@ export const DEFAULT_COLUMNS = [
 	{ name: "Review", color: "#FFB547", isCompleted: false },
 	{ name: "Done", color: "#32D583", isCompleted: true },
 ] as const;
+
+export type TaskCreatedMessage = {
+	type: "task:created";
+	data: {
+		taskId: string;
+		columnId: string;
+		title: string;
+	};
+};
+
+export type TaskUpdatedMessage = {
+	type: "task:updated";
+	data: {
+		taskId: string;
+	};
+};
+
+export type TaskDeletedMessage = {
+	type: "task:deleted";
+	data: {
+		taskId: string;
+	};
+};
+
+export type TaskMovedMessage = {
+	type: "task:moved";
+	data: {
+		taskId: string;
+		columnId: string;
+		order: number;
+	};
+};
+
+export type ColumnCreatedMessage = {
+	type: "column:created";
+	data: {
+		columnId: string;
+		name: string;
+	};
+};
+
+export type ColumnUpdatedMessage = {
+	type: "column:updated";
+	data: {
+		columnId: string;
+	};
+};
+
+export type ColumnDeletedMessage = {
+	type: "column:deleted";
+	data: {
+		columnId: string;
+	};
+};
+
+export type ColumnsReorderedMessage = {
+	type: "columns:reordered";
+	data: {
+		columns: Array<{
+			id: string;
+			order: number;
+		}>;
+	};
+};
+
+export type WebSocketMessage =
+	| TaskCreatedMessage
+	| TaskUpdatedMessage
+	| TaskDeletedMessage
+	| TaskMovedMessage
+	| ColumnCreatedMessage
+	| ColumnUpdatedMessage
+	| ColumnDeletedMessage
+	| ColumnsReorderedMessage
+    | { type: "pong" };
+
+export type WebSocketStatus = "connecting" | "connected" | "disconnected" | "error";
+
+export interface UseWebSocketOptions {
+	organizationId: string;
+	enabled?: boolean;
+	onError?: (error: unknown) => void;
+}

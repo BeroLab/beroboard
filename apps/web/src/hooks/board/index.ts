@@ -15,3 +15,4 @@ export {
 	useReorderTasks,
 	useUpdateTask,
 } from "./use-task-mutations";
+export { useWebSocket } from "./use-websocket";
