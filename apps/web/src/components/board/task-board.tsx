@@ -30,6 +30,7 @@ import {
   useReorderColumns,
   useReorderTasks,
   useUpdateColumn,
+  useWebSocket,
 } from "~/hooks/board";
 import type {
   Column,
@@ -86,14 +87,76 @@ export function TaskBoard({ organizationId, userId }: TaskBoardProps) {
   const lastMoveRef = useRef<{ taskId: string; columnId: string } | null>(null);
 
   const { data: columns = [], isLoading, error } = useColumns(organizationId);
-  const createTaskMutation = useCreateTask(organizationId);
-  const createColumnMutation = useCreateColumn(organizationId);
-  const updateColumnMutation = useUpdateColumn(organizationId);
-  const deleteColumnMutation = useDeleteColumn(organizationId);
+  
+  const {
+    sendTaskCreated,
+    sendTaskUpdated,
+    sendTaskDeleted,
+    sendTaskMoved,
+    sendColumnCreated,
+    sendColumnUpdated,
+    sendColumnDeleted,
+    sendColumnsReordered,
+    isConnected,
+  } = useWebSocket({
+    organizationId,
+    enabled: true,
+  });
+
+  const createTaskMutation = useCreateTask(organizationId, {
+    onSuccess: (task) => {
+      sendTaskCreated({
+        taskId: task.id,
+        columnId: task.columnId,
+        title: task.title,
+      });
+    },
+  });
+
+  const createColumnMutation = useCreateColumn(organizationId, {
+    onSuccess: (column) => {
+      sendColumnCreated({
+        columnId: column.id,
+        name: column.name,
+      });
+    },
+  });
+
+  const updateColumnMutation = useUpdateColumn(organizationId, {
+    onSuccess: (column) => {
+      sendColumnUpdated({
+        columnId: column.id,
+      });
+    },
+  });
+
+  const deleteColumnMutation = useDeleteColumn(organizationId, {
+    onSuccess: (id) => {
+      sendColumnDeleted({
+        columnId: id,
+      });
+    },
+  });
+
   const createDefaultColumnsMutation = useCreateDefaultColumns(organizationId);
-  const moveTaskMutation = useMoveTask(organizationId);
+  
+  const reorderColumnsMutation = useReorderColumns(organizationId, {
+    onSuccess: (columns) => {
+      sendColumnsReordered({ columns });
+    },
+  });
+
+  const moveTaskMutation = useMoveTask(organizationId, {
+    onSuccess: (task, input) => {
+      sendTaskMoved({
+        taskId: input.taskId,
+        columnId: input.columnId,
+        order: input.order,
+      });
+    },
+  });
+
   const reorderTasksMutation = useReorderTasks(organizationId);
-  const reorderColumnsMutation = useReorderColumns(organizationId);
 
   useEffect(() => {
     if (!activeTask && !activeColumn && !isPendingMutation.current) {
@@ -319,19 +382,21 @@ export function TaskBoard({ organizationId, userId }: TaskBoardProps) {
         const currentIndex = localColumns.findIndex((c) => c.id === column.id);
 
         if (currentIndex !== startIndex) {
-          // Reorder columns on server
+          // Reorder columns - primeiro HTTP, depois WebSocket
           const reorderedColumns = localColumns.map((col, index) => ({
             id: col.id,
             order: index,
           }));
 
-          try {
-            await reorderColumnsMutation.mutateAsync(reorderedColumns);
-            toast.success("Columns reordered successfully");
-          } catch {
-            toast.error("Failed to reorder columns");
-            setLocalColumns(columns);
-          }
+          reorderColumnsMutation.mutate(reorderedColumns, {
+            onSuccess: () => {
+              toast.success("Columns reordered successfully");
+            },
+            onError: () => {
+              toast.error("Failed to reorder columns");
+              setLocalColumns(columns);
+            },
+          });
         }
 
         isPendingMutation.current = false;
@@ -375,16 +440,22 @@ export function TaskBoard({ organizationId, userId }: TaskBoardProps) {
       }
 
       if (columnChanged) {
-        try {
-          await moveTaskMutation.mutateAsync({
+        moveTaskMutation.mutate(
+          {
             taskId: activeId,
             columnId: currentColumn.id,
             order: currentIndex,
-          });
-        } catch {
-          toast.error("Failed to move task");
-          setLocalColumns(columns);
-        }
+          },
+          {
+            onSuccess: () => {
+              toast.success("Task moved successfully");
+            },
+            onError: () => {
+              toast.error("Failed to move task");
+              setLocalColumns(columns);
+            },
+          },
+        );
       } else if (indexChanged) {
         const reorderedTasks = currentColumn.tasks.map((task, index) => ({
           id: task.id,
@@ -407,8 +478,8 @@ export function TaskBoard({ organizationId, userId }: TaskBoardProps) {
       columns,
       localColumns,
       moveTaskMutation,
-      reorderTasksMutation,
       reorderColumnsMutation,
+      reorderTasksMutation,
     ],
   );
 
@@ -509,7 +580,7 @@ export function TaskBoard({ organizationId, userId }: TaskBoardProps) {
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         onNewTask={() => setIsModalOpen(true)}
-      />
+        />
 
       {localColumns.length === 0 ? (
         <EmptyBoard
