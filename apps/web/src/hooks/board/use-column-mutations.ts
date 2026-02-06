@@ -114,11 +114,26 @@ export function useReorderColumns(
 
 			return columns;
 		},
-		onSuccess: (columns) => {
-			queryClient.invalidateQueries({
-				queryKey: boardKeys.columns(organizationId),
-			});
-			options?.onSuccess?.(columns);
+		onSuccess: (reorderedColumns) => {
+			// Update cache directly to avoid refetch flicker
+			queryClient.setQueryData(
+				boardKeys.columns(organizationId),
+				(oldData: Column[] | undefined) => {
+					if (!oldData) return oldData;
+
+					const orderMap = new Map(
+						reorderedColumns.map((c) => [c.id, c.order]),
+					);
+
+					return [...oldData]
+						.map((col) => ({
+							...col,
+							order: orderMap.get(col.id) ?? col.order,
+						}))
+						.sort((a, b) => a.order - b.order);
+				},
+			);
+			options?.onSuccess?.(reorderedColumns);
 		},
 	});
 }

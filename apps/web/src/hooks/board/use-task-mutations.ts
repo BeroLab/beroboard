@@ -3,6 +3,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "~/lib/api";
 import type {
+	Column,
 	CreateTaskInput,
 	MoveTaskInput,
 	Task,
@@ -124,9 +125,34 @@ export function useMoveTask(
 			return { task: data as Task, input };
 		},
 		onSuccess: ({ task, input }) => {
-			queryClient.invalidateQueries({
-				queryKey: boardKeys.columns(organizationId),
-			});
+			// Update cache directly to avoid refetch flicker
+			queryClient.setQueryData(
+				boardKeys.columns(organizationId),
+				(oldData: Column[] | undefined) => {
+					if (!oldData) return oldData;
+
+					return oldData.map((col) => {
+						// Remove task from source column
+						if (col.tasks.some((t) => t.id === input.taskId)) {
+							return {
+								...col,
+								tasks: col.tasks.filter((t) => t.id !== input.taskId),
+							};
+						}
+						// Add task to target column
+						if (col.id === input.columnId) {
+							const newTasks = [...col.tasks];
+							const insertIndex = Math.min(input.order, newTasks.length);
+							newTasks.splice(insertIndex, 0, task);
+							return {
+								...col,
+								tasks: newTasks.map((t, idx) => ({ ...t, order: idx })),
+							};
+						}
+						return col;
+					});
+				},
+			);
 			options?.onSuccess?.(task, input);
 		},
 	});
@@ -145,12 +171,36 @@ export function useReorderTasks(organizationId: string) {
 				throw new Error("Failed to reorder tasks");
 			}
 
-			return { success: true };
+			return tasks;
 		},
-		onSuccess: () => {
-			queryClient.invalidateQueries({
-				queryKey: boardKeys.columns(organizationId),
-			});
+		onSuccess: (reorderedTasks) => {
+			// Update cache directly to avoid refetch flicker
+			queryClient.setQueryData(
+				boardKeys.columns(organizationId),
+				(oldData: Column[] | undefined) => {
+					if (!oldData) return oldData;
+
+					const taskOrderMap = new Map(
+						reorderedTasks.map((t) => [t.id, t.order]),
+					);
+					const columnId = reorderedTasks[0]?.columnId;
+
+					return oldData.map((col) => {
+						if (col.id === columnId) {
+							const sortedTasks = [...col.tasks].sort((a, b) => {
+								const orderA = taskOrderMap.get(a.id) ?? a.order;
+								const orderB = taskOrderMap.get(b.id) ?? b.order;
+								return orderA - orderB;
+							});
+							return {
+								...col,
+								tasks: sortedTasks.map((t, idx) => ({ ...t, order: idx })),
+							};
+						}
+						return col;
+					});
+				},
+			);
 		},
 	});
 }

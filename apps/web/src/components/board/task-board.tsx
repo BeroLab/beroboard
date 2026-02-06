@@ -360,7 +360,7 @@ export function TaskBoard({ organizationId, userId }: TaskBoardProps) {
   );
 
   const handleDragEnd = useCallback(
-    async (event: DragEndEvent) => {
+    (event: DragEndEvent) => {
       const { active } = event;
       const activeData = active.data.current;
 
@@ -382,7 +382,6 @@ export function TaskBoard({ organizationId, userId }: TaskBoardProps) {
         const currentIndex = localColumns.findIndex((c) => c.id === column.id);
 
         if (currentIndex !== startIndex) {
-          // Reorder columns - primeiro HTTP, depois WebSocket
           const reorderedColumns = localColumns.map((col, index) => ({
             id: col.id,
             order: index,
@@ -396,10 +395,14 @@ export function TaskBoard({ organizationId, userId }: TaskBoardProps) {
               toast.error("Failed to reorder columns");
               setLocalColumns(columns);
             },
+            onSettled: () => {
+              isPendingMutation.current = false;
+            },
           });
+        } else {
+          isPendingMutation.current = false;
         }
 
-        isPendingMutation.current = false;
         return;
       }
 
@@ -454,6 +457,10 @@ export function TaskBoard({ organizationId, userId }: TaskBoardProps) {
               toast.error("Failed to move task");
               setLocalColumns(columns);
             },
+            onSettled: () => {
+              isPendingMutation.current = false;
+              lastMoveRef.current = null;
+            },
           },
         );
       } else if (indexChanged) {
@@ -463,16 +470,17 @@ export function TaskBoard({ organizationId, userId }: TaskBoardProps) {
           columnId: currentColumn.id,
         }));
 
-        try {
-          await reorderTasksMutation.mutateAsync(reorderedTasks);
-        } catch {
-          toast.error("Failed to reorder tasks");
-          setLocalColumns(columns);
-        }
+        reorderTasksMutation.mutate(reorderedTasks, {
+          onError: () => {
+            toast.error("Failed to reorder tasks");
+            setLocalColumns(columns);
+          },
+          onSettled: () => {
+            isPendingMutation.current = false;
+            lastMoveRef.current = null;
+          },
+        });
       }
-
-      isPendingMutation.current = false;
-      lastMoveRef.current = null;
     },
     [
       columns,
