@@ -10,17 +10,20 @@ import { CSS } from "@dnd-kit/utilities";
 import {
 	Check,
 	Circle,
-	CheckCircle,
-	Hourglass,
-	Eye,
-	Tray,
 	DotsThree,
 	PencilSimple,
 	Plus,
 	Trash,
 	X,
 } from "@phosphor-icons/react";
-import type { Icon as PhosphorIcon } from "@phosphor-icons/react";
+import type { ComponentType, SVGProps } from "react";
+import {
+	BacklogIcon,
+	DoneIcon,
+	InProgressIcon,
+	ReviewIcon,
+	TodoIcon,
+} from "~/components/icons";
 import { useMemo, useRef, useState } from "react";
 import {
 	DropdownMenu,
@@ -34,28 +37,30 @@ import { COLUMN_COLORS } from "./add-column";
 import { DraggableTaskCard } from "./draggable-task-card";
 import { InlineTaskCreate } from "./inline-task-create";
 
+type IconComponent = ComponentType<SVGProps<SVGSVGElement>>;
+
 const COLUMN_META: Record<
 	string,
-	{ icon: PhosphorIcon; description: string }
+	{ icon: IconComponent; description: string }
 > = {
 	backlog: {
-		icon: Tray,
+		icon: BacklogIcon,
 		description: "Atividades que estão sendo refinadas",
 	},
 	todo: {
-		icon: Circle,
+		icon: TodoIcon,
 		description: "Atividades prontas para serem desenvolvidas",
 	},
 	"in progress": {
-		icon: Hourglass,
+		icon: InProgressIcon,
 		description: "Atividades que estão em desenvolvimento",
 	},
 	review: {
-		icon: Eye,
+		icon: ReviewIcon,
 		description: "Atividades aguardando revisão",
 	},
 	done: {
-		icon: CheckCircle,
+		icon: DoneIcon,
 		description: "Atividades finalizadas",
 	},
 };
@@ -63,8 +68,8 @@ const COLUMN_META: Record<
 function getColumnMeta(name: string, isCompleted: boolean) {
 	const key = name.toLowerCase();
 	if (COLUMN_META[key]) return COLUMN_META[key];
-	if (isCompleted) return { icon: CheckCircle, description: "" };
-	return { icon: Circle, description: "" };
+	if (isCompleted) return { icon: DoneIcon, description: "" };
+	return { icon: TodoIcon, description: "" };
 }
 
 interface KanbanColumnProps {
@@ -233,9 +238,9 @@ export function KanbanColumn({
 			>
 				<div className="flex items-center gap-2">
 					<StatusIcon
-						size={16}
-						weight={column.isCompleted ? "fill" : "regular"}
-						className="text-muted-foreground"
+						width={16}
+						height={16}
+						className="shrink-0 text-muted-foreground"
 					/>
 					<span className="font-medium text-foreground text-sm">
 						{column.name}
