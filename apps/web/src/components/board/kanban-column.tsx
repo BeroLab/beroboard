@@ -32,6 +32,7 @@ import type { Column, UpdateColumnInput } from "~/lib/types";
 import { cn } from "~/lib/utils";
 import { COLUMN_COLORS } from "./add-column";
 import { DraggableTaskCard } from "./draggable-task-card";
+import { InlineTaskCreate } from "./inline-task-create";
 
 const COLUMN_META: Record<
 	string,
@@ -71,6 +72,8 @@ interface KanbanColumnProps {
 	onDelete?: (id: string) => void;
 	onUpdate?: (id: string, input: UpdateColumnInput) => void;
 	onAddTask?: (columnId: string) => void;
+	onCreateTask?: (title: string, columnId: string) => void;
+	isCreatingTask?: boolean;
 }
 
 export function KanbanColumn({
@@ -78,6 +81,8 @@ export function KanbanColumn({
 	onDelete,
 	onUpdate,
 	onAddTask,
+	onCreateTask,
+	isCreatingTask,
 }: KanbanColumnProps) {
 	const [isEditing, setIsEditing] = useState(false);
 	const [editName, setEditName] = useState(column.name);
@@ -316,6 +321,15 @@ export function KanbanColumn({
 						/>
 					))}
 				</SortableContext>
+
+				{onCreateTask && (
+					<InlineTaskCreate
+						columnId={column.id}
+						taskCount={column.tasks.length}
+						onSubmit={onCreateTask}
+						isPending={isCreatingTask}
+					/>
+				)}
 			</div>
 		</div>
 	);

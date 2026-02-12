@@ -3,6 +3,7 @@ export { BoardHeader } from "./board-header";
 export { CreateTaskModal } from "./create-task-modal";
 export { DraggableTaskCard } from "./draggable-task-card";
 export { EmptyBoard } from "./empty-board";
+export { InlineTaskCreate } from "./inline-task-create";
 export { KanbanColumn } from "./kanban-column";
 export { TaskBoard } from "./task-board";
 export { TaskCard } from "./task-card";

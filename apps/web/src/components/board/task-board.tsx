@@ -516,6 +516,19 @@ export function TaskBoard({ organizationId, userId }: TaskBoardProps) {
     }
   };
 
+  const handleInlineCreateTask = async (title: string, columnId: string) => {
+    try {
+      await createTaskMutation.mutateAsync({
+        title,
+        columnId,
+        organizationId,
+        createdById: userId,
+      });
+    } catch {
+      toast.error("Failed to create task");
+    }
+  };
+
   const handleCreateColumn = async (name: string, color?: string) => {
     try {
       await createColumnMutation.mutateAsync({
@@ -614,6 +627,8 @@ export function TaskBoard({ organizationId, userId }: TaskBoardProps) {
                   onDelete={handleDeleteColumn}
                   onUpdate={handleUpdateColumn}
                   onAddTask={() => setIsModalOpen(true)}
+                  onCreateTask={handleInlineCreateTask}
+                  isCreatingTask={createTaskMutation.isPending}
                 />
               ))}
               <AddColumn
