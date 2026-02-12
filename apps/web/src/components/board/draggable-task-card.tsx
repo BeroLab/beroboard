@@ -2,7 +2,7 @@
 
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { Warning } from "@phosphor-icons/react";
+import { Warning, UserCircleDashed } from "@phosphor-icons/react";
 import { useRouter } from "next/navigation";
 import { useRef } from "react";
 import type { Task } from "~/lib/types";
@@ -102,10 +102,10 @@ export function DraggableTaskCard({
 			onClick={handleClick}
 			onKeyDown={handleKeyDown}
 			className={cn(
-				"flex w-full flex-col gap-2.5 rounded-lg p-3 text-left transition-all",
+				"flex w-full flex-col gap-3 rounded-xl border border-border/50 p-4 text-left transition-all",
 				isDragging
-					? "border border-foreground/20 border-dashed bg-accent/50 opacity-40"
-					: "cursor-grab bg-card hover:ring-1 hover:ring-foreground/20 active:cursor-grabbing",
+					? "border-foreground/20 border-dashed bg-accent/50 opacity-40"
+					: "cursor-grab bg-card hover:border-foreground/20 active:cursor-grabbing",
 				isCompleted && "opacity-60",
 			)}
 		>
@@ -123,10 +123,10 @@ export function DraggableTaskCard({
 
 			{/* Indicators row */}
 			{(priority || task.labels.length > 0) && (
-				<div className="flex flex-wrap items-center gap-1.5">
+				<div className="flex flex-wrap items-center gap-2">
 					{priority && (
 						<Warning
-							size={14}
+							size={16}
 							weight="fill"
 							style={{ color: priority.color }}
 						/>
@@ -134,12 +134,16 @@ export function DraggableTaskCard({
 					{task.labels.map((label) => (
 						<span
 							key={label.text}
-							className="rounded px-1.5 py-0.5 font-medium text-[11px]"
+							className="flex items-center gap-1 rounded-md px-2 py-0.5 font-medium text-xs"
 							style={{
 								color: label.color,
-								backgroundColor: `${label.color}15`,
+								backgroundColor: `${label.color}18`,
 							}}
 						>
+							<span
+								className="size-1.5 rounded-full"
+								style={{ backgroundColor: label.color }}
+							/>
 							{label.text}
 						</span>
 					))}
@@ -148,10 +152,10 @@ export function DraggableTaskCard({
 
 			{/* Footer */}
 			<div className="flex items-center justify-between">
-				<span className="text-muted-foreground/60 text-xs">
-					Issue #{task.order + 1}
+				<span className="text-muted-foreground/50 text-xs">
+					Issue #{task.order + 1} | FrontEnd
 				</span>
-				{task.assignee && (
+				{task.assignee ? (
 					<div
 						className="flex size-6 items-center justify-center rounded-full font-semibold text-[10px] text-white"
 						style={{ backgroundColor: stringToColor(task.assignee.name) }}
@@ -159,6 +163,8 @@ export function DraggableTaskCard({
 					>
 						{getInitials(task.assignee.name)}
 					</div>
+				) : (
+					<UserCircleDashed size={20} className="text-muted-foreground/40" />
 				)}
 			</div>
 		</button>

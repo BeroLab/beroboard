@@ -1,6 +1,6 @@
 "use client";
 
-import { Warning } from "@phosphor-icons/react";
+import { Warning, UserCircleDashed } from "@phosphor-icons/react";
 import Link from "next/link";
 import type { Task } from "~/lib/types";
 import { cn } from "~/lib/utils";
@@ -42,7 +42,7 @@ export function TaskCard({ task, isCompleted = false }: TaskCardProps) {
 		<Link
 			href={`/task/${task.id}`}
 			className={cn(
-				"flex flex-col gap-2.5 rounded-lg bg-card p-3 transition-all hover:ring-1 hover:ring-foreground/20",
+				"flex flex-col gap-3 rounded-xl border border-border/50 bg-card p-4 transition-all hover:border-foreground/20",
 				isCompleted && "opacity-60",
 			)}
 		>
@@ -60,10 +60,10 @@ export function TaskCard({ task, isCompleted = false }: TaskCardProps) {
 
 			{/* Indicators row */}
 			{(priority || task.labels.length > 0) && (
-				<div className="flex flex-wrap items-center gap-1.5">
+				<div className="flex flex-wrap items-center gap-2">
 					{priority && (
 						<Warning
-							size={14}
+							size={16}
 							weight="fill"
 							style={{ color: priority.color }}
 						/>
@@ -71,12 +71,16 @@ export function TaskCard({ task, isCompleted = false }: TaskCardProps) {
 					{task.labels.map((label) => (
 						<span
 							key={label.text}
-							className="rounded px-1.5 py-0.5 font-medium text-[11px]"
+							className="flex items-center gap-1 rounded-md px-2 py-0.5 font-medium text-xs"
 							style={{
 								color: label.color,
-								backgroundColor: `${label.color}15`,
+								backgroundColor: `${label.color}18`,
 							}}
 						>
+							<span
+								className="size-1.5 rounded-full"
+								style={{ backgroundColor: label.color }}
+							/>
 							{label.text}
 						</span>
 					))}
@@ -85,10 +89,10 @@ export function TaskCard({ task, isCompleted = false }: TaskCardProps) {
 
 			{/* Footer */}
 			<div className="flex items-center justify-between">
-				<span className="text-muted-foreground/60 text-xs">
-					Issue #{task.order + 1}
+				<span className="text-muted-foreground/50 text-xs">
+					Issue #{task.order + 1} | FrontEnd
 				</span>
-				{task.assignee && (
+				{task.assignee ? (
 					<div
 						className="flex size-6 items-center justify-center rounded-full font-semibold text-[10px] text-white"
 						style={{ backgroundColor: stringToColor(task.assignee.name) }}
@@ -96,6 +100,8 @@ export function TaskCard({ task, isCompleted = false }: TaskCardProps) {
 					>
 						{getInitials(task.assignee.name)}
 					</div>
+				) : (
+					<UserCircleDashed size={20} className="text-muted-foreground/40" />
 				)}
 			</div>
 		</Link>

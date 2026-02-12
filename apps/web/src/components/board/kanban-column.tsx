@@ -165,7 +165,7 @@ export function KanbanColumn({
 
 	if (isEditing) {
 		return (
-			<div className="flex w-64 min-w-64 flex-col gap-3 rounded-lg border border-border/50 bg-card/30 p-3 shadow-sm">
+			<div className="flex w-80 min-w-80 flex-col gap-3 rounded-xl bg-background p-3">
 				<input
 					ref={inputRef}
 					type="text"
@@ -226,7 +226,7 @@ export function KanbanColumn({
 			ref={setSortableNodeRef}
 			style={style}
 			className={cn(
-				"flex w-64 min-w-64 flex-col rounded-lg p-3",
+				"flex w-80 min-w-80 flex-col rounded-xl bg-background p-3",
 				isDragging && "opacity-50",
 			)}
 		>
@@ -238,8 +238,8 @@ export function KanbanColumn({
 			>
 				<div className="flex items-center gap-2">
 					<StatusIcon
-						width={16}
-						height={16}
+						width={20}
+						height={20}
 						className="shrink-0 text-muted-foreground"
 					/>
 					<span className="font-medium text-foreground text-sm">

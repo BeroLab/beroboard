@@ -2,14 +2,15 @@
 
 import { useState } from "react";
 import {
-	Folder,
+	Cube,
 	UsersThree,
 	CalendarBlank,
 	SlidersHorizontal,
+	Bell,
 } from "@phosphor-icons/react";
 
 const FILTER_TABS = [
-	{ id: "projects", label: "Projects", icon: Folder },
+	{ id: "projects", label: "Projects", icon: Cube },
 	{ id: "teams", label: "Teams", icon: UsersThree },
 	{ id: "date", label: "Date", icon: CalendarBlank },
 ] as const;
@@ -25,14 +26,23 @@ export function BoardHeader({ title, issueCount }: BoardHeaderProps) {
 	const [activeTab, setActiveTab] = useState<FilterTab>("projects");
 
 	return (
-		<div className="flex flex-col gap-4 border-border border-b pb-4">
-			<div className="flex items-baseline gap-3">
-				<h1 className="font-bold text-2xl text-foreground tracking-tight">
-					{title}
-				</h1>
-				<span className="text-muted-foreground text-sm">
-					{issueCount} Issues
-				</span>
+		<div className="flex flex-col gap-4 pb-2">
+			<div className="flex items-center justify-between">
+				<div className="flex items-baseline gap-3">
+					<h1 className="font-bold text-2xl text-foreground tracking-tight">
+						{title}
+					</h1>
+					<span className="text-muted-foreground text-sm">
+						{issueCount} Issues
+					</span>
+				</div>
+
+				<button
+					type="button"
+					className="flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+				>
+					<Bell size={20} />
+				</button>
 			</div>
 
 			<div className="flex items-center justify-between">

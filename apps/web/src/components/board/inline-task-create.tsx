@@ -1,5 +1,6 @@
 "use client";
 
+import { UserCircleDashed } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
 
 interface InlineTaskCreateProps {
@@ -39,7 +40,7 @@ export function InlineTaskCreate({
 	};
 
 	return (
-		<div className="flex flex-col gap-2.5 rounded-lg bg-card p-3 ring-1 ring-foreground/20">
+		<div className="flex flex-col gap-3 rounded-xl border border-border/50 bg-card p-4">
 			<input
 				ref={inputRef}
 				type="text"
@@ -49,13 +50,14 @@ export function InlineTaskCreate({
 				onBlur={handleBlur}
 				placeholder="Type the issue title here..."
 				disabled={isPending}
-				className="bg-transparent font-medium text-foreground text-sm placeholder:text-muted-foreground/40 focus:outline-none disabled:opacity-50"
+				className="bg-transparent text-foreground text-sm placeholder:text-muted-foreground/30 focus:outline-none disabled:opacity-50"
 			/>
 
-			<div className="flex items-center justify-between">
-				<span className="text-muted-foreground/40 text-xs">
-					Issue #{taskCount + 1}
+			<div className="flex items-center justify-between pt-4">
+				<span className="text-muted-foreground/50 text-xs">
+					Issue #{taskCount + 1} | FrontEnd
 				</span>
+				<UserCircleDashed size={20} className="text-muted-foreground/40" />
 			</div>
 		</div>
 	);

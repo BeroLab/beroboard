@@ -619,7 +619,7 @@ export function TaskBoard({ organizationId, userId }: TaskBoardProps) {
             items={columnIds}
             strategy={horizontalListSortingStrategy}
           >
-            <div className="flex flex-1 gap-4 overflow-x-auto pb-4">
+            <div className="flex flex-1 gap-4 overflow-x-auto scrollbar-none">
               {filteredColumns.map((column) => (
                 <KanbanColumn
                   key={column.id}
