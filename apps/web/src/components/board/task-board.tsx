@@ -583,11 +583,8 @@ export function TaskBoard({ organizationId, userId }: TaskBoardProps) {
   return (
     <div className="flex flex-1 flex-col gap-5 overflow-hidden p-5">
       <BoardHeader
-        title="Project Overview"
-        subtitle={`${totalTasks} tasks · ${columns.length} columns`}
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        onNewTask={() => setIsModalOpen(true)}
+        title="Board"
+        issueCount={totalTasks}
         />
 
       {localColumns.length === 0 ? (
