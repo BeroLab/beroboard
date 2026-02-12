@@ -9,12 +9,18 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import {
 	Check,
-	DotsSixVertical,
+	Circle,
+	CheckCircle,
+	Hourglass,
+	Eye,
+	Tray,
 	DotsThree,
 	PencilSimple,
+	Plus,
 	Trash,
 	X,
 } from "@phosphor-icons/react";
+import type { Icon as PhosphorIcon } from "@phosphor-icons/react";
 import { useMemo, useRef, useState } from "react";
 import {
 	DropdownMenu,
@@ -27,16 +33,51 @@ import { cn } from "~/lib/utils";
 import { COLUMN_COLORS } from "./add-column";
 import { DraggableTaskCard } from "./draggable-task-card";
 
+const COLUMN_META: Record<
+	string,
+	{ icon: PhosphorIcon; description: string }
+> = {
+	backlog: {
+		icon: Tray,
+		description: "Atividades que estão sendo refinadas",
+	},
+	todo: {
+		icon: Circle,
+		description: "Atividades prontas para serem desenvolvidas",
+	},
+	"in progress": {
+		icon: Hourglass,
+		description: "Atividades que estão em desenvolvimento",
+	},
+	review: {
+		icon: Eye,
+		description: "Atividades aguardando revisão",
+	},
+	done: {
+		icon: CheckCircle,
+		description: "Atividades finalizadas",
+	},
+};
+
+function getColumnMeta(name: string, isCompleted: boolean) {
+	const key = name.toLowerCase();
+	if (COLUMN_META[key]) return COLUMN_META[key];
+	if (isCompleted) return { icon: CheckCircle, description: "" };
+	return { icon: Circle, description: "" };
+}
+
 interface KanbanColumnProps {
 	column: Column;
 	onDelete?: (id: string) => void;
 	onUpdate?: (id: string, input: UpdateColumnInput) => void;
+	onAddTask?: (columnId: string) => void;
 }
 
 export function KanbanColumn({
 	column,
 	onDelete,
 	onUpdate,
+	onAddTask,
 }: KanbanColumnProps) {
 	const [isEditing, setIsEditing] = useState(false);
 	const [editName, setEditName] = useState(column.name);
@@ -76,6 +117,11 @@ export function KanbanColumn({
 	const taskIds = useMemo(
 		() => column.tasks.map((task) => task.id),
 		[column.tasks],
+	);
+
+	const { icon: StatusIcon, description } = getColumnMeta(
+		column.name,
+		column.isCompleted,
 	);
 
 	const handleStartEdit = () => {
@@ -171,7 +217,7 @@ export function KanbanColumn({
 			ref={setSortableNodeRef}
 			style={style}
 			className={cn(
-				"flex w-64 min-w-64 flex-col rounded-lg border border-border/50 bg-card/30 p-3 shadow-sm",
+				"flex w-64 min-w-64 flex-col rounded-lg p-3",
 				isDragging && "opacity-50",
 			)}
 		>
@@ -179,70 +225,85 @@ export function KanbanColumn({
 			<div
 				{...attributes}
 				{...listeners}
-				className="flex cursor-grab items-center justify-between pb-2 active:cursor-grabbing"
+				className="flex cursor-grab items-center justify-between active:cursor-grabbing"
 			>
 				<div className="flex items-center gap-2">
-					<DotsSixVertical
-						size={14}
-						weight="bold"
+					<StatusIcon
+						size={16}
+						weight={column.isCompleted ? "fill" : "regular"}
 						className="text-muted-foreground"
 					/>
-					{column.color && (
-						<div
-							className="size-2 rounded-full"
-							style={{ backgroundColor: column.color }}
-						/>
-					)}
 					<span className="font-medium text-foreground text-sm">
 						{column.name}
 					</span>
-					<span className="text-muted-foreground text-xs">
+					<span className="text-muted-foreground/60 text-xs">
 						{column.tasks.length}
 					</span>
 				</div>
 
-				{(onDelete || onUpdate) && (
-					<DropdownMenu>
-						<DropdownMenuTrigger
-							className="flex size-6 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-							onClick={(e) => e.stopPropagation()}
+				<div className="flex items-center gap-0.5">
+					{onAddTask && (
+						<button
+							type="button"
+							onClick={(e) => {
+								e.stopPropagation();
+								onAddTask(column.id);
+							}}
 							onPointerDown={(e) => e.stopPropagation()}
+							className="flex size-6 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
 						>
-							<DotsThree size={16} weight="bold" />
-						</DropdownMenuTrigger>
-						<DropdownMenuContent
-							className="w-36 rounded-lg border border-border bg-popover p-1"
-							align="end"
-							sideOffset={4}
-						>
-							{onUpdate && (
-								<DropdownMenuItem
-									className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-foreground hover:bg-accent focus:bg-accent"
-									onClick={handleStartEdit}
-								>
-									<PencilSimple size={14} />
-									<span className="text-sm">Edit column</span>
-								</DropdownMenuItem>
-							)}
-							{onDelete && (
-								<DropdownMenuItem
-									className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-destructive hover:bg-destructive/10 focus:bg-destructive/10 focus:text-destructive"
-									onClick={() => onDelete(column.id)}
-								>
-									<Trash size={14} />
-									<span className="text-sm">Delete column</span>
-								</DropdownMenuItem>
-							)}
-						</DropdownMenuContent>
-					</DropdownMenu>
-				)}
+							<Plus size={16} />
+						</button>
+					)}
+
+					{(onDelete || onUpdate) && (
+						<DropdownMenu>
+							<DropdownMenuTrigger
+								className="flex size-6 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+								onClick={(e) => e.stopPropagation()}
+								onPointerDown={(e) => e.stopPropagation()}
+							>
+								<DotsThree size={16} weight="bold" />
+							</DropdownMenuTrigger>
+							<DropdownMenuContent
+								className="w-36 rounded-lg border border-border bg-popover p-1"
+								align="end"
+								sideOffset={4}
+							>
+								{onUpdate && (
+									<DropdownMenuItem
+										className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-foreground hover:bg-accent focus:bg-accent"
+										onClick={handleStartEdit}
+									>
+										<PencilSimple size={14} />
+										<span className="text-sm">Edit column</span>
+									</DropdownMenuItem>
+								)}
+								{onDelete && (
+									<DropdownMenuItem
+										className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-destructive hover:bg-destructive/10 focus:bg-destructive/10 focus:text-destructive"
+										onClick={() => onDelete(column.id)}
+									>
+										<Trash size={14} />
+										<span className="text-sm">Delete column</span>
+									</DropdownMenuItem>
+								)}
+							</DropdownMenuContent>
+						</DropdownMenu>
+					)}
+				</div>
 			</div>
+
+			{/* Description */}
+			{description && (
+				<p className="mt-1 text-muted-foreground/50 text-xs">{description}</p>
+			)}
 
 			{/* Task Drop Area */}
 			<div
 				ref={setDroppableNodeRef}
 				className={cn(
-					"flex min-h-[100px] flex-1 flex-col gap-2 overflow-y-auto rounded-lg p-0.5",
+					"mt-3 flex min-h-[100px] flex-1 flex-col gap-2 overflow-y-auto rounded-lg p-0.5",
 					isOver && "bg-accent/50",
 				)}
 			>
