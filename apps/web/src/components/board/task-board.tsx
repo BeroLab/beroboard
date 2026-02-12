@@ -626,7 +626,6 @@ export function TaskBoard({ organizationId, userId }: TaskBoardProps) {
                   column={column}
                   onDelete={handleDeleteColumn}
                   onUpdate={handleUpdateColumn}
-                  onAddTask={() => setIsModalOpen(true)}
                   onCreateTask={handleInlineCreateTask}
                   isCreatingTask={createTaskMutation.isPending}
                 />

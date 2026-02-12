@@ -71,7 +71,6 @@ interface KanbanColumnProps {
 	column: Column;
 	onDelete?: (id: string) => void;
 	onUpdate?: (id: string, input: UpdateColumnInput) => void;
-	onAddTask?: (columnId: string) => void;
 	onCreateTask?: (title: string, columnId: string) => void;
 	isCreatingTask?: boolean;
 }
@@ -80,11 +79,11 @@ export function KanbanColumn({
 	column,
 	onDelete,
 	onUpdate,
-	onAddTask,
 	onCreateTask,
 	isCreatingTask,
 }: KanbanColumnProps) {
 	const [isEditing, setIsEditing] = useState(false);
+	const [isCreating, setIsCreating] = useState(false);
 	const [editName, setEditName] = useState(column.name);
 	const [editColor, setEditColor] = useState(
 		column.color ?? COLUMN_COLORS[0].color,
@@ -247,12 +246,12 @@ export function KanbanColumn({
 				</div>
 
 				<div className="flex items-center gap-0.5">
-					{onAddTask && (
+					{onCreateTask && (
 						<button
 							type="button"
 							onClick={(e) => {
 								e.stopPropagation();
-								onAddTask(column.id);
+								setIsCreating(true);
 							}}
 							onPointerDown={(e) => e.stopPropagation()}
 							className="flex size-6 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
@@ -322,11 +321,15 @@ export function KanbanColumn({
 					))}
 				</SortableContext>
 
-				{onCreateTask && (
+				{isCreating && onCreateTask && (
 					<InlineTaskCreate
 						columnId={column.id}
 						taskCount={column.tasks.length}
-						onSubmit={onCreateTask}
+						onSubmit={(title, colId) => {
+							onCreateTask(title, colId);
+							setIsCreating(false);
+						}}
+						onCancel={() => setIsCreating(false)}
 						isPending={isCreatingTask}
 					/>
 				)}
