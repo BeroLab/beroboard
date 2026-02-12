@@ -9,7 +9,6 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import {
 	Check,
-	Circle,
 	DotsThree,
 	PencilSimple,
 	Plus,
@@ -39,37 +38,46 @@ import { InlineTaskCreate } from "./inline-task-create";
 
 type IconComponent = ComponentType<SVGProps<SVGSVGElement>>;
 
-const COLUMN_META: Record<
-	string,
-	{ icon: IconComponent; description: string }
-> = {
-	backlog: {
-		icon: BacklogIcon,
-		description: "Atividades que estão sendo refinadas",
-	},
-	todo: {
-		icon: TodoIcon,
-		description: "Atividades prontas para serem desenvolvidas",
-	},
-	"in progress": {
-		icon: InProgressIcon,
-		description: "Atividades que estão em desenvolvimento",
-	},
-	review: {
-		icon: ReviewIcon,
-		description: "Atividades aguardando revisão",
-	},
-	done: {
-		icon: DoneIcon,
-		description: "Atividades finalizadas",
-	},
+const ICON_MAP: Record<string, IconComponent> = {
+	backlog: BacklogIcon,
+	todo: TodoIcon,
+	"in-progress": InProgressIcon,
+	review: ReviewIcon,
+	done: DoneIcon,
 };
 
-function getColumnMeta(name: string, isCompleted: boolean) {
+const NAME_TO_ICON: Record<string, IconComponent> = {
+	backlog: BacklogIcon,
+	todo: TodoIcon,
+	"in progress": InProgressIcon,
+	review: ReviewIcon,
+	done: DoneIcon,
+};
+
+function getColumnVisual(
+	name: string,
+	color: string | null,
+	isCompleted: boolean,
+): { icon: IconComponent | null; dotColor: string | null } {
+	// If color has icon: prefix, use the SVG icon
+	if (color?.startsWith("icon:")) {
+		const iconKey = color.slice(5);
+		const icon = ICON_MAP[iconKey] ?? null;
+		return { icon, dotColor: null };
+	}
+
+	// If color is a hex value, show colored dot
+	if (color) {
+		return { icon: null, dotColor: color };
+	}
+
+	// Fallback: match by name
 	const key = name.toLowerCase();
-	if (COLUMN_META[key]) return COLUMN_META[key];
-	if (isCompleted) return { icon: DoneIcon, description: "" };
-	return { icon: TodoIcon, description: "" };
+	if (NAME_TO_ICON[key]) {
+		return { icon: NAME_TO_ICON[key], dotColor: null };
+	}
+	if (isCompleted) return { icon: DoneIcon, dotColor: null };
+	return { icon: TodoIcon, dotColor: null };
 }
 
 interface KanbanColumnProps {
@@ -90,8 +98,19 @@ export function KanbanColumn({
 	const [isEditing, setIsEditing] = useState(false);
 	const [isCreating, setIsCreating] = useState(false);
 	const [editName, setEditName] = useState(column.name);
+	const [editDescription, setEditDescription] = useState(
+		column.description ?? "",
+	);
+	const [editMode, setEditMode] = useState<"icon" | "color">(
+		column.color?.startsWith("icon:") ? "icon" : "color",
+	);
+	const [editIcon, setEditIcon] = useState(
+		column.color?.startsWith("icon:") ? column.color.slice(5) : "backlog",
+	);
 	const [editColor, setEditColor] = useState(
-		column.color ?? COLUMN_COLORS[0].color,
+		column.color && !column.color.startsWith("icon:")
+			? column.color
+			: COLUMN_COLORS[0].color,
 	);
 	const inputRef = useRef<HTMLInputElement>(null);
 
@@ -128,29 +147,39 @@ export function KanbanColumn({
 		[column.tasks],
 	);
 
-	const { icon: StatusIcon, description } = getColumnMeta(
+	const { icon: StatusIcon, dotColor } = getColumnVisual(
 		column.name,
+		column.color,
 		column.isCompleted,
 	);
 
 	const handleStartEdit = () => {
 		setEditName(column.name);
-		setEditColor(column.color ?? COLUMN_COLORS[0].color);
+		setEditDescription(column.description ?? "");
+		const isIcon = column.color?.startsWith("icon:");
+		setEditMode(isIcon ? "icon" : "color");
+		setEditIcon(isIcon ? column.color!.slice(5) : "backlog");
+		setEditColor(
+			column.color && !isIcon ? column.color : COLUMN_COLORS[0].color,
+		);
 		setIsEditing(true);
 		setTimeout(() => inputRef.current?.focus(), 0);
 	};
 
 	const handleCancelEdit = () => {
 		setEditName(column.name);
-		setEditColor(column.color ?? COLUMN_COLORS[0].color);
+		setEditDescription(column.description ?? "");
 		setIsEditing(false);
 	};
 
 	const handleSaveEdit = () => {
 		if (!editName.trim()) return;
+		const colorValue =
+			editMode === "icon" ? `icon:${editIcon}` : editColor;
 		onUpdate?.(column.id, {
 			name: editName.trim(),
-			color: editColor,
+			description: editDescription.trim() || null,
+			color: colorValue,
 		});
 		setIsEditing(false);
 	};
@@ -176,29 +205,90 @@ export function KanbanColumn({
 					className="h-9 rounded-lg border border-border bg-background px-3 text-foreground text-sm placeholder:text-muted-foreground focus:border-foreground/30 focus:outline-none"
 				/>
 
-				<div className="flex flex-col gap-1.5">
-					<span className="text-muted-foreground text-xs">Color</span>
-					<div className="flex flex-wrap gap-1.5">
-						{COLUMN_COLORS.map((c) => (
-							<button
-								key={c.id}
-								type="button"
-								onClick={() => setEditColor(c.color)}
-								className={cn(
-									"flex size-6 items-center justify-center rounded-md transition-all",
-									editColor === c.color
-										? "ring-2 ring-foreground ring-offset-1 ring-offset-background"
-										: "hover:scale-110",
-								)}
-								style={{ backgroundColor: c.color }}
-							>
-								{editColor === c.color && (
-									<Check size={12} weight="bold" className="text-white" />
-								)}
-							</button>
-						))}
-					</div>
+				<input
+					type="text"
+					value={editDescription}
+					onChange={(e) => setEditDescription(e.target.value)}
+					onKeyDown={handleKeyDown}
+					placeholder="Description (optional)"
+					className="h-9 rounded-lg border border-border bg-background px-3 text-foreground text-xs placeholder:text-muted-foreground focus:border-foreground/30 focus:outline-none"
+				/>
+
+				{/* Mode toggle */}
+				<div className="flex gap-1 rounded-lg bg-accent/50 p-0.5">
+					<button
+						type="button"
+						onClick={() => setEditMode("icon")}
+						className={cn(
+							"flex-1 rounded-md px-2 py-1 text-xs transition-colors",
+							editMode === "icon"
+								? "bg-background font-medium text-foreground shadow-sm"
+								: "text-muted-foreground hover:text-foreground",
+						)}
+					>
+						Icon
+					</button>
+					<button
+						type="button"
+						onClick={() => setEditMode("color")}
+						className={cn(
+							"flex-1 rounded-md px-2 py-1 text-xs transition-colors",
+							editMode === "color"
+								? "bg-background font-medium text-foreground shadow-sm"
+								: "text-muted-foreground hover:text-foreground",
+						)}
+					>
+						Color
+					</button>
 				</div>
+
+				{editMode === "icon" ? (
+					<div className="flex flex-col gap-1.5">
+						<span className="text-muted-foreground text-xs">Icon</span>
+						<div className="flex flex-wrap gap-1.5">
+							{Object.entries(ICON_MAP).map(([key, Icon]) => (
+								<button
+									key={key}
+									type="button"
+									onClick={() => setEditIcon(key)}
+									title={key}
+									className={cn(
+										"flex size-7 items-center justify-center rounded-md transition-all",
+										editIcon === key
+											? "bg-accent ring-2 ring-foreground ring-offset-1 ring-offset-background"
+											: "text-muted-foreground hover:bg-accent hover:text-foreground",
+									)}
+								>
+									<Icon width={18} height={18} />
+								</button>
+							))}
+						</div>
+					</div>
+				) : (
+					<div className="flex flex-col gap-1.5">
+						<span className="text-muted-foreground text-xs">Color</span>
+						<div className="flex flex-wrap gap-1.5">
+							{COLUMN_COLORS.map((c) => (
+								<button
+									key={c.id}
+									type="button"
+									onClick={() => setEditColor(c.color)}
+									className={cn(
+										"flex size-6 items-center justify-center rounded-md transition-all",
+										editColor === c.color
+											? "ring-2 ring-foreground ring-offset-1 ring-offset-background"
+											: "hover:scale-110",
+									)}
+									style={{ backgroundColor: c.color }}
+								>
+									{editColor === c.color && (
+										<Check size={12} weight="bold" className="text-white" />
+									)}
+								</button>
+							))}
+						</div>
+					</div>
+				)}
 
 				<div className="flex gap-2">
 					<button
@@ -237,11 +327,18 @@ export function KanbanColumn({
 				className="flex cursor-grab items-center justify-between active:cursor-grabbing"
 			>
 				<div className="flex items-center gap-2">
-					<StatusIcon
-						width={20}
-						height={20}
-						className="shrink-0 text-muted-foreground"
-					/>
+					{StatusIcon ? (
+						<StatusIcon
+							width={20}
+							height={20}
+							className="shrink-0 text-muted-foreground"
+						/>
+					) : dotColor ? (
+						<div
+							className="size-3 shrink-0 rounded-full"
+							style={{ backgroundColor: dotColor }}
+						/>
+					) : null}
 					<span className="font-medium text-foreground text-sm">
 						{column.name}
 					</span>
@@ -304,8 +401,8 @@ export function KanbanColumn({
 			</div>
 
 			{/* Description */}
-			{description && (
-				<p className="mt-1 text-muted-foreground/50 text-xs">{description}</p>
+			{column.description && (
+				<p className="mt-1 text-muted-foreground/50 text-xs">{column.description}</p>
 			)}
 
 			{/* Task Drop Area */}

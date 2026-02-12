@@ -1,13 +1,23 @@
 "use client";
 
 import { Check, Plus, X } from "@phosphor-icons/react";
+import type { ComponentType, SVGProps } from "react";
 import { useRef, useState } from "react";
+import {
+	BacklogIcon,
+	DoneIcon,
+	InProgressIcon,
+	ReviewIcon,
+	TodoIcon,
+} from "~/components/icons";
 import { cn } from "~/lib/utils";
 
 interface AddColumnProps {
-	onAdd: (name: string, color?: string) => void;
+	onAdd: (name: string, color?: string, description?: string) => void;
 	isLoading?: boolean;
 }
+
+type IconComponent = ComponentType<SVGProps<SVGSVGElement>>;
 
 const COLUMN_COLORS = [
 	{ id: "blue", color: "#3b82f6" },
@@ -20,22 +30,43 @@ const COLUMN_COLORS = [
 	{ id: "cyan", color: "#06b6d4" },
 ];
 
+const COLUMN_ICONS: { id: string; label: string; icon: IconComponent }[] = [
+	{ id: "backlog", label: "Backlog", icon: BacklogIcon },
+	{ id: "todo", label: "Todo", icon: TodoIcon },
+	{ id: "in-progress", label: "In Progress", icon: InProgressIcon },
+	{ id: "review", label: "Review", icon: ReviewIcon },
+	{ id: "done", label: "Done", icon: DoneIcon },
+];
+
+type SelectionMode = "icon" | "color";
+
 export function AddColumn({ onAdd, isLoading }: AddColumnProps) {
 	const [isEditing, setIsEditing] = useState(false);
 	const [name, setName] = useState("");
+	const [description, setDescription] = useState("");
+	const [mode, setMode] = useState<SelectionMode>("icon");
+	const [selectedIcon, setSelectedIcon] = useState(COLUMN_ICONS[0].id);
 	const [selectedColor, setSelectedColor] = useState(COLUMN_COLORS[0].color);
 	const inputRef = useRef<HTMLInputElement>(null);
 
 	const handleSubmit = () => {
 		if (!name.trim()) return;
-		onAdd(name.trim(), selectedColor);
+		const colorValue =
+			mode === "icon" ? `icon:${selectedIcon}` : selectedColor;
+		onAdd(name.trim(), colorValue, description.trim() || undefined);
 		setName("");
+		setDescription("");
+		setMode("icon");
+		setSelectedIcon(COLUMN_ICONS[0].id);
 		setSelectedColor(COLUMN_COLORS[0].color);
 		setIsEditing(false);
 	};
 
 	const handleCancel = () => {
 		setName("");
+		setDescription("");
+		setMode("icon");
+		setSelectedIcon(COLUMN_ICONS[0].id);
 		setSelectedColor(COLUMN_COLORS[0].color);
 		setIsEditing(false);
 	};
@@ -66,29 +97,93 @@ export function AddColumn({ onAdd, isLoading }: AddColumnProps) {
 					className="h-9 rounded-lg border border-border bg-background px-3 text-foreground text-sm placeholder:text-muted-foreground focus:border-foreground/30 focus:outline-none"
 				/>
 
-				<div className="flex flex-col gap-1.5">
-					<span className="text-muted-foreground text-xs">Color</span>
-					<div className="flex flex-wrap gap-1.5">
-						{COLUMN_COLORS.map((c) => (
-							<button
-								key={c.id}
-								type="button"
-								onClick={() => setSelectedColor(c.color)}
-								className={cn(
-									"flex size-6 items-center justify-center rounded-md transition-all",
-									selectedColor === c.color
-										? "ring-2 ring-foreground ring-offset-1 ring-offset-background"
-										: "hover:scale-110",
-								)}
-								style={{ backgroundColor: c.color }}
-							>
-								{selectedColor === c.color && (
-									<Check size={12} weight="bold" className="text-white" />
-								)}
-							</button>
-						))}
-					</div>
+				<input
+					type="text"
+					value={description}
+					onChange={(e) => setDescription(e.target.value)}
+					onKeyDown={handleKeyDown}
+					placeholder="Description (optional)"
+					className="h-9 rounded-lg border border-border bg-background px-3 text-foreground text-xs placeholder:text-muted-foreground focus:border-foreground/30 focus:outline-none"
+				/>
+
+				{/* Mode toggle */}
+				<div className="flex gap-1 rounded-lg bg-accent/50 p-0.5">
+					<button
+						type="button"
+						onClick={() => setMode("icon")}
+						className={cn(
+							"flex-1 rounded-md px-2 py-1 text-xs transition-colors",
+							mode === "icon"
+								? "bg-background font-medium text-foreground shadow-sm"
+								: "text-muted-foreground hover:text-foreground",
+						)}
+					>
+						Icon
+					</button>
+					<button
+						type="button"
+						onClick={() => setMode("color")}
+						className={cn(
+							"flex-1 rounded-md px-2 py-1 text-xs transition-colors",
+							mode === "color"
+								? "bg-background font-medium text-foreground shadow-sm"
+								: "text-muted-foreground hover:text-foreground",
+						)}
+					>
+						Color
+					</button>
 				</div>
+
+				{mode === "icon" ? (
+					<div className="flex flex-col gap-1.5">
+						<span className="text-muted-foreground text-xs">Icon</span>
+						<div className="flex flex-wrap gap-1.5">
+							{COLUMN_ICONS.map((item) => {
+								const Icon = item.icon;
+								return (
+									<button
+										key={item.id}
+										type="button"
+										onClick={() => setSelectedIcon(item.id)}
+										title={item.label}
+										className={cn(
+											"flex size-7 items-center justify-center rounded-md transition-all",
+											selectedIcon === item.id
+												? "bg-accent ring-2 ring-foreground ring-offset-1 ring-offset-background"
+												: "text-muted-foreground hover:bg-accent hover:text-foreground",
+										)}
+									>
+										<Icon width={18} height={18} />
+									</button>
+								);
+							})}
+						</div>
+					</div>
+				) : (
+					<div className="flex flex-col gap-1.5">
+						<span className="text-muted-foreground text-xs">Color</span>
+						<div className="flex flex-wrap gap-1.5">
+							{COLUMN_COLORS.map((c) => (
+								<button
+									key={c.id}
+									type="button"
+									onClick={() => setSelectedColor(c.color)}
+									className={cn(
+										"flex size-6 items-center justify-center rounded-md transition-all",
+										selectedColor === c.color
+											? "ring-2 ring-foreground ring-offset-1 ring-offset-background"
+											: "hover:scale-110",
+									)}
+									style={{ backgroundColor: c.color }}
+								>
+									{selectedColor === c.color && (
+										<Check size={12} weight="bold" className="text-white" />
+									)}
+								</button>
+							))}
+						</div>
+					</div>
+				)}
 
 				<div className="flex gap-2">
 					<button
