@@ -33,6 +33,7 @@ export const getColumnsSucessResponseSchema = z
       .array(),
     id: z.string(),
     name: z.string(),
+    description: z.string().nullable(),
     color: z.string().nullable(),
     order: z.number(),
     isCompleted: z.boolean(),

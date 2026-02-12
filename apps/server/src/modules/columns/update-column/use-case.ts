@@ -9,6 +9,7 @@ export async function updateColumnUseCase(
 		where: { id },
 		data: {
 			name: input.name,
+			description: input.description,
 			color: input.color,
 			order: input.order,
 			isCompleted: input.isCompleted,

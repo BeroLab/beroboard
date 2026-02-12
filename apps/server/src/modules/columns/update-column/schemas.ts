@@ -7,6 +7,7 @@ export const updateColumnParamsSchema = z.object({
 
 export const updateColumnBodySchema = z.object({
 	name: z.string().min(1).optional(),
+	description: z.string().nullable().optional(),
 	color: z.string().optional(),
 	order: z.number().int().optional(),
 	isCompleted: z.boolean().optional(),
@@ -17,6 +18,7 @@ export type UpdateColumnInput = z.infer<typeof updateColumnBodySchema>;
 export const updateColumnResponseSchema = z.object({
 	id: z.string(),
 	name: z.string(),
+	description: z.string().nullable(),
 	createdAt: zDate,
 	updatedAt: zDate,
 	organizationId: z.string(),
