@@ -1,6 +1,6 @@
 "use client";
 
-import { Columns, Plus } from "@phosphor-icons/react";
+import { ColumnsIcon, PlusIcon } from "@phosphor-icons/react";
 import { DEFAULT_COLUMNS } from "~/lib/types";
 
 interface EmptyBoardProps {
@@ -15,7 +15,7 @@ export function EmptyBoard({
 	return (
 		<div className="flex flex-1 flex-col items-center justify-center gap-5">
 			<div className="flex size-12 items-center justify-center rounded-xl bg-muted">
-				<Columns size={24} className="text-muted-foreground" />
+				<ColumnsIcon size={24} className="text-muted-foreground" />
 			</div>
 
 			<div className="flex flex-col items-center gap-1.5">
@@ -35,7 +35,7 @@ export function EmptyBoard({
 					disabled={isLoading}
 					className="flex h-9 items-center gap-1.5 rounded-full bg-foreground px-4 font-medium text-background text-sm transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
 				>
-					<Plus size={14} weight="bold" />
+					<PlusIcon size={14} weight="bold" />
 					{isLoading ? "Creating..." : "Create default columns"}
 				</button>
 

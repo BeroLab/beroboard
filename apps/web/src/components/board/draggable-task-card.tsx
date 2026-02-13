@@ -2,7 +2,7 @@
 
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { Warning, UserCircleDashed } from "@phosphor-icons/react";
+import { WarningIcon, UserCircleDashedIcon } from "@phosphor-icons/react";
 import { useRouter } from "next/navigation";
 import { useRef } from "react";
 import type { Task } from "~/lib/types";
@@ -125,7 +125,7 @@ export function DraggableTaskCard({
 			{(priority || task.labels.length > 0) && (
 				<div className="flex flex-wrap items-center gap-2">
 					{priority && (
-						<Warning
+						<WarningIcon
 							size={16}
 							weight="fill"
 							style={{ color: priority.color }}
@@ -164,7 +164,7 @@ export function DraggableTaskCard({
 						{getInitials(task.assignee.name)}
 					</div>
 				) : (
-					<UserCircleDashed size={20} className="text-muted-foreground/40" />
+					<UserCircleDashedIcon size={20} className="text-muted-foreground/40" />
 				)}
 			</div>
 		</button>

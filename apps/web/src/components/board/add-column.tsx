@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Plus, X } from "@phosphor-icons/react";
+import { CheckIcon, PlusIcon, XIcon } from "@phosphor-icons/react";
 import type { ComponentType, SVGProps } from "react";
 import { useRef, useState } from "react";
 import {
@@ -177,7 +177,7 @@ export function AddColumn({ onAdd, isLoading }: AddColumnProps) {
 									style={{ backgroundColor: c.color }}
 								>
 									{selectedColor === c.color && (
-										<Check size={12} weight="bold" className="text-white" />
+										<CheckIcon size={12} weight="bold" className="text-white" />
 									)}
 								</button>
 							))}
@@ -199,7 +199,7 @@ export function AddColumn({ onAdd, isLoading }: AddColumnProps) {
 						onClick={handleCancel}
 						className="flex size-8 items-center justify-center rounded-lg border border-border text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
 					>
-						<X size={14} />
+						<XIcon size={14} />
 					</button>
 				</div>
 			</div>
@@ -212,7 +212,7 @@ export function AddColumn({ onAdd, isLoading }: AddColumnProps) {
 			onClick={handleStartEditing}
 			className="flex h-9 w-64 min-w-64 items-center justify-center gap-1.5 rounded-lg border border-border border-dashed text-muted-foreground transition-colors hover:border-foreground/30 hover:bg-accent hover:text-foreground"
 		>
-			<Plus size={14} />
+			<PlusIcon size={14} />
 			<span className="text-sm">Add column</span>
 		</button>
 	);

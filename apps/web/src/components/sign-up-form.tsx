@@ -1,6 +1,6 @@
 "use client";
 
-import { GithubLogo, GoogleLogo } from "@phosphor-icons/react";
+import { GithubLogoIcon, GoogleLogoIcon } from "@phosphor-icons/react";
 import Link from "next/link";
 import { toast } from "sonner";
 
@@ -51,7 +51,7 @@ export default function SignUpForm() {
 					onClick={() => handleSocialSignIn("google")}
 					className="flex h-11 w-full items-center justify-center gap-3 rounded-lg border border-border bg-card font-medium text-foreground text-sm transition-colors hover:bg-accent"
 				>
-					<GoogleLogo className="h-5 w-5" weight="bold" />
+					<GoogleLogoIcon className="h-5 w-5" weight="bold" />
 					<span>Continue with Google</span>
 				</button>
 
@@ -60,7 +60,7 @@ export default function SignUpForm() {
 					onClick={() => handleSocialSignIn("github")}
 					className="flex h-11 w-full items-center justify-center gap-3 rounded-lg border border-border bg-card font-medium text-foreground text-sm transition-colors hover:bg-accent"
 				>
-					<GithubLogo className="h-5 w-5" weight="bold" />
+					<GithubLogoIcon className="h-5 w-5" weight="bold" />
 					<span>Continue with GitHub</span>
 				</button>
 			</div>

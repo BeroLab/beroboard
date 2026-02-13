@@ -8,12 +8,12 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import {
-	Check,
-	DotsThree,
-	PencilSimple,
-	Plus,
-	Trash,
-	X,
+	CheckIcon,
+	DotsThreeIcon,
+	PencilSimpleIcon,
+	PlusIcon,
+	TrashIcon,
+	XIcon,
 } from "@phosphor-icons/react";
 import type { ComponentType, SVGProps } from "react";
 import {
@@ -282,7 +282,7 @@ export function KanbanColumn({
 									style={{ backgroundColor: c.color }}
 								>
 									{editColor === c.color && (
-										<Check size={12} weight="bold" className="text-white" />
+										<CheckIcon size={12} weight="bold" className="text-white" />
 									)}
 								</button>
 							))}
@@ -304,7 +304,7 @@ export function KanbanColumn({
 						onClick={handleCancelEdit}
 						className="flex size-8 items-center justify-center rounded-lg border border-border text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
 					>
-						<X size={14} />
+						<XIcon size={14} />
 					</button>
 				</div>
 			</div>
@@ -358,7 +358,7 @@ export function KanbanColumn({
 							onPointerDown={(e) => e.stopPropagation()}
 							className="flex size-6 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
 						>
-							<Plus size={16} />
+							<PlusIcon size={16} />
 						</button>
 					)}
 
@@ -369,7 +369,7 @@ export function KanbanColumn({
 								onClick={(e) => e.stopPropagation()}
 								onPointerDown={(e) => e.stopPropagation()}
 							>
-								<DotsThree size={16} weight="bold" />
+								<DotsThreeIcon size={16} weight="bold" />
 							</DropdownMenuTrigger>
 							<DropdownMenuContent
 								className="w-36 rounded-lg border border-border bg-popover p-1"
@@ -381,7 +381,7 @@ export function KanbanColumn({
 										className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-foreground hover:bg-accent focus:bg-accent"
 										onClick={handleStartEdit}
 									>
-										<PencilSimple size={14} />
+										<PencilSimpleIcon size={14} />
 										<span className="text-sm">Edit column</span>
 									</DropdownMenuItem>
 								)}
@@ -390,7 +390,7 @@ export function KanbanColumn({
 										className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-destructive hover:bg-destructive/10 focus:bg-destructive/10 focus:text-destructive"
 										onClick={() => onDelete(column.id)}
 									>
-										<Trash size={14} />
+										<TrashIcon size={14} />
 										<span className="text-sm">Delete column</span>
 									</DropdownMenuItem>
 								)}

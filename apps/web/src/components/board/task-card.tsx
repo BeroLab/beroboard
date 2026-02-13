@@ -1,6 +1,6 @@
 "use client";
 
-import { Warning, UserCircleDashed } from "@phosphor-icons/react";
+import { WarningIcon, UserCircleDashedIcon } from "@phosphor-icons/react";
 import Link from "next/link";
 import type { Task } from "~/lib/types";
 import { cn } from "~/lib/utils";
@@ -62,7 +62,7 @@ export function TaskCard({ task, isCompleted = false }: TaskCardProps) {
 			{(priority || task.labels.length > 0) && (
 				<div className="flex flex-wrap items-center gap-2">
 					{priority && (
-						<Warning
+						<WarningIcon
 							size={16}
 							weight="fill"
 							style={{ color: priority.color }}
@@ -101,7 +101,7 @@ export function TaskCard({ task, isCompleted = false }: TaskCardProps) {
 						{getInitials(task.assignee.name)}
 					</div>
 				) : (
-					<UserCircleDashed size={20} className="text-muted-foreground/40" />
+					<UserCircleDashedIcon size={20} className="text-muted-foreground/40" />
 				)}
 			</div>
 		</Link>

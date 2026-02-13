@@ -1,6 +1,6 @@
 "use client";
 
-import { UserCircleDashed } from "@phosphor-icons/react";
+import { UserCircleDashedIcon } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
 
 interface InlineTaskCreateProps {
@@ -57,7 +57,7 @@ export function InlineTaskCreate({
 				<span className="text-muted-foreground/50 text-xs">
 					Issue #{taskCount + 1} | FrontEnd
 				</span>
-				<UserCircleDashed size={20} className="text-muted-foreground/40" />
+				<UserCircleDashedIcon size={20} className="text-muted-foreground/40" />
 			</div>
 		</div>
 	);
