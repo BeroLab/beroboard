@@ -44,6 +44,7 @@ export interface TaskWithDetails extends Task {
 export interface Column {
 	id: string;
 	name: string;
+	description: string | null;
 	color: string | null;
 	order: number;
 	isCompleted: boolean;
@@ -84,6 +85,7 @@ export interface MoveTaskInput {
 
 export interface CreateColumnInput {
 	name: string;
+	description?: string;
 	color?: string;
 	isCompleted?: boolean;
 	organizationId: string;
@@ -91,16 +93,18 @@ export interface CreateColumnInput {
 
 export interface UpdateColumnInput {
 	name?: string;
+	description?: string | null;
 	color?: string;
 	order?: number;
 	isCompleted?: boolean;
 }
 
 export const DEFAULT_COLUMNS = [
-	{ name: "Backlog", color: "#6B6B70", isCompleted: false },
-	{ name: "In Progress", color: "#6366F1", isCompleted: false },
-	{ name: "Review", color: "#FFB547", isCompleted: false },
-	{ name: "Done", color: "#32D583", isCompleted: true },
+	{ name: "Backlog", description: "Tasks being refined and prioritized", color: "icon:backlog", isCompleted: false },
+	{ name: "Todo", description: "Tasks ready to be worked on", color: "icon:todo", isCompleted: false },
+	{ name: "In Progress", description: "Tasks currently being developed", color: "icon:in-progress", isCompleted: false },
+	{ name: "Review", description: "Tasks awaiting review", color: "icon:review", isCompleted: false },
+	{ name: "Done", description: "Completed tasks", color: "icon:done", isCompleted: true },
 ] as const;
 
 export type TaskCreatedMessage = {

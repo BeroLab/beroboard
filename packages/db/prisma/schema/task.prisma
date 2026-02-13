@@ -8,6 +8,7 @@ enum TaskPriority {
 model Column {
   id             String       @id @default(auto()) @map("_id") @db.ObjectId
   name           String
+  description    String?
   color          String?
   order          Int          @default(0)
   isCompleted    Boolean      @default(false)

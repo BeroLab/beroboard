@@ -13,6 +13,7 @@ export async function createColumnUseCase(
 	return prisma.column.create({
 		data: {
 			name: input.name,
+			description: input.description,
 			color: input.color,
 			order: lastColumn ? lastColumn.order + 1 : 0,
 			isCompleted: input.isCompleted ?? false,

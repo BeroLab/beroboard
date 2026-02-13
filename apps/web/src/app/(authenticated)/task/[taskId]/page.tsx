@@ -1,11 +1,11 @@
 "use client";
 
 import {
-  ArrowLeft,
-  CalendarBlank,
-  DotsThree,
-  PencilSimple,
-  Trash,
+  ArrowLeftIcon,
+  CalendarIcon,
+  DotsThreeIcon,
+  PencilSimpleIcon,
+  TrashIcon,
 } from "@phosphor-icons/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -133,7 +133,7 @@ export default function TaskDetailsPage({ params }: PageProps) {
             href="/"
             className="flex size-9 items-center justify-center rounded-lg border border-border bg-card transition-colors hover:border-foreground/20"
           >
-            <ArrowLeft size={16} className="text-foreground" />
+            <ArrowLeftIcon size={16} className="text-foreground" />
           </Link>
           <div className="flex items-center gap-2 text-sm">
             <span className="text-muted-foreground">Project Overview</span>
@@ -148,16 +148,12 @@ export default function TaskDetailsPage({ params }: PageProps) {
             className="flex h-9 items-center gap-2 rounded-lg border border-border bg-transparent px-3 text-foreground text-sm transition-colors hover:border-foreground/20 hover:bg-accent"
             onClick={() => setIsEditModalOpen(true)}
           >
-            <PencilSimple size={16} />
+            <PencilSimpleIcon size={16} />
             Edit
           </button>
           <DropdownMenu>
             <DropdownMenuTrigger className="flex size-9 items-center justify-center rounded-lg border border-border bg-card transition-colors hover:border-foreground/20 hover:bg-accent">
-              <DotsThree
-                size={20}
-                weight="bold"
-                className="text-foreground"
-              />
+              <DotsThreeIcon size={20} weight="bold" className="text-foreground" />
             </DropdownMenuTrigger>
             <DropdownMenuContent
               className="w-40 rounded-lg border border-border bg-popover p-1"
@@ -167,7 +163,7 @@ export default function TaskDetailsPage({ params }: PageProps) {
                 className="flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-destructive hover:bg-destructive/10 focus:bg-destructive/10 focus:text-destructive"
                 onClick={handleDelete}
               >
-                <Trash size={16} />
+                <TrashIcon size={16} />
                 <span className="text-sm">Delete task</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -285,7 +281,7 @@ export default function TaskDetailsPage({ params }: PageProps) {
                 Due Date
               </span>
               <div className="flex items-center gap-2">
-                <CalendarBlank size={16} className="text-muted-foreground" />
+                <CalendarIcon size={16} className="text-muted-foreground" />
                 <span className="font-medium text-foreground text-sm">
                   {formatDate(task.dueDate)}
                 </span>
@@ -310,9 +306,7 @@ export default function TaskDetailsPage({ params }: PageProps) {
             </div>
 
             <div className="flex items-center justify-between">
-              <span className="text-[13px] text-muted-foreground">
-                Status
-              </span>
+              <span className="text-[13px] text-muted-foreground">Status</span>
               <div className="flex items-center gap-2">
                 <div
                   className="size-2 rounded-full"

@@ -8,6 +8,7 @@ export const deleteColumnParamsSchema = z.object({
 export const deleteColumnResponseSchema = z.object({
 	id: z.string(),
 	name: z.string(),
+	description: z.string().nullable(),
 	createdAt: zDate,
 	updatedAt: zDate,
 	organizationId: z.string(),

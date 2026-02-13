@@ -17,6 +17,7 @@ export function useCreateColumn(
 		mutationFn: async (input: CreateColumnInput) => {
 			const { data, error } = await api.columns.post({
 				name: input.name,
+				description: input.description,
 				color: input.color,
 				isCompleted: input.isCompleted ?? false,
 			});

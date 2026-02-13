@@ -4,10 +4,10 @@ import {
   CheckIcon,
   CaretUpDownIcon,
   CaretRightIcon,
-  List,
+  ListIcon,
   MagnifyingGlassIcon,
   PlusIcon,
-  PushPin,
+  PushPinIcon,
   PencilSimpleIcon,
   XIcon,
   FadersHorizontalIcon,
@@ -86,7 +86,7 @@ export function SidebarTrigger({ className }: { className?: string }) {
         className,
       )}
     >
-      <List size={24} />
+      <ListIcon size={24} />
     </button>
   );
 }
@@ -581,7 +581,7 @@ function SidebarContent({ className }: { className?: string }) {
                                 : "opacity-0 group-hover:opacity-100",
                             )}
                           >
-                            <PushPin
+                            <PushPinIcon
                               size={16}
                               weight={
                                 pinnedProjectIds.has(project.id)
@@ -665,7 +665,7 @@ function SidebarContent({ className }: { className?: string }) {
                                 : "opacity-0 group-hover:opacity-100",
                             )}
                           >
-                            <PushPin
+                            <PushPinIcon
                               size={16}
                               weight={
                                 pinnedTeamIds.has(team.id) ? "fill" : "regular"

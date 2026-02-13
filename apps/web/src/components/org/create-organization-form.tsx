@@ -3,7 +3,9 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import { api } from "~/lib/api";
 import { authClient } from "~/lib/auth-client";
+import { DEFAULT_COLUMNS } from "~/lib/types";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
@@ -45,6 +47,16 @@ export default function CreateOrganizationForm() {
 		}
 
 		await authClient.getSession({ fetchOptions: { cache: "no-cache" } });
+
+		for (const col of DEFAULT_COLUMNS) {
+			await api.columns.post({
+				name: col.name,
+				description: col.description,
+				color: col.color,
+				isCompleted: col.isCompleted,
+			});
+		}
+
 		toast.success("Organization created successfully");
 		setIsCreating(false);
 		router.push("/");

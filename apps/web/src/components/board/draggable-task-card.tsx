@@ -2,7 +2,7 @@
 
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { CheckCircle } from "@phosphor-icons/react";
+import { WarningIcon, UserCircleDashedIcon } from "@phosphor-icons/react";
 import { useRouter } from "next/navigation";
 import { useRef } from "react";
 import type { Task } from "~/lib/types";
@@ -13,12 +13,12 @@ interface DraggableTaskCardProps {
 	isCompleted?: boolean;
 }
 
-const priorityColors = {
-	HIGH: "#ef4444",
-	MEDIUM: "#f59e0b",
-	LOW: "#22c55e",
-	NONE: "transparent",
-};
+const priorityConfig = {
+	HIGH: { color: "#ef4444", label: "High" },
+	MEDIUM: { color: "#f59e0b", label: "Medium" },
+	LOW: { color: "#22c55e", label: "Low" },
+	NONE: null,
+} as const;
 
 function getInitials(name: string): string {
 	return name
@@ -27,6 +27,15 @@ function getInitials(name: string): string {
 		.join("")
 		.toUpperCase()
 		.slice(0, 2);
+}
+
+function stringToColor(str: string): string {
+	const colors = ["#6366F1", "#E85A4F", "#32D583", "#FFB547", "#8B5CF6"];
+	let hash = 0;
+	for (let i = 0; i < str.length; i++) {
+		hash = str.charCodeAt(i) + ((hash << 5) - hash);
+	}
+	return colors[Math.abs(hash) % colors.length];
 }
 
 export function DraggableTaskCard({
@@ -56,7 +65,7 @@ export function DraggableTaskCard({
 		transition,
 	};
 
-	const firstLabel = task.labels?.[0];
+	const priority = priorityConfig[task.priority];
 
 	const handleMouseDown = () => {
 		hasDragged.current = false;
@@ -93,62 +102,71 @@ export function DraggableTaskCard({
 			onClick={handleClick}
 			onKeyDown={handleKeyDown}
 			className={cn(
-				"flex w-full flex-col gap-2 rounded-lg border p-3 text-left",
+				"flex w-full flex-col gap-3 rounded-xl border border-border/50 p-4 text-left transition-all",
 				isDragging
 					? "border-foreground/20 border-dashed bg-accent/50 opacity-40"
-					: "cursor-grab border-border bg-card transition-colors hover:border-foreground/20 active:cursor-grabbing",
+					: "cursor-grab bg-card hover:border-foreground/20 active:cursor-grabbing",
+				isCompleted && "opacity-60",
 			)}
 		>
-			<div className="flex items-start gap-2">
-				{isCompleted ? (
-					<CheckCircle
-						size={16}
-						weight="fill"
-						className="mt-0.5 shrink-0 text-green-500"
-					/>
-				) : (
-					task.priority !== "NONE" && (
-						<div
-							className="mt-1.5 size-1.5 shrink-0 rounded-full"
-							style={{ backgroundColor: priorityColors[task.priority] }}
-						/>
-					)
+			{/* Title */}
+			<span
+				className={cn(
+					"text-sm leading-snug",
+					isCompleted
+						? "text-muted-foreground line-through"
+						: "font-medium text-foreground",
 				)}
-				<span
-					className={cn(
-						"text-sm leading-snug",
-						isCompleted
-							? "text-muted-foreground line-through"
-							: "font-medium text-foreground",
-					)}
-				>
-					{task.title}
-				</span>
-			</div>
+			>
+				{task.title}
+			</span>
 
-			{(firstLabel || task.assignee) && (
-				<div className="flex items-center justify-between gap-2">
-					{firstLabel && (
+			{/* Indicators row */}
+			{(priority || task.labels.length > 0) && (
+				<div className="flex flex-wrap items-center gap-2">
+					{priority && (
+						<WarningIcon
+							size={16}
+							weight="fill"
+							style={{ color: priority.color }}
+						/>
+					)}
+					{task.labels.map((label) => (
 						<span
-							className="rounded px-1.5 py-0.5 font-medium text-[11px]"
+							key={label.text}
+							className="flex items-center gap-1 rounded-md px-2 py-0.5 font-medium text-xs"
 							style={{
-								color: firstLabel.color,
-								backgroundColor: `${firstLabel.color}15`,
+								color: label.color,
+								backgroundColor: `${label.color}18`,
 							}}
 						>
-							{firstLabel.text}
+							<span
+								className="size-1.5 rounded-full"
+								style={{ backgroundColor: label.color }}
+							/>
+							{label.text}
 						</span>
-					)}
-					{task.assignee && (
-						<div
-							className="flex size-5 items-center justify-center rounded-full bg-muted font-semibold text-[9px] text-muted-foreground"
-							title={task.assignee.name}
-						>
-							{getInitials(task.assignee.name)}
-						</div>
-					)}
+					))}
 				</div>
 			)}
+
+			{/* Footer */}
+			<div className="flex items-center justify-between">
+				<span className="text-muted-foreground/50 text-xs">
+					Issue #{task.order + 1} | FrontEnd
+				</span>
+				{task.assignee ? (
+					<div
+						className="flex size-6 items-center justify-center rounded-full font-semibold text-[10px] text-white"
+						style={{ backgroundColor: stringToColor(task.assignee.name) }}
+						title={task.assignee.name}
+					>
+						{getInitials(task.assignee.name)}
+					</div>
+				) : (
+					<UserCircleDashedIcon size={20} className="text-muted-foreground/40" />
+				)}
+			</div>
 		</button>
 	);
 }

@@ -16,9 +16,9 @@ export default function AuthenticatedLayout({
     <OrgGuard>
       <CommandPaletteProvider>
         <SidebarProvider>
-          <div className="flex h-screen overflow-hidden bg-background">
+          <div className="flex h-screen overflow-hidden bg-sidebar">
             <Sidebar />
-            <div className="flex flex-1 flex-col overflow-hidden">
+            <div className="flex flex-1 flex-col overflow-hidden rounded-xl border border-border bg-sidebar my-2 mr-2">
               {/* Mobile Header */}
               <header className="flex h-14 shrink-0 items-center gap-4 border-b border-border bg-background px-4 md:hidden">
                 <SidebarTrigger />

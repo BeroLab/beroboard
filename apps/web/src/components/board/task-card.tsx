@@ -1,6 +1,6 @@
 "use client";
 
-import { Check } from "lucide-react";
+import { WarningIcon, UserCircleDashedIcon } from "@phosphor-icons/react";
 import Link from "next/link";
 import type { Task } from "~/lib/types";
 import { cn } from "~/lib/utils";
@@ -10,12 +10,12 @@ interface TaskCardProps {
 	isCompleted?: boolean;
 }
 
-const priorityColors = {
-	HIGH: "#E85A4F",
-	MEDIUM: "#FFB547",
-	LOW: "#32D583",
-	NONE: "#4A4A50",
-};
+const priorityConfig = {
+	HIGH: { color: "#ef4444", label: "High" },
+	MEDIUM: { color: "#f59e0b", label: "Medium" },
+	LOW: { color: "#22c55e", label: "Low" },
+	NONE: null,
+} as const;
 
 function getInitials(name: string): string {
 	return name
@@ -36,73 +36,74 @@ function stringToColor(str: string): string {
 }
 
 export function TaskCard({ task, isCompleted = false }: TaskCardProps) {
-	const firstLabel = task.labels?.[0];
+	const priority = priorityConfig[task.priority];
 
 	return (
 		<Link
 			href={`/task/${task.id}`}
-			className="flex cursor-pointer flex-col gap-3 rounded-xl border border-[#2A2A2E] bg-[#16161A] p-4 transition-colors hover:border-[#3A3A3E] hover:bg-[#1A1A1E]"
+			className={cn(
+				"flex flex-col gap-3 rounded-xl border border-border/50 bg-card p-4 transition-all hover:border-foreground/20",
+				isCompleted && "opacity-60",
+			)}
 		>
-			{/* Header */}
-			<div className="flex items-center gap-2">
-				{isCompleted ? (
-					<div className="flex size-[18px] items-center justify-center rounded-full bg-[#32D583]">
-						<Check className="size-3 text-[#0B0B0E]" />
-					</div>
-				) : (
-					<div
-						className="size-1.5 rounded-sm"
-						style={{ backgroundColor: priorityColors[task.priority] }}
-					/>
+			{/* Title */}
+			<span
+				className={cn(
+					"text-sm leading-snug",
+					isCompleted
+						? "text-muted-foreground line-through"
+						: "font-medium text-foreground",
 				)}
-				<span
-					className={cn(
-						"font-medium text-sm",
-						isCompleted ? "text-[#6B6B70]" : "text-[#FAFAF9]",
-					)}
-				>
-					{task.title}
-				</span>
-			</div>
+			>
+				{task.title}
+			</span>
 
-			{/* Description */}
-			{task.description && (
-				<p
-					className={cn(
-						"text-[13px]",
-						isCompleted ? "text-[#4A4A50]" : "text-[#6B6B70]",
+			{/* Indicators row */}
+			{(priority || task.labels.length > 0) && (
+				<div className="flex flex-wrap items-center gap-2">
+					{priority && (
+						<WarningIcon
+							size={16}
+							weight="fill"
+							style={{ color: priority.color }}
+						/>
 					)}
-				>
-					{task.description}
-				</p>
+					{task.labels.map((label) => (
+						<span
+							key={label.text}
+							className="flex items-center gap-1 rounded-md px-2 py-0.5 font-medium text-xs"
+							style={{
+								color: label.color,
+								backgroundColor: `${label.color}18`,
+							}}
+						>
+							<span
+								className="size-1.5 rounded-full"
+								style={{ backgroundColor: label.color }}
+							/>
+							{label.text}
+						</span>
+					))}
+				</div>
 			)}
 
 			{/* Footer */}
-			{(firstLabel || task.assignee) && (
-				<div className="flex items-center justify-between">
-					{firstLabel && (
-						<span
-							className="rounded-md px-2 py-1 font-medium text-[11px]"
-							style={{
-								color: firstLabel.color,
-								backgroundColor: `${firstLabel.color}20`,
-							}}
-						>
-							{firstLabel.text}
-						</span>
-					)}
-					{task.assignee && (
-						<div
-							className="flex size-7 items-center justify-center rounded-full"
-							style={{ backgroundColor: stringToColor(task.assignee.name) }}
-						>
-							<span className="font-semibold text-[11px] text-white">
-								{getInitials(task.assignee.name)}
-							</span>
-						</div>
-					)}
-				</div>
-			)}
+			<div className="flex items-center justify-between">
+				<span className="text-muted-foreground/50 text-xs">
+					Issue #{task.order + 1} | FrontEnd
+				</span>
+				{task.assignee ? (
+					<div
+						className="flex size-6 items-center justify-center rounded-full font-semibold text-[10px] text-white"
+						style={{ backgroundColor: stringToColor(task.assignee.name) }}
+						title={task.assignee.name}
+					>
+						{getInitials(task.assignee.name)}
+					</div>
+				) : (
+					<UserCircleDashedIcon size={20} className="text-muted-foreground/40" />
+				)}
+			</div>
 		</Link>
 	);
 }
