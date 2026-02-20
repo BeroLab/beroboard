@@ -10,6 +10,9 @@ export async function moveTaskUseCase(input: MoveTaskInput) {
 		},
 		include: {
 			column: true,
+			labels: {
+				select: { id: true, color: true, text: true },
+			},
 			assignee: {
 				select: { id: true, name: true, image: true },
 			},

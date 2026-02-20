@@ -9,9 +9,23 @@ export interface CreateOrganizationInput {
 	description?: string;
 }
 
+export interface CreateLabelInput {
+	text: string;
+  color: string;
+	organizationId: string
+}
+
+export interface UpdateLabelInput {
+	text?: string;
+  color?: string;
+}
+
 export interface TaskLabel {
+	id: string;
 	text: string;
 	color: string;
+	createdAt: Date | string;
+	updatedAt: Date | string;
 }
 
 export interface Task {

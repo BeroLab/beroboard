@@ -130,7 +130,7 @@ export function DraggableTaskCard({
 				<div className="flex items-center justify-between gap-2">
 					{firstLabel && (
 						<span
-							className="rounded px-1.5 py-0.5 font-medium text-[11px]"
+							className="max-w-25 truncate rounded px-1.5 py-0.5 font-medium text-[11px] transition-all hover:max-w-50"
 							style={{
 								color: firstLabel.color,
 								backgroundColor: `${firstLabel.color}15`,

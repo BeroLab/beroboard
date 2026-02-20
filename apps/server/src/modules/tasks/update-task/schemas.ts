@@ -1,11 +1,13 @@
 import { z } from "zod";
 import { zDate } from "@/shared/schemas/zod-date";
+import { zHexColor } from "@/shared/schemas/zod-hex-color";
 
 export const taskPrioritySchema = z.enum(["HIGH", "MEDIUM", "LOW", "NONE"]);
 
 export const taskLabelSchema = z.object({
+	id: z.string(),
 	text: z.string().min(1),
-	color: z.string().min(1),
+	color: zHexColor.min(1),
 });
 
 export const updateTaskParamsSchema = z.object({
@@ -28,7 +30,7 @@ export type UpdateTaskInput = z.infer<typeof updateTaskBodySchema>;
 const columnSchema = z.object({
 	id: z.string(),
 	name: z.string(),
-	color: z.string().nullable(),
+	color: zHexColor.nullable(),
 	order: z.number(),
 	isCompleted: z.boolean(),
 	organizationId: z.string(),
@@ -44,6 +46,7 @@ export const updateTaskResponseSchema = z.object({
 	dueDate: zDate.nullable(),
 	order: z.number(),
 	labels: z.array(taskLabelSchema),
+	labelIds: z.array(z.string()),
 	columnId: z.string(),
 	assigneeId: z.string().nullable(),
 	organizationId: z.string(),

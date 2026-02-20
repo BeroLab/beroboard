@@ -11,6 +11,9 @@ export async function getColumnsUseCase(organizationId: string) {
 					assignee: {
 						select: { id: true, name: true, image: true },
 					},
+					labels: {
+						select: { id: true, text: true, color: true },
+					},
 				},
 			},
 		},

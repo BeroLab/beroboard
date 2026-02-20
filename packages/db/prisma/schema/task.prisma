@@ -30,7 +30,8 @@ model Task {
   dueDate     DateTime?
   order       Int          @default(0)
 
-  labels TaskLabel[]
+  labelIds String[] @db.ObjectId
+  labels   Label[]  @relation(fields: [labelIds], references: [id])
 
   columnId       String       @db.ObjectId
   column         Column       @relation(fields: [columnId], references: [id])
@@ -47,10 +48,6 @@ model Task {
   @@index([organizationId])
   @@index([columnId])
   @@index([assigneeId])
+  @@index([labelIds])
   @@map("task")
-}
-
-type TaskLabel {
-  text  String
-  color String
 }

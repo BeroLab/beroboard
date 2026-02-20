@@ -23,7 +23,9 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
+import { useLabels } from "~/hooks/use-labels";
 import type { Column, CreateTaskInput, TaskLabel } from "~/lib/types";
+import { LabelSelector } from "./label-selector";
 
 interface CreateTaskModalProps {
 	isOpen: boolean;
@@ -32,6 +34,7 @@ interface CreateTaskModalProps {
 	onSubmit: (
 		data: Omit<CreateTaskInput, "organizationId" | "createdById">,
 	) => Promise<void>;
+	organizationId: string;
 }
 
 interface TagProps {
@@ -97,7 +100,8 @@ export function CreateTaskModal({
 	isOpen,
 	onClose,
 	columns,
-	onSubmit,
+  onSubmit,
+  organizationId
 }: CreateTaskModalProps) {
 	const [name, setName] = useState("");
 	const [description, setDescription] = useState("");
@@ -109,6 +113,19 @@ export function CreateTaskModal({
 	const [tags, setTags] = useState<TaskLabel[]>([]);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const { data: allLabels = [] } = useLabels(organizationId)
+  
+  const handleToggleLabel = (label: TaskLabel) => {
+     setTags((currentTags) => {
+       const isSelected = currentTags.some((l) => l.id === label.id);
+       
+       if (isSelected) {
+         return currentTags.filter((l) => l.id !== label.id);
+       }
+       return [...currentTags, label];
+     });
+   };
+	
 	const resetForm = () => {
 		setName("");
 		setDescription("");
@@ -340,13 +357,11 @@ export function CreateTaskModal({
 									onRemove={() => removeTag(index)}
 								/>
 							))}
-							<button
-								type="button"
-								className="flex h-6 items-center gap-1 rounded border border-border border-dashed px-2 text-muted-foreground transition-colors hover:border-foreground/30 hover:text-foreground"
-							>
-								<Plus size={12} />
-								<span className="text-xs">Add label</span>
-							</button>
+              <LabelSelector
+                allLabels={allLabels}
+                selectedLabels={tags}
+                onToggleLabel={handleToggleLabel}
+              />
 						</div>
 					</div>
 				</div>
