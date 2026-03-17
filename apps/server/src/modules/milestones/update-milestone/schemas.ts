@@ -1,40 +1,19 @@
 import z from "zod";
+import { milestonesStatusSchema } from "@/shared/schemas/milestone-status";
 import { zDate } from "@/shared/schemas/zod-date";
 
 export const updateMilestonesParamsSchema = z.object({
 	id: z.string().min(1),
 });
 
-const milestonesStatusSchema = z.enum([
-	"PLANNED",
-	"ACTIVE",
-	"COMPLETED",
-	"CANCELLED",
-]);
-
-export const updateMilestonesBodySchema = z
-	.object({
-		name: z.string().min(2).max(100).optional(),
-		description: z.string().min(2).max(200).optional(),
-		status: milestonesStatusSchema.optional(),
-		startDate: zDate.optional(),
-		endDate: zDate.optional(),
-		taskIds: z.array(z.string()).optional(),
-	})
-	.refine(
-		(data) => {
-			if (data.startDate && data.endDate) {
-				const start = new Date(data.startDate);
-				const end = new Date(data.endDate);
-				return end >= start;
-			}
-			return true;
-		},
-		{
-			message: "End date must be after or equal to start date",
-			path: ["endDate"],
-		},
-	);
+export const updateMilestonesBodySchema = z.object({
+	name: z.string().min(2).max(100).optional(),
+	description: z.string().min(2).max(200).optional(),
+	status: milestonesStatusSchema.optional(),
+	startDate: zDate.optional(),
+	endDate: zDate.optional(),
+	taskIds: z.array(z.string()).optional(),
+});
 
 export type UpdateMilestonesBody = z.infer<typeof updateMilestonesBodySchema>;
 

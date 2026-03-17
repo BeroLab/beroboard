@@ -1,12 +1,6 @@
 import z from "zod";
+import { milestonesStatusSchema } from "@/shared/schemas/milestone-status";
 import { zDate } from "@/shared/schemas/zod-date";
-
-const milestonesStatusSchema = z.enum([
-	"PLANNED",
-	"ACTIVE",
-	"COMPLETED",
-	"CANCELLED",
-]);
 
 export const assignTasksMilestoneParamsSchema = z.object({
 	id: z.string().min(1),

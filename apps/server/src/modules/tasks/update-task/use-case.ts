@@ -50,10 +50,19 @@ export async function updateTaskUseCase(id: string, input: UpdateTaskInput) {
 			}
 
 			if (removed.length > 0) {
-				await tx.label.updateMany({
-					where: { id: { in: removed } },
-					data: { taskIds: { push: id } },
-				});
+				for (const labelId of removed) {
+					const label = await tx.label.findUnique({ where: { id: labelId } });
+					if (label) {
+						await tx.label.update({
+							where: { id: labelId },
+							data: {
+								taskIds: {
+									set: label.taskIds.filter((taskId) => taskId !== id),
+								},
+							},
+						});
+					}
+				}
 			}
 		}
 
