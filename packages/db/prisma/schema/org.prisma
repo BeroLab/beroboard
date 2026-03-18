@@ -9,6 +9,7 @@ model Organization {
   columns Column[]
   tasks   Task[]
   labels  Label[]
+  milestones Milestone[]
 
   @@map("organization")
 }

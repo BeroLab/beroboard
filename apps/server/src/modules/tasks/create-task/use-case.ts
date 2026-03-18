@@ -6,34 +6,47 @@ export async function createTaskUseCase(
 	createdById: string,
 	input: CreateTaskInput,
 ) {
-	const lastTask = await prisma.task.findFirst({
-		where: { columnId: input.columnId },
-		orderBy: { order: "desc" },
-  });
-	
-	const labelIdsToCreate = input.labels?.map((label) => label.id);
+	return await prisma.$transaction(async (tx) => {
+		const lastTask = await tx.task.findFirst({
+			where: { columnId: input.columnId },
+			orderBy: { order: "desc" },
+		});
 
-	return prisma.task.create({
-		data: {
-			title: input.title,
-			description: input.description,
-			priority: input.priority,
-			dueDate: input.dueDate ? new Date(input.dueDate) : null,
-			order: lastTask ? lastTask.order + 1 : 0,
-			columnId: input.columnId,
-			organizationId,
-			assigneeId: input.assigneeId,
-      createdById,
-			...(labelIdsToCreate !== undefined && { labelIds: labelIdsToCreate }),
-		},
-		include: {
-			column: true,
-			assignee: {
-				select: { id: true, name: true, image: true },
+		const labelIds = input.labels?.map((label) => label.id) || [];
+
+		const task = await tx.task.create({
+			data: {
+				title: input.title,
+				description: input.description,
+				priority: input.priority,
+				dueDate: input.dueDate ? new Date(input.dueDate) : null,
+				order: lastTask ? lastTask.order + 1 : 0,
+				columnId: input.columnId,
+				organizationId,
+				assigneeId: input.assigneeId,
+				createdById,
+				labelIds: labelIds,
 			},
-			labels: {
-				select: { id: true, text: true, color: true },
+			include: {
+				column: true,
+				assignee: {
+					select: { id: true, name: true, image: true },
+				},
+				labels: {
+					select: { id: true, text: true, color: true },
+				},
 			},
-		},
+		});
+
+		if (labelIds.length > 0) {
+			await tx.label.updateMany({
+				where: { id: { in: labelIds } },
+				data: {
+					taskIds: { push: task.id },
+				},
+			});
+		}
+
+		return task;
 	});
 }

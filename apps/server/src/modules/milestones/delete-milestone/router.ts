@@ -1,13 +1,16 @@
 import { Elysia } from "elysia";
 import { authMiddleware } from "@/shared/http/middleware/auth.middleware";
 import { authMiddlewareErrorSchemas } from "@/shared/schemas/auth-middleware-errors";
-import { deleteTaskParamsSchema, deleteTaskResponseSchema } from "./schemas";
-import { deleteTaskUseCase } from "./use-case";
+import {
+	deleteMilestoneParamsSchema,
+	deleteMilestoneResponseSchema,
+} from "./schemas";
+import { deleteMilestone } from "./use-case";
 
-export const deleteTaskRouter = new Elysia().use(authMiddleware).delete(
+export const deleteMilestonesRouter = new Elysia().use(authMiddleware).delete(
 	"/:id",
-	async ({ params, status, session }) => {
-		const result = await deleteTaskUseCase(
+	async ({ session, params, status }) => {
+		const result = await deleteMilestone(
 			params.id,
 			session.activeOrganizationId,
 		);
@@ -16,9 +19,9 @@ export const deleteTaskRouter = new Elysia().use(authMiddleware).delete(
 	},
 	{
 		requireOrganization: true,
-		params: deleteTaskParamsSchema,
+		params: deleteMilestoneParamsSchema,
 		response: {
-			200: deleteTaskResponseSchema,
+			200: deleteMilestoneResponseSchema,
 			...authMiddlewareErrorSchemas,
 		},
 	},

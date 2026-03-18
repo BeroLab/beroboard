@@ -30,6 +30,10 @@ model Task {
   dueDate     DateTime?
   order       Int          @default(0)
 
+
+  milestoneId String? @db.ObjectId
+  milestone   Milestone?   @relation(fields: [milestoneId], references: [id])
+
   labelIds String[] @db.ObjectId
   labels   Label[]  @relation(fields: [labelIds], references: [id])
 
@@ -45,6 +49,7 @@ model Task {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([milestoneId])
   @@index([organizationId])
   @@index([columnId])
   @@index([assigneeId])

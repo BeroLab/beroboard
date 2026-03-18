@@ -41,6 +41,7 @@ export const getTaskResponseSchema = z.object({
 	order: z.number(),
 	labels: z.array(taskLabelSchema),
 	labelIds: z.array(z.string()),
+	milestoneId: z.string().nullable(),
 	columnId: z.string(),
 	assigneeId: z.string().nullable(),
 	organizationId: z.string(),
