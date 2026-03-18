@@ -6,8 +6,11 @@ import { deleteTaskUseCase } from "./use-case";
 
 export const deleteTaskRouter = new Elysia().use(authMiddleware).delete(
 	"/:id",
-	async ({ params, status }) => {
-		const result = await deleteTaskUseCase(params.id);
+	async ({ params, status, session }) => {
+		const result = await deleteTaskUseCase(
+			params.id,
+			session.activeOrganizationId,
+		);
 
 		return status(200, result);
 	},

@@ -24,18 +24,21 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
+import { useLabels } from "~/hooks/use-labels";
 import type {
 	Column,
 	TaskLabel,
 	TaskWithDetails,
 	UpdateTaskInput,
 } from "~/lib/types";
+import { LabelSelector } from "./label-selector";
 
 interface EditTaskModalProps {
 	isOpen: boolean;
 	onClose: () => void;
 	task: TaskWithDetails;
-	columns: Column[];
+  columns: Column[];
+  organizationId: string;
 	onSubmit: (data: UpdateTaskInput) => Promise<void>;
 }
 
@@ -113,7 +116,8 @@ export function EditTaskModal({
 	onClose,
 	task,
 	columns,
-	onSubmit,
+  onSubmit,
+	organizationId
 }: EditTaskModalProps) {
 	const [name, setName] = useState(task.title);
 	const [description, setDescription] = useState(task.description ?? "");
@@ -132,6 +136,19 @@ export function EditTaskModal({
 	const [tags, setTags] = useState<TaskLabel[]>(task.labels ?? []);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 
+	const { data: allLabels = [] } = useLabels(organizationId);
+
+ const handleToggleLabel = (label: TaskLabel) => {
+    setTags((currentTags) => {
+      const isSelected = currentTags.some((l) => l.id === label.id);
+      
+      if (isSelected) {
+        return currentTags.filter((l) => l.id !== label.id);
+      }
+      return [...currentTags, label];
+    });
+  };
+	
 	useEffect(() => {
 		if (isOpen) {
 			setName(task.title);
@@ -377,14 +394,12 @@ export function EditTaskModal({
 									color={tag.color}
 									onRemove={() => removeTag(index)}
 								/>
-							))}
-							<button
-								type="button"
-								className="flex h-6 items-center gap-1 rounded border border-border border-dashed px-2 text-muted-foreground transition-colors hover:border-foreground/30 hover:text-foreground"
-							>
-								<Plus size={12} />
-								<span className="text-xs">Add label</span>
-							</button>
+              ))}
+              <LabelSelector
+                allLabels={allLabels}
+                selectedLabels={tags}
+                onToggleLabel={handleToggleLabel}
+              />
 						</div>
 					</div>
 				</div>

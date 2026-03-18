@@ -6,6 +6,11 @@ export async function reorderTasksUseCase(input: ReorderTasksInput) {
 		prisma.task.update({
 			where: { id: task.id },
 			data: { order: task.order, columnId: task.columnId },
+			include: {
+				labels: {
+					select: { id: true, color: true, text: true },
+				},
+			},
 		}),
 	);
 	return await prisma.$transaction(updates);

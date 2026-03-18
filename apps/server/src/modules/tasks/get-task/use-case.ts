@@ -9,6 +9,13 @@ const taskInclude = {
 	createdBy: {
 		select: { id: true, name: true, image: true },
 	},
+	labels: {
+		select: {
+			id: true,
+			text: true,
+			color: true,
+		},
+	},
 } as const;
 
 export async function getTaskUseCase(id: string) {

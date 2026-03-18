@@ -662,6 +662,7 @@ export function TaskBoard({ organizationId, userId }: TaskBoardProps) {
       )}
 
       <CreateTaskModal
+        organizationId={organizationId}
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         columns={columns}

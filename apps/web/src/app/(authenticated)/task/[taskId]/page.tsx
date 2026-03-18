@@ -26,6 +26,7 @@ import {
 } from "~/hooks/board";
 import type { UpdateTaskInput } from "~/lib/types";
 import Loader from "~/components/loader";
+import { EditTaskModal } from "~/components/board/edit-task-modal";
 
 const priorityColors = {
   HIGH: "#ef4444",
@@ -101,6 +102,7 @@ export default function TaskDetailsPage({ params }: PageProps) {
       await updateTaskMutation.mutateAsync({ id: task.id, input });
       await refetch();
       toast.success("Task updated successfully");
+      setIsEditModalOpen(false)
     } catch {
       toast.error("Failed to update task");
     }
@@ -231,11 +233,11 @@ export default function TaskDetailsPage({ params }: PageProps) {
                 {task.labels.map((label) => (
                   <div
                     key={label.text}
-                    className="flex h-7 items-center rounded-md px-3"
+                    className="flex h-7 max-w-30 items-center rounded-md px-3 transition-all duration-300 hover:max-w-100"
                     style={{ backgroundColor: `${label.color}15` }}
                   >
                     <span
-                      className="font-medium text-xs"
+                      className="truncate font-medium text-xs"
                       style={{ color: label.color }}
                     >
                       {label.text}
@@ -354,6 +356,17 @@ export default function TaskDetailsPage({ params }: PageProps) {
           </div>
         </div>
       </div>
+      
+      {isEditModalOpen && task && (
+        <EditTaskModal
+          isOpen={isEditModalOpen}
+          organizationId={task?.organizationId ?? ""}
+          onClose={() => setIsEditModalOpen(false)}
+          task={task}
+          columns={columns}
+          onSubmit={handleUpdate}
+        />
+      )}
     </>
   );
 }

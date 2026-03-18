@@ -2,7 +2,8 @@ import { env } from "@blaboard/env/server";
 import { cors } from "@elysiajs/cors";
 import { openapi } from "@elysiajs/openapi";
 import { Elysia } from "elysia";
-
+import { labelsRouter } from "@/modules/labels/router";
+import { milestonesRouter } from "@/modules/milestones/router";
 import { columnsRouter } from "../../modules/columns/router";
 import { tasksRouter } from "../../modules/tasks/router";
 import { openapiConfig } from "../config/openapi";
@@ -20,8 +21,8 @@ const app = new Elysia()
 	)
 	.use(openapi(openapiConfig))
 	.use(authPlugin)
-	.use(wsPlugin) 
-	.use([columnsRouter, tasksRouter])
+	.use(wsPlugin)
+	.use([columnsRouter, tasksRouter, labelsRouter, milestonesRouter])
 	.listen(env.PORT, ({ hostname, port }) =>
 		console.log(`Server is running on http://${hostname}:${port}`),
 	);
